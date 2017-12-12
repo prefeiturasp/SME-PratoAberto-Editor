@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prato Aberto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+    <style>
+
+        html {
+            background-color: #3498DB;
+        }
+        body {
+            background-color: #3498DB;
+            padding-top: 20px;
+            font-size: 16px;
+            background: transparent;
+        }
+
+
+        h1 {
+            font-weight: 400;
+            font-size: 40px;
+        }
+
+        /* Override B3 .panel adding a subtly transparent background */
+        .panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 4px;
+        }
+
+        .margin-base-vertical {
+            margin: 40px 0;
+        }
+
+        .input-group {
+            width: 100%;
+            padding-top: 10px;
+        }
+
+        .input-group .form-control:last-child {
+            border-radius: 4px;
+        }
+
+        .btn {
+            width: 100%;
+            font-size: 25px;
+        }
+
+        .col-centered{
+            margin: 0 auto;
+            float: none;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    </style>
+
+</head>
+
+{% block body %}
+{% if session['logged_in'] %}
+<p>You're logged in already!</p>
+{% else %}
+
+<div class="container">
+    <div class="row" style="padding-top: 50px">
+        <div class="col-md-6 col-md-offset-3 panel panel-default">
+            <form action="/" method="POST" class="margin-base-vertical">
+                <div class="login">
+                    <div class="login-screen">
+                        <div class="app-title text-center">
+                            <h1>Editor de Cardápio</h1>
+                        </div>
+                        <div class="text-center text-danger">
+                            {% with messages = get_flashed_messages() %}
+                               {% if messages %}
+                                  {% for message in messages %}
+                                     {{ message }}
+                                  {% endfor %}
+                               {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="row col-centered" style="padding-top: 15px;">
+                            <p class="input-group">
+                                <input type="text" class="form-control input-lg" value="" placeholder="login" name="username">
+                                <!-- <label class="login-field-icon fui-user" for="login-name"></label>-->
+                            </p>
+
+                            <p class="input-group text-center">
+                                <input type="password" class="form-control input-lg" value="" placeholder="senha" name="password">
+                                <!-- <label class="login-field-icon fui-lock" for="login-pass"></label>-->
+                            </p>
+                            <p class="text-center" style="padding-top: 10px;">
+                                <button type="submit" value="Log in" class="btn btn-primary btn-large btn-block">ENTRAR</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endblock %}
