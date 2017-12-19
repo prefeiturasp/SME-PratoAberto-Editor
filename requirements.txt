@@ -2,6 +2,7 @@ beautifulsoup4==4.6.0
 Flask==0.12.2
 Flask-Login==0.4.1
 gunicorn==19.7.1
+lxml==4.1.1
 python-dateutil==2.6.1
 requests==2.18.4
 SQLAlchemy==1.1.15
