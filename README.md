@@ -1,3 +1,4 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/91db18f57ab71fb8f602/maintainability)](https://codeclimate.com/github/prefeiturasp/SME-PratoAberto-Editor/maintainability)
 # editor
 
 Este é o painel de edição de cardápios da Secretária Municipal de Educação.
