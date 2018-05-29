@@ -6,6 +6,7 @@
 Pré requisitos:
 
 Python
+
 pip
 
 Instale os requisitos através do requirements.txt
