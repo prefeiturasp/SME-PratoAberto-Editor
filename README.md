@@ -17,7 +17,7 @@ pip install -r requirements.txt
 Para executar o editor:
 
 ```
-FLASK_APP=hello.py flask run
+FLASK_APP=app.py flask run
 ```
 Caso alguma dependência esteja faltando após o processo instale com:
 
