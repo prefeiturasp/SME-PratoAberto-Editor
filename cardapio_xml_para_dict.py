@@ -40,8 +40,17 @@ def create(FILE):
 
 
                 lista = []
-                for ingrediente in informacao_dia.find_all('txt_dcr_almn'):
-                    lista.append(ingrediente.text.strip())
+                for ingrediente in informacao_dia.find_all('g_txt_dcr_rcta'):
+                    subs = ingrediente.find("subs_por_nada")
+                    item = ingrediente.find("txt_dcr_almn")
+
+                    fullName = ""
+                    if subs is not None and subs.text is not None and len(subs.text):
+                    	fullName = subs.text
+                    if item is not None and item.text is not None:
+                    	fullName += item.text
+		
+                    lista.append(fullName.strip())
 
                 # Constroi o dicionario
                 if txt_tip_atendimento in cardapio_dict.keys():

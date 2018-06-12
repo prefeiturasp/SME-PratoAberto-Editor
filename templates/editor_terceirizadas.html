@@ -9,6 +9,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/custom.css">
+
     <style>
 
         .row {
@@ -67,7 +69,6 @@
         .panel-body{
             display: none;
         }
-
 
     </style>
 </head>
@@ -154,7 +155,7 @@
                                     <td contenteditable="true">{{ tipo_refeicao }}</td>
                                     <td class="lista-alimentos">
                                         {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
-                                            {{ ingrediente }},
+                                            {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe}},
                                         {% endfor %}
                                     </td>
                                     <td contenteditable="true" style="background-color: #FFEEAD">
