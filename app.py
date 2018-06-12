@@ -19,7 +19,6 @@ import db_setup
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
-app.secret_key = os.urandom(12)
 
 # BLOCO GET ENDPOINT E KEYS
 config = configparser.ConfigParser()
@@ -27,6 +26,7 @@ config.read('config/integracao.conf')
 api = config.get('ENDPOINTS', 'PRATOABERTO_API')
 _user = config.get('LOGIN', 'USER')
 _password = config.get('LOGIN', 'PASSWORD')
+app.secret_key = config.get("TOKENS", "APPLICATION_KEY")
 
 
 # BLOCO LOGIN
@@ -486,10 +486,6 @@ def calendario_grupo_cardapio():
 
             else:
                 if cardapio_atual:
-                    cardapio_atual['cardapio_semana_anterior'] = []
-                    cardapios.append(cardapio_atual)
-
-                elif cardapio_anterior:
                     cardapio_atual['cardapio_semana_anterior'] = []
                     cardapios.append(cardapio_atual)
 
@@ -1159,7 +1155,7 @@ def filtro_dicionarios(dictlist, key, valuelist):
     if lista_filtrada:
         return lista_filtrada[0]
     else:
-        return []
+        return None
 
 
 def get_cardapios_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
