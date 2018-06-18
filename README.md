@@ -9,6 +9,8 @@ Python
 
 pip
 
+virtualenv (Passo a passo da instalação virtualenv+flask [aqui.](http://flask.pocoo.org/docs/0.12/installation/))
+
 Instale os requisitos através do requirements.txt
 
 ```
