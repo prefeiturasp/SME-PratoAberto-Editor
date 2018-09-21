@@ -1,5 +1,31 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/91db18f57ab71fb8f602/maintainability)](https://codeclimate.com/github/prefeiturasp/SME-PratoAberto-Editor/maintainability)
 
+### Instalação
+Pré requisitos:
+
+Python
+
+pip
+
+virtualenv (Passo a passo da instalação virtualenv+flask [aqui.](http://flask.pocoo.org/docs/0.12/installation/))
+
+Instale os requisitos através do requirements.txt
+
+```
+pip install -r requirements.txt
+```
+Para executar o editor:
+
+```
+FLASK_APP=app.py flask run
+```
+Caso alguma dependência esteja faltando após o processo instale com:
+
+```
+pip install nomeDependecia
+```
+Repita o processo até não faltar mais nenhuma dependência.
+
 # Pátio Digital
 
 _“Recurso público retorna ao público”._
@@ -71,30 +97,6 @@ ajudar a alcançar nossos objetivos. Lembrando que todos devem seguir
 nosso [código de conduta](./CODEOFCONDUCT.md).
 
 
-### Instalação
-Pré requisitos:
 
-Python
-
-pip
-
-virtualenv (Passo a passo da instalação virtualenv+flask [aqui.](http://flask.pocoo.org/docs/0.12/installation/))
-
-Instale os requisitos através do requirements.txt
-
-```
-pip install -r requirements.txt
-```
-Para executar o editor:
-
-```
-FLASK_APP=app.py flask run
-```
-Caso alguma dependência esteja faltando após o processo instale com:
-
-```
-pip install nomeDependecia
-```
-Repita o processo até não faltar mais nenhuma dependência.
 
 Baseado no Readme do [i-educar](https://github.com/portabilis/i-educar)
