@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    environment:
+      - API_MONGO_URI=db:27017
+    command: python -u app.py
+
+    ports:
+      - 5001:5001
+    volumes:
+      - .:/code
