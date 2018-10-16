@@ -28,7 +28,7 @@ config.read('config/integracao.conf')
 api = config.get('ENDPOINTS', 'PRATOABERTO_API')
 _user = config.get('LOGIN', 'USER')
 _password = config.get('LOGIN', 'PASSWORD')
-#app.secret_key = config.get("TOKENS", "APPLICATION_KEY")
+app.secret_key = os.urandom(16)
 
 
 # BLOCO LOGIN
