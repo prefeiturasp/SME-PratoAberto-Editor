@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import collections
 import configparser
 import datetime
@@ -26,7 +28,7 @@ config.read('config/integracao.conf')
 api = config.get('ENDPOINTS', 'PRATOABERTO_API')
 _user = config.get('LOGIN', 'USER')
 _password = config.get('LOGIN', 'PASSWORD')
-app.secret_key = config.get("TOKENS", "APPLICATION_KEY")
+#app.secret_key = config.get("TOKENS", "APPLICATION_KEY")
 
 
 # BLOCO LOGIN
@@ -63,7 +65,7 @@ def request_loader(request):
     # DO NOT ever store passwords in plaintext and always compare password
     # hashes using constant-time comparison!
     user.is_authenticated = request.form['password'] == users[email]['password']
-
+ 
     return user
 
 
@@ -96,7 +98,6 @@ def unauthorized_handler():
     return 'Unauthorized'
 
 
-# BLOCO DE QUEBRA CARDÁPIOS
 @app.route("/pendencias_publicacoes", methods=["GET", "POST"])
 @flask_login.login_required
 def backlog():
@@ -137,7 +138,6 @@ def publicados():
                                semanas=semanas)
 
 
-# BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
 @app.route('/upload', methods=['POST'])
 @flask_login.login_required
 def upload_file():
@@ -289,8 +289,6 @@ def upload_terceirizadas():
     else:
         return ('', 200)
 
-
-# BLOCO DE EDIÇÃO DOS CARDÁPIOS
 @app.route('/atualiza_cardapio', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio():
@@ -437,7 +435,7 @@ def calendario_grupo_cardapio():
         lista_args.append(args)
 
     if (len(set(lista_data_inicial)) > 1) or (len(set(lista_data_final)) > 1):
-        flash('A cópia de cardápios só é permitida para quabras com mesmo periodo')
+        flash("A cópia de cardápios só é permitida para quabras com mesmo periodo")
         return redirect(url_for('backlog'))
 
     depara = db_functions.select_all()
@@ -1186,4 +1184,4 @@ def get_quebras_escolas():
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0',port=5001)
