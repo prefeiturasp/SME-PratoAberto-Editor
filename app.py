@@ -1,29 +1,3 @@
-Skip to content
- 
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- @MrVictor42 Sign out
-0
-0 3 MES-PratoAberto/SME-PratoAberto-Editor
-forked from prefeiturasp/SME-PratoAberto-Editor
- Code
- Issues 3
- Pull requests 0
- ZenHub
- Projects 0
- Wiki
- Insights
- Settings
-SME-PratoAberto-Editor/app.py
-3d5836e  4 hours ago
-@MrVictor42 MrVictor42 Inserindo docker compose e dockerfile para o editor
-@vitorhirota @thiagorpereira @pnspinelli @MrVictor42
-    
-1188 lines (961 sloc)  45.3 KB
 # -*- coding: utf-8 -*-
 
 import collections
