@@ -2,11 +2,9 @@ import collections
 import configparser
 import datetime
 import itertools
-
 import requests
-
 import db_functions
-
+from app import replace_cardapio,data_semana_format,get_cardapio,get_semana,get_quebras_escolas,get_escola
 
 # BLOCO GET ENDPOINT E KEYS
 config = configparser.ConfigParser()
@@ -16,22 +14,6 @@ api = config.get('ENDPOINTS', 'PRATOABERTO_API')
 def dia_semana(dia):
     diasemana = ('Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom')
     return diasemana[dia]
-
-
-def replace_cardapio(cardapio):
-    config_editor = db_functions.select_all()
-
-    for de_para in config_editor:
-        cardapio = [de_para[4] if x == de_para[3] else x for x in cardapio]
-
-    cardapio = [x for x in cardapio if x != '']
-    return cardapio
-
-
-def data_semana_format(text):
-    date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
-    return str(date[0])+"-"+str(date[1])
-
 
 def get_cardapios_iguais():
     url = api + '/cardapios?status=PENDENTE&status=SALVO'
@@ -123,27 +105,15 @@ def get_escola(cod_eol):
     return escola
 
 
-def get_escolas():
+def get_escolas_completo():
     url = api + '/escolas?completo'
     r = requests.get(url)
     escolas = r.json()
 
     return escolas
 
-
-def get_escola(cod_eol):
-    url = api + '/escola/{}'.format(cod_eol)
-    r = requests.get(url)
-    try:
-        escola = r.json()
-    except:
-        escola = None
-
-    return escola
-
-
 def post_cardapio():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
     for escola in escolas:
@@ -164,8 +134,18 @@ def post_cardapio():
                           headers=headers)
 
 
+def get_refeicao_aux(refeicao, dic_refeicoes):
+    refeicao_aux = []
+
+    if refeicao in dic_refeicoes.keys():
+        refeicao_aux.append(dic_refeicoes[refeicao])
+    else:
+        refeicao_aux.append(refeicao)
+
+    return refeicao_aux
+
 def post_idades_idades():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
     dic_refeicoes = {
@@ -190,10 +170,7 @@ def post_idades_idades():
 
             refeicao_aux = []
             for refeicao in escola['refeicoes']:
-                if refeicao in dic_refeicoes.keys():
-                    refeicao_aux.append(dic_refeicoes[refeicao])
-                else:
-                    refeicao_aux.append(refeicao)
+                refeicao_aux = get_refeicao_aux(refeicao,dic_refeicoes)
             if refeicao_aux != escola['refeicoes']:
                 print(count, escola['_id'], refeicao_aux, escola['refeicoes'])
             escola['refeicoes'] = refeicao_aux
@@ -202,20 +179,15 @@ def post_idades_idades():
             if 'historico' in escola.keys():
                 if escola['historico'] != []:
                     for refeicao in escola['historico']['refeicoes']:
-                        if refeicao in dic_refeicoes.keys():
-                            refeicao_aux.append(dic_refeicoes[refeicao])
-                        else:
-                            refeicao_aux.append(refeicao)
+                        refeicao_aux = get_refeicao_aux(refeicao,dic_refeicoes)
                         escola['historico']['refeicoes'] = refeicao_aux
-
 
             r = requests.post(api + '/editor/escola/{}'.format(str(escola['_id'])),
                               data=json.dumps(escola),
                               headers=headers)
 
-
 def post_ordenar_refeicoes():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
 
@@ -282,43 +254,12 @@ def post_cardapio_add_merendas():
                           headers=headers)
         count += 1
 
-
-def get_quebras_escolas():
-    escolas = get_escolas()
-    mapa_base = collections.defaultdict(list)
-    for escola in escolas:
-        agrupamento = str(escola['agrupamento'])
-        tipo_unidade = escola['tipo_unidade']
-        tipo_atendimento = escola['tipo_atendimento']
-        if 'idades' in escola.keys():
-            for idade in escola['idades']:
-                _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
-                mapa_base[_key].append(escola['_id'])
-        else:
-            pass
-            # print(escola)
-
-    mapa = []
-    for row in mapa_base:
-        mapa.append(row.split(', ') + [len(mapa_base[row])] + [mapa_base[row][0]])
-
-    return mapa
-
-
-def get_cardapio(args):
-    url = api + '/editor/cardapios?' + '&'.join(['%s=%s' % item for item in args.items()])
-    r = requests.get(url)
-    refeicoes = r.json()
-
-    return refeicoes
-
-
 def mapa_pendencias():
     mapa = get_quebras_escolas()
 
     delta_dias = datetime.timedelta(days=7)
     dia_semana_seguinte = datetime.datetime.now() + delta_dias
-    semana = [dia_semana_seguinte + datetime.timedelta(days=i) for i in range(0 - dia_semana_seguinte.weekday(), 7 - dia_semana_seguinte.weekday())]
+    semana = get_semana(dia_semana_seguinte)
     dia_inicial = min(semana).strftime("%Y%m%d")
     dia_final = max(semana).strftime("%Y%m%d")
 

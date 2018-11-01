@@ -8,6 +8,7 @@ from db_setup import Replacements, ReceitasTerceirizadas, Base
 
 # FUNCOES REPLACEMENTS
 def add_replacements(substitution_group, substitution_scope, from_word, to_word):
+
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
@@ -19,50 +20,47 @@ def add_replacements(substitution_group, substitution_scope, from_word, to_word)
     session.add(new_rule)
     session.commit()
 
+def get_session():
 
-def truncate_replacements():
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
     session = dbsession()
+
+    return session
+
+def truncate_replacements():
+
+    session = get_session()
     session.query(Replacements).delete()
     session.commit()
 
-
 def del_replacements(id):
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     session.query(Replacements).filter(Replacements.id == id).delete()
     session.commit()
 
 
 def select_all():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(Replacements).all()
     list = [(x.id, x.substitution_group, x.substitution_scope, x.from_word, x.to_word) for x in res]
     return list
 
 
 def select_distinct_substitution_groups():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(Replacements).all()
     grupos = list(set([x.substitution_group for x in res]))
     return grupos
 
 
 def filtra_grupos_replacements(substitution_group):
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(Replacements).filter(Replacements.substitution_group == substitution_group).all()
     list = [(x.id, x.substitution_group, x.substitution_scope, x.from_word, x.to_word) for x in res]
     return list
@@ -70,10 +68,8 @@ def filtra_grupos_replacements(substitution_group):
 
 # FUNCOES CARDAPIOS
 def add_cardapio(tipo_gestao, tipo_escola, edital, diasemana, idade, refeicao, cardapio):
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     new_rule = ReceitasTerceirizadas(tipo_gestao=tipo_gestao,
                                      tipo_escola=tipo_escola,
                                      edital=edital,
@@ -86,6 +82,7 @@ def add_cardapio(tipo_gestao, tipo_escola, edital, diasemana, idade, refeicao, c
 
 
 def add_bulk_cardapio(bulk):
+
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
@@ -105,38 +102,31 @@ def add_bulk_cardapio(bulk):
 
 
 def truncate_receitas_terceirizadas():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     session.query(ReceitasTerceirizadas).delete()
     session.commit()
 
 
 def del_receitas_terceirizadas(id):
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     session.query(ReceitasTerceirizadas).filter(ReceitasTerceirizadas.id == id).delete()
     session.commit()
 
 
 def select_all_receitas_terceirizadas():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(ReceitasTerceirizadas).all()
     list = [(x.id, x.tipo_gestao, x.tipo_escola, x.edital, x.diasemana, x.idade, x.refeicao, x.cardapio) for x in res]
+
     return list
 
 
 def select_receitas_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(ReceitasTerceirizadas).filter(and_(ReceitasTerceirizadas.tipo_gestao == tipo_gestao,
                                                            ReceitasTerceirizadas.tipo_escola == tipo_escola,
                                                            ReceitasTerceirizadas.edital == edital,
@@ -165,12 +155,11 @@ def select_receitas_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
 
 
 def select_quebras_terceirizadas():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     res = session.query(ReceitasTerceirizadas).all()
     list = set([(x.tipo_escola, x.edital, x.idade, x.refeicao) for x in res])
+
     return list
 
 
