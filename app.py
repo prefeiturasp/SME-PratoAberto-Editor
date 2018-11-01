@@ -862,8 +862,7 @@ def publicacao():
                     if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
 
                         url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                        r = requests.get(url)
-                        refeicoes = r.json()
+                        get_json(url)
 
                         for refeicoes_dia in refeicoes:
 
@@ -904,8 +903,7 @@ def download_csv():
                 if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
 
                     url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                    r = requests.get(url)
-                    refeicoes = r.json()
+                    refeicoes = get_json(url)
 
                     for refeicoes_dia in refeicoes:
 
@@ -1021,8 +1019,7 @@ def data_semana_format(text):
 def get_cardapio(args):
 
     url = api + '/editor/cardapios?' + '&'.join(['%s=%s' % item for item in args.items()])
-    r = requests.get(url)
-    refeicoes = r.json()
+    refeicoes = get_json(url)
 
     return refeicoes
 
@@ -1030,8 +1027,7 @@ def get_pendencias():
     
     url = api + '/editor/cardapios?status=PENDENTE&status=SALVO'
     
-    r = requests.get(url,timeout=300)
-    refeicoes = r.json()
+    refeicoes = get_json(url)
 
     # Formatar as chaves
     semanas = {}
@@ -1088,8 +1084,7 @@ def get_pendencias():
 def get_deletados():
 
     url = api + '/editor/cardapios?status=DELETADO'
-    r = requests.get(url)
-    refeicoes = r.json()
+    refeicoes = get_json(url)
 
     # Formatar as chaves
     semanas = {}
@@ -1145,8 +1140,7 @@ def get_deletados():
 def get_publicados():
 
     url = api + '/editor/cardapios?status=PUBLICADO'
-    r = requests.get(url)
-    refeicoes = r.json()
+    refeicoes = get_json()
 
     # Formatar as chaves
     semanas = {}
@@ -1203,24 +1197,21 @@ def get_publicados():
 def get_escolas():
 
     url = api + '/editor/escolas'
-    r = requests.get(url)
-    escolas = r.json()
+    escolas = get_json(url)
 
     return escolas
 
 def get_escola(cod_eol):
     
     url = api + '/escola/{}'.format(cod_eol)
-    r = requests.get(url)
-    escola = r.json()
+    escola = get_json(url)
 
     return escola
 
 def get_grupo_publicacoes(status):
     
     url = api + '/editor/cardapios?status=' + status
-    r = requests.get(url)
-    refeicoes = r.json()
+    refeicoes = get_json(url)
 
     # Formatar as chaves
     semanas = {}
@@ -1283,8 +1274,7 @@ def get_pendencias_terceirizadas():
 def get_cardapios_iguais():
 
     url = api + '/editor/cardapios?status=PENDENTE&status=SALVO'
-    r = requests.get(url)
-    refeicoes = r.json()
+    refeicoes = get_json(url)
 
     # Formatar as chaves
     semanas = {}
@@ -1407,6 +1397,11 @@ def get_quebras_escolas():
         mapa.append(row.split(', ') + [len(mapa_base[row])] + [mapa_base[row][0]])
 
     return mapa
+
+def get_json(url):
+
+    r = requests.get(url)
+    return r.json()
 
 if __name__ == "__main__":
     db_setup.set()
