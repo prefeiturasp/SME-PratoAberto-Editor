@@ -109,27 +109,37 @@ def unauthorized_handler():
 
     return 'Unauthorized'
 
+def get_publicacao(status):
+
+    if status == "pendencias":
+
+        condicoes = "publicacao"
+        condicao = get_pendencias()
+
+    elif status == "deletados":
+
+        condicoes = "deletadas"
+        condicao = get_deletados()
+
+    elif status == "publicadas":
+
+        condicoes = "publicadas"
+        condicao = get_publicados()
+
+    semanas = sorted(set([str(x[4]) + ' - ' + str(x[5]) for x in condicao]), reverse=True)
+
+    return render_template("pendencias_" + condicoes + ".html",
+                           pendentes=condicao,
+                           semanas=semanas)
+
 @app.route("/pendencias_publicacoes", methods=["GET", "POST"])
 @flask_login.login_required
 def backlog():
 
-    if request.method == "GET":
+    if request.method == "GET" or request.method == "POST":
 
-        pendentes = get_pendencias()
-        semanas = sorted(set([str(x[4]) + ' - ' + str(x[5]) for x in pendentes]), reverse=True)
-
-        return render_template("pendencias_publicacao.html",
-                               pendentes=pendentes,
-                               semanas=semanas)
-
-    else:
-
-        pendentes = get_pendencias()
-        semanas = sorted(set([str(x[4]) + ' - ' + str(x[5]) for x in pendentes]), reverse=True)
-
-        return render_template("pendencias_publicacao.html",
-                               pendentes=pendentes,
-                               semanas=semanas)
+        status = "pendencias"
+        return get_publicacao(status)
 
 
 @app.route("/pendencias_deletadas", methods=["GET", "POST"])
@@ -138,12 +148,8 @@ def deletados():
 
     if request.method == "GET":
 
-        deletados = get_deletados()
-        semanas = sorted(set([str(x[4]) + ' - ' + str(x[5]) for x in deletados]), reverse=True)
-
-        return render_template("pendencias_deletadas.html",
-                               pendentes=deletados,
-                               semanas=semanas)
+        status = "deletados"
+        return get_publicacao(status)
 
 @app.route("/pendencias_publicadas", methods=["GET", "POST"])
 @flask_login.login_required
@@ -151,12 +157,8 @@ def publicados():
 
     if request.method == "GET":
 
-        publicados = get_publicados()
-        semanas = sorted(set([str(x[4]) + ' - ' + str(x[5]) for x in publicados]), reverse=True)
-
-        return render_template("pendencias_publicadas.html",
-                               pendentes=publicados,
-                               semanas=semanas)
+        status = "publicadas"
+        return get_publicacao(status)
 
 @app.route('/upload', methods=['POST'])
 @flask_login.login_required
@@ -862,7 +864,8 @@ def publicacao():
                     if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
 
                         url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                        get_json(url)
+                        r = requests.get(url)
+                        refeicoes = r.json()
 
                         for refeicoes_dia in refeicoes:
 
@@ -903,7 +906,8 @@ def download_csv():
                 if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
 
                     url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                    refeicoes = get_json(url)
+                    r = requests.get(url)
+                    refeicoes = r.json()
 
                     for refeicoes_dia in refeicoes:
 
@@ -1019,7 +1023,8 @@ def data_semana_format(text):
 def get_cardapio(args):
 
     url = api + '/editor/cardapios?' + '&'.join(['%s=%s' % item for item in args.items()])
-    refeicoes = get_json(url)
+    r = requests.get(url)
+    refeicoes = r.json()
 
     return refeicoes
 
@@ -1027,7 +1032,8 @@ def get_pendencias():
     
     url = api + '/editor/cardapios?status=PENDENTE&status=SALVO'
     
-    refeicoes = get_json(url)
+    r = requests.get(url,timeout=300)
+    refeicoes = r.json()
 
     # Formatar as chaves
     semanas = {}
@@ -1084,7 +1090,8 @@ def get_pendencias():
 def get_deletados():
 
     url = api + '/editor/cardapios?status=DELETADO'
-    refeicoes = get_json(url)
+    r = requests.get(url)
+    refeicoes = r.json()
 
     # Formatar as chaves
     semanas = {}
@@ -1140,7 +1147,8 @@ def get_deletados():
 def get_publicados():
 
     url = api + '/editor/cardapios?status=PUBLICADO'
-    refeicoes = get_json()
+    r = requests.get(url)
+    refeicoes = r.json()
 
     # Formatar as chaves
     semanas = {}
@@ -1197,21 +1205,24 @@ def get_publicados():
 def get_escolas():
 
     url = api + '/editor/escolas'
-    escolas = get_json(url)
+    r = requests.get(url)
+    escolas = r.json()
 
     return escolas
 
 def get_escola(cod_eol):
     
     url = api + '/escola/{}'.format(cod_eol)
-    escola = get_json(url)
+    r = requests.get(url)
+    escola = r.json()
 
     return escola
 
 def get_grupo_publicacoes(status):
     
     url = api + '/editor/cardapios?status=' + status
-    refeicoes = get_json(url)
+    r = requests.get(url)
+    refeicoes = r.json()
 
     # Formatar as chaves
     semanas = {}
@@ -1274,7 +1285,8 @@ def get_pendencias_terceirizadas():
 def get_cardapios_iguais():
 
     url = api + '/editor/cardapios?status=PENDENTE&status=SALVO'
-    refeicoes = get_json(url)
+    r = requests.get(url)
+    refeicoes = r.json()
 
     # Formatar as chaves
     semanas = {}
@@ -1397,11 +1409,6 @@ def get_quebras_escolas():
         mapa.append(row.split(', ') + [len(mapa_base[row])] + [mapa_base[row][0]])
 
     return mapa
-
-def get_json(url):
-
-    r = requests.get(url)
-    return r.json()
 
 if __name__ == "__main__":
     db_setup.set()
