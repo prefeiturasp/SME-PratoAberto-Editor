@@ -134,6 +134,16 @@ def post_cardapio():
                           headers=headers)
 
 
+def get_refeicao_aux(refeicao, dic_refeicoes):
+    refeicao_aux = []
+
+    if refeicao in dic_refeicoes.keys():
+        refeicao_aux.append(dic_refeicoes[refeicao])
+    else:
+        refeicao_aux.append(refeicao)
+
+    return refeicao_aux
+
 def post_idades_idades():
     escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
@@ -160,10 +170,7 @@ def post_idades_idades():
 
             refeicao_aux = []
             for refeicao in escola['refeicoes']:
-                if refeicao in dic_refeicoes.keys():
-                    refeicao_aux.append(dic_refeicoes[refeicao])
-                else:
-                    refeicao_aux.append(refeicao)
+                refeicao_aux = get_refeicao_aux(refeicao,dic_refeicoes)
             if refeicao_aux != escola['refeicoes']:
                 print(count, escola['_id'], refeicao_aux, escola['refeicoes'])
             escola['refeicoes'] = refeicao_aux
@@ -172,20 +179,15 @@ def post_idades_idades():
             if 'historico' in escola.keys():
                 if escola['historico'] != []:
                     for refeicao in escola['historico']['refeicoes']:
-                        if refeicao in dic_refeicoes.keys():
-                            refeicao_aux.append(dic_refeicoes[refeicao])
-                        else:
-                            refeicao_aux.append(refeicao)
+                        refeicao_aux = get_refeicao_aux(refeicao,dic_refeicoes)
                         escola['historico']['refeicoes'] = refeicao_aux
-
 
             r = requests.post(api + '/editor/escola/{}'.format(str(escola['_id'])),
                               data=json.dumps(escola),
                               headers=headers)
 
-
 def post_ordenar_refeicoes():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
 
