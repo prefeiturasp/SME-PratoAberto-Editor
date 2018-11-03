@@ -498,6 +498,10 @@ def visualizador():
                            idade=args['idade'],
                            agrupamento=args['agrupamento'])
 
+def get_args(url):
+
+    return dict([tuple(x.split('=')) for x in url.split('?')[1].split('&')])
+
 @app.route("/calendario_editor_grupo", methods=["POST"])
 @flask_login.login_required
 def calendario_grupo_cardapio():
@@ -518,7 +522,7 @@ def calendario_grupo_cardapio():
 
     for url in data:
 
-        args = dict([tuple(x.split('=')) for x in url.split('?')[1].split('&')])
+        args = get_args(url)
         lista_data_inicial.append(args['data_inicial'])
         lista_data_final.append(args['data_final'])
         lista_args.append(args)
@@ -534,7 +538,7 @@ def calendario_grupo_cardapio():
 
     for url in data:
 
-        args = dict([tuple(x.split('=')) for x in url.split('?')[1].split('&')])
+        args = get_args(url)
         jdata = get_cardapio(args)
 
         # Obtem data semana anterior
@@ -676,6 +680,12 @@ def escolas():
         escolas = get_escolas()
 
         return render_template("configurações_escolas.html", escolas=escolas)
+
+def get_request_post():
+
+    requests.post(api + '/editor/escola/{}'.format(str(escola_atual['_id'])),
+                  data=json.dumps(escola_atual),
+                  headers=headers)
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required

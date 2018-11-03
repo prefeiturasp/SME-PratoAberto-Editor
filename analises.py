@@ -4,7 +4,7 @@ import datetime
 import itertools
 import requests
 import db_functions
-from app import replace_cardapio,data_semana_format,get_cardapio,get_semana,get_quebras_escolas
+from app import replace_cardapio,data_semana_format,get_cardapio,get_semana,get_quebras_escolas,get_escola
 
 # BLOCO GET ENDPOINT E KEYS
 config = configparser.ConfigParser()
@@ -105,27 +105,15 @@ def get_escola(cod_eol):
     return escola
 
 
-def get_escolas():
+def get_escolas_completo():
     url = api + '/escolas?completo'
     r = requests.get(url)
     escolas = r.json()
 
     return escolas
 
-
-def get_escola(cod_eol):
-    url = api + '/escola/{}'.format(cod_eol)
-    r = requests.get(url)
-    try:
-        escola = r.json()
-    except:
-        escola = None
-
-    return escola
-
-
 def post_cardapio():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
     for escola in escolas:
@@ -147,7 +135,7 @@ def post_cardapio():
 
 
 def post_idades_idades():
-    escolas = get_escolas()
+    escolas = get_escolas_completo()
     headers = {'Content-type': 'application/json'}
     count = 0
     dic_refeicoes = {
