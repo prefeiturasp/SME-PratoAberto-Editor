@@ -1089,9 +1089,8 @@ def get_pendencias():
 
 def get_deletados():
 
-    url = api + '/editor/cardapios?status=DELETADO'
-    r = requests.get(url)
-    refeicoes = r.json()
+    status = "DELETADO"
+    refeicoes = get_url_json(status)
 
     # Formatar as chaves
     semanas = {}
@@ -1144,11 +1143,20 @@ def get_deletados():
 
     return pendentes
 
+def get_url_json(status):
+
+    if status == "PUBLICADO" or status == "DELETADO":
+
+        url = api + '/editor/cardapios?status=' + status
+        r = requests.get(url)
+        refeicoes = r.json()
+
+        return refeicoes    
+
 def get_publicados():
 
-    url = api + '/editor/cardapios?status=PUBLICADO'
-    r = requests.get(url)
-    refeicoes = r.json()
+    status = "PUBLICADO"
+    refeicoes = get_url_json(status)
 
     # Formatar as chaves
     semanas = {}
