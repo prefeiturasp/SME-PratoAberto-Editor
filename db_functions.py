@@ -19,15 +19,20 @@ def add_replacements(substitution_group, substitution_scope, from_word, to_word)
     session.add(new_rule)
     session.commit()
 
+def get_session():
 
-def truncate_replacements():
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
     Base.metadata.bind = engine
     dbsession = sessionmaker(bind=engine)
     session = dbsession()
+
+    return session
+
+def truncate_replacements():
+
+    session = get_session()
     session.query(Replacements).delete()
     session.commit()
-
 
 def del_replacements(id):
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
@@ -105,10 +110,8 @@ def add_bulk_cardapio(bulk):
 
 
 def truncate_receitas_terceirizadas():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
-    Base.metadata.bind = engine
-    dbsession = sessionmaker(bind=engine)
-    session = dbsession()
+
+    session = get_session()
     session.query(ReceitasTerceirizadas).delete()
     session.commit()
 

@@ -2,7 +2,7 @@ import collections
 import configparser
 import datetime
 import itertools
-from app import replace_cardapio,data_semana_format
+from app import replace_cardapio,data_semana_format,get_cardapio,get_semana
 
 import requests
 
@@ -289,21 +289,12 @@ def get_quebras_escolas():
 
     return mapa
 
-
-def get_cardapio(args):
-    url = api + '/editor/cardapios?' + '&'.join(['%s=%s' % item for item in args.items()])
-    r = requests.get(url)
-    refeicoes = r.json()
-
-    return refeicoes
-
-
 def mapa_pendencias():
     mapa = get_quebras_escolas()
 
     delta_dias = datetime.timedelta(days=7)
     dia_semana_seguinte = datetime.datetime.now() + delta_dias
-    semana = [dia_semana_seguinte + datetime.timedelta(days=i) for i in range(0 - dia_semana_seguinte.weekday(), 7 - dia_semana_seguinte.weekday())]
+    semana = get_semana(dia_semana_seguinte)
     dia_inicial = min(semana).strftime("%Y%m%d")
     dia_final = max(semana).strftime("%Y%m%d")
 

@@ -943,6 +943,12 @@ def download_csv():
 
             return ('', 200)
 
+def get_semana(dia_semana_seguinte):
+
+    semana = [dia_semana_seguinte + datetime.timedelta(days=i) for i in
+              range(0 - dia_semana_seguinte.weekday(), 7 - dia_semana_seguinte.weekday())]
+
+    return semana
 
 # BLOCO MAPA DE PENDENCIAS
 @app.route('/mapa_pendencias', methods=['GET', 'POST'])
@@ -955,7 +961,7 @@ def mapa_pendencias():
 
         delta_dias = datetime.timedelta(days=7)
         dia_semana_seguinte = datetime.datetime.now() + delta_dias
-        semana = [dia_semana_seguinte + datetime.timedelta(days=i) for i in range(0 - dia_semana_seguinte.weekday(), 7 - dia_semana_seguinte.weekday())]
+        semana = get_semana(dia_semana_seguinte)
         data_inicial = min(semana).strftime("%Y%m%d")
         data_final = max(semana).strftime("%Y%m%d")
 
