@@ -2,6 +2,7 @@ import collections
 import configparser
 import datetime
 import itertools
+from app import replace_cardapio,data_semana_format
 
 import requests
 
@@ -16,22 +17,6 @@ api = config.get('ENDPOINTS', 'PRATOABERTO_API')
 def dia_semana(dia):
     diasemana = ('Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom')
     return diasemana[dia]
-
-
-def replace_cardapio(cardapio):
-    config_editor = db_functions.select_all()
-
-    for de_para in config_editor:
-        cardapio = [de_para[4] if x == de_para[3] else x for x in cardapio]
-
-    cardapio = [x for x in cardapio if x != '']
-    return cardapio
-
-
-def data_semana_format(text):
-    date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
-    return str(date[0])+"-"+str(date[1])
-
 
 def get_cardapios_iguais():
     url = api + '/cardapios?status=PENDENTE&status=SALVO'

@@ -266,6 +266,16 @@ def cria_terceirizada():
                                idades=idade,
                                refeicoes=refeicao)
 
+def caso_nao_cardapio(quebra,refeicao):
+
+    cardapios = []
+
+    quebra_aux = quebra
+    quebra_aux['cardapio'] = {refeicao['tipo_refeicao']: []}
+    quebra_aux['cardapio_original'] = {refeicao['tipo_refeicao']: []}
+    cardapios.append(quebra_aux)
+
+    return cardapios
 
 @app.route('/upload_terceirizada', methods=['POST'])
 @flask_login.login_required
@@ -288,10 +298,7 @@ def upload_terceirizadas():
 
         if not cardapios:
 
-            quebra_aux = quebra
-            quebra_aux['cardapio'] = {refeicao['tipo_refeicao']: []}
-            quebra_aux['cardapio_original'] = {refeicao['tipo_refeicao']: []}
-            cardapios.append(quebra_aux)
+            cardapios = caso_nao_cardapio(quebra,refeicao)
 
         else:
             # Filtrar os cardapios nas chaves
@@ -303,11 +310,8 @@ def upload_terceirizadas():
             cardapios_aux = [d for d in cardapios_aux if d['data'] == refeicao['data']]
 
             if not cardapios_aux:
-                # Caso: quebra nao existe
-                quebra_aux = quebra
-                quebra_aux['cardapio'] = {refeicao['tipo_refeicao']: []}
-                quebra_aux['cardapio_original'] = {refeicao['tipo_refeicao']: []}
-                cardapios.append(quebra_aux)
+
+                cardapios = caso_nao_cardapio(quebra,refeicao)
 
             else:
                 # Caso: quebra ja exista
@@ -359,6 +363,12 @@ def atualiza_cardapio():
 
         return ('', 200)
 
+def get_depara(depara):
+
+    depara = [x[3:5] for x in depara if x[2] == 'INGREDIENTES']
+
+    return depara
+
 # comments = []
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required
@@ -366,7 +376,7 @@ def calendario():
     
     args = request.args
     depara = db_functions.select_all()
-    depara = [x[3:5] for x in depara if x[2] == 'INGREDIENTES']
+    depara = get_depara(depara)
 
     # Monta json - Semana da requisicao
     jdata = get_cardapio(args)
@@ -511,7 +521,7 @@ def calendario_grupo_cardapio():
         return redirect(url_for('backlog'))
 
     depara = db_functions.select_all()
-    depara = [x[3:5] for x in depara if x[2] == 'INGREDIENTES']
+    depara = get_depara()
     cardapios = []
 
     for url in data:
