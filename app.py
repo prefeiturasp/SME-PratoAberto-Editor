@@ -369,6 +369,14 @@ def get_depara(depara):
 
     return depara
 
+def get_cardapio_atual(jdata,dia):
+
+    return filtro_dicionarios(jdata, 'dia_semana', dia)
+
+def get_cardapio_anterior(jdata_anterior,dia):
+
+    return filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
+
 # comments = []
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required
@@ -417,11 +425,11 @@ def calendario():
     dias_da_semana = set([x['dia_semana'] for x in list(jdata + jdata_anterior)])
 
     cardapios = []
-    
+
     for dia in dias_da_semana:
     
-        cardapio_atual = filtro_dicionarios(jdata, 'dia_semana', dia)
-        cardapio_anterior = filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
+        cardapio_atual = get_cardapio_atual(jdata,dia)
+        cardapio_anterior = get_cardapio_anterior(jdata_anterior,dia)
 
         if cardapio_atual and cardapio_anterior:
     
@@ -564,8 +572,8 @@ def calendario_grupo_cardapio():
 
         for dia in dias_da_semana:
 
-            cardapio_atual = filtro_dicionarios(jdata, 'dia_semana', dia)
-            cardapio_anterior = filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
+            cardapio_atual = get_cardapio_atual(jdata,dia)
+            cardapio_anterior = get_cardapio_anterior(jdata_anterior,dia)
 
             if cardapio_atual and cardapio_anterior:
 
@@ -1105,8 +1113,7 @@ def get_pendencias():
 
 def get_deletados():
 
-    status = "DELETADO"
-    refeicoes = get_url_json(status)
+    refeicoes = get_url_json("DELETADO")
 
     # Formatar as chaves
     semanas = {}
@@ -1171,8 +1178,7 @@ def get_url_json(status):
 
 def get_publicados():
 
-    status = "PUBLICADO"
-    refeicoes = get_url_json(status)
+    refeicoes = get_url_json("PUBLICADO")
 
     # Formatar as chaves
     semanas = {}

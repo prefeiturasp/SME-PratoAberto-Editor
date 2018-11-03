@@ -2,12 +2,9 @@ import collections
 import configparser
 import datetime
 import itertools
-from app import replace_cardapio,data_semana_format,get_cardapio,get_semana
-
 import requests
-
 import db_functions
-
+from app import replace_cardapio,data_semana_format,get_cardapio,get_semana,get_quebras_escolas
 
 # BLOCO GET ENDPOINT E KEYS
 config = configparser.ConfigParser()
@@ -266,28 +263,6 @@ def post_cardapio_add_merendas():
                           data=json.dumps(escola),
                           headers=headers)
         count += 1
-
-
-def get_quebras_escolas():
-    escolas = get_escolas()
-    mapa_base = collections.defaultdict(list)
-    for escola in escolas:
-        agrupamento = str(escola['agrupamento'])
-        tipo_unidade = escola['tipo_unidade']
-        tipo_atendimento = escola['tipo_atendimento']
-        if 'idades' in escola.keys():
-            for idade in escola['idades']:
-                _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
-                mapa_base[_key].append(escola['_id'])
-        else:
-            pass
-            # print(escola)
-
-    mapa = []
-    for row in mapa_base:
-        mapa.append(row.split(', ') + [len(mapa_base[row])] + [mapa_base[row][0]])
-
-    return mapa
 
 def mapa_pendencias():
     mapa = get_quebras_escolas()
