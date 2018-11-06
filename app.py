@@ -377,6 +377,16 @@ def get_cardapio_anterior(jdata_anterior,dia):
 
     return filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
 
+def get_cardapio_lista(cardapio_atual):
+
+    jdata_aux = []
+
+    dia = datetime.datetime.strptime(str(cardapio_atual['data']), '%Y%m%d').weekday()
+    cardapio_atual['dia_semana'] = dia_semana(dia)
+    jdata_aux.append(cardapio_atual)
+
+    return jdata_aux
+
 # comments = []
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required
@@ -406,17 +416,13 @@ def calendario():
     
     for cardapio_atual in jdata:
     
-        dia = datetime.datetime.strptime(str(cardapio_atual['data']), '%Y%m%d').weekday()
-        cardapio_atual['dia_semana'] = dia_semana(dia)
-        jdata_aux.append(cardapio_atual)
+        jdata_aux = get_cardapio_lista(cardapio_atual)
 
     jdata_anterior_aux = []
     
     for cardapio_anterior in jdata_anterior:
     
-        dia = datetime.datetime.strptime(str(cardapio_anterior['data']), '%Y%m%d').weekday()
-        cardapio_anterior['dia_semana'] = dia_semana(dia)
-        jdata_anterior_aux.append(cardapio_anterior)
+        jdata_anterior_aux = get_cardapio_lista(cardapio_anterior)
 
     jdata = jdata_aux
     jdata_anterior = jdata_anterior_aux
@@ -485,7 +491,7 @@ def visualizador():
     cardapios = []
     
     for cardapio in jdata:
-    
+
         dia = datetime.datetime.strptime(str(cardapio['data']), '%Y%m%d').weekday()
         cardapio['dia_semana'] = dia_semana(dia)
         cardapios.append(cardapio)
@@ -533,7 +539,7 @@ def calendario_grupo_cardapio():
         return redirect(url_for('backlog'))
 
     depara = db_functions.select_all()
-    depara = get_depara()
+    depara = get_depara(depara)
     cardapios = []
 
     for url in data:
@@ -556,17 +562,13 @@ def calendario_grupo_cardapio():
 
         for cardapio_atual in jdata:
 
-            dia = datetime.datetime.strptime(str(cardapio_atual['data']), '%Y%m%d').weekday()
-            cardapio_atual['dia_semana'] = dia_semana(dia)
-            jdata_aux.append(cardapio_atual)
+            jdata_aux = get_cardapio_lista(cardapio_atual)
 
         jdata_anterior_aux = []
 
         for cardapio_anterior in jdata_anterior:
 
-            dia = datetime.datetime.strptime(str(cardapio_anterior['data']), '%Y%m%d').weekday()
-            cardapio_anterior['dia_semana'] = dia_semana(dia)
-            jdata_anterior_aux.append(cardapio_anterior)
+            jdata_anterior_aux = get_cardapio_lista(cardapio_anterior)
 
         jdata = jdata_aux
         jdata_anterior = jdata_anterior_aux
