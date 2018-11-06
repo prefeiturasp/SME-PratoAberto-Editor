@@ -683,12 +683,6 @@ def escolas():
 
         return render_template("configurações_escolas.html", escolas=escolas)
 
-def get_request_post():
-
-    requests.post(api + '/editor/escola/{}'.format(str(escola_atual['_id'])),
-                  data=json.dumps(escola_atual),
-                  headers=headers)
-
 @app.route('/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
 def atualiza_historico_escolas():
