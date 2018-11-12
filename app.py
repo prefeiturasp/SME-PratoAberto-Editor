@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import collections
 import configparser
 import datetime
-import itertools
 import json
 import os
 from operator import itemgetter
@@ -16,11 +14,19 @@ from werkzeug.utils import secure_filename
 import cardapio_xml_para_dict
 import db_functions
 import db_setup
+from login.login import login_app
 from utils.utils import get_publicacao,caso_nao_cardapio,get_depara,get_cardapio_atual,get_cardapio_anterior,\
                         get_cardapio_lista,get_cardapios_terceirizadas,get_quebras_escolas,get_cardapio,get_escola,\
                         get_escolas,get_grupo_publicacoes,allowed_file,dia_semana
 
-app = Flask(__name__)
+def create_app():
+
+    app = Flask(__name__)
+    app.register_blueprint(login_app)
+
+    return app
+
+app = create_app()
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
@@ -69,36 +75,6 @@ def request_loader(request):
     user.is_authenticated = request.form['password'] == users[email]['password']
 
     return user
-
-
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'GET':
-        return render_template('login.html')
-
-    email = request.form['username']
-
-    if email in users:
-
-        if request.form['password'] == users[email]['password']:
-            user = User()
-            user.id = email
-            flask_login.login_user(user)
-
-            return redirect(url_for('backlog'))
-
-    flash('Senha ou usuario nao identificados')
-
-    return render_template('login.html')
-
-
-@app.route('/logout')
-@flask_login.login_required
-def logout():
-    flask_login.logout_user()
-
-    return redirect(url_for('login'))
-
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
@@ -948,5 +924,6 @@ def mapa_pendencias():
 
 
 if __name__ == "__main__":
+    app = create_app()
     db_setup.set()
     app.run(debug=True)
