@@ -15,6 +15,7 @@ import cardapio_xml_para_dict
 import db_functions
 import db_setup
 from login.login import login_app
+from configuracoes.configuracoes import config_app
 from utils.utils import get_publicacao,caso_nao_cardapio,get_depara,get_cardapio_atual,get_cardapio_anterior,\
                         get_cardapio_lista,get_cardapios_terceirizadas,get_quebras_escolas,get_cardapio,get_escola,\
                         get_escolas,get_grupo_publicacoes,allowed_file,dia_semana
@@ -23,7 +24,7 @@ def create_app():
 
     app = Flask(__name__)
     app.register_blueprint(login_app)
-
+    app.register_blueprint(config_app)
     return app
 
 app = create_app()
@@ -508,42 +509,6 @@ def calendario_grupo_cardapio():
                                args=lista_args,
                                depara=depara)
 
-
-# BLOCO DE CONFIGURAÇÕES
-@app.route("/configuracoes_gerais", methods=['GET', 'POST'])
-@flask_login.login_required
-def config():
-    if request.method == "GET":
-        config_editor = db_functions.select_all()
-        return render_template("configurações.html", config=config_editor)
-
-
-@app.route('/atualiza_configuracoes', methods=['POST'])
-@flask_login.login_required
-def atualiza_configuracoes():
-    headers = {'Content-type': 'application/json'}
-    data = request.form.get('json_dump', request.data)
-
-    db_functions.truncate_replacements()
-
-    for row in json.loads(data):
-        db_functions.add_replacements(row[0], row[1], row[2], row[3])
-
-    if request.form:
-
-        return (redirect(url_for('config')))
-    else:
-
-        return ('', 200)
-
-
-@app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
-@flask_login.login_required
-def config_cardapio():
-    if request.method == "GET":
-        config_editor = db_functions.select_all_receitas_terceirizadas()
-
-        return render_template("configurações_receitas.html", config=config_editor)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
