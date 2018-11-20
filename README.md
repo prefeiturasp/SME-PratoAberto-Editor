@@ -1,4 +1,4 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/91db18f57ab71fb8f602/maintainability)](https://codeclimate.com/github/prefeiturasp/SME-PratoAberto-Editor)
+[![Maintainability](https://api.codeclimate.com/v1/badges/91db18f57ab71fb8f602/maintainability)](https://codeclimate.com/github/prefeiturasp/SME-PratoAberto-Editor/maintainability)
 
 ### Instalação
 Pré requisitos:
