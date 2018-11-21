@@ -60,6 +60,7 @@ def create(FILE):
                                 if data_merenda in cardapio_dict[txt_tip_atendimento][txt_dcr_unidade][cod_agrupamento][txt_faixa_etaria].keys():
                                     cardapio_dict[txt_tip_atendimento][txt_dcr_unidade][cod_agrupamento][txt_faixa_etaria][data_merenda][txt_tipo_refeicao] = ', '.join(lista)
                                 else:
+                                    
                                     cardapio_dict[txt_tip_atendimento][txt_dcr_unidade][cod_agrupamento][txt_faixa_etaria][data_merenda] = {}
                                     cardapio_dict[txt_tip_atendimento][txt_dcr_unidade][cod_agrupamento][txt_faixa_etaria][data_merenda][txt_tipo_refeicao] = ', '.join(lista)
                             else:
