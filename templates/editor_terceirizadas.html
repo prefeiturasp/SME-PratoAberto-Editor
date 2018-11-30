@@ -392,8 +392,20 @@
     <!-- Deleta refeição -->
     <script>
         function deleteRow(r) {
-            var i = r.parentNode.parentNode.rowIndex;
-            document.getElementById("task-table").deleteRow(i);
+
+            var retVal = confirm("Você realmente deseja prosseguir com essa exclusão ?");
+
+            if( retVal == true ) {
+
+                var i = r.parentNode.parentNode.rowIndex;
+                document.getElementById("task-table").deleteRow(i);
+                return true;
+            }
+
+            else{
+
+                return false;
+            }
         }
     </script>
 

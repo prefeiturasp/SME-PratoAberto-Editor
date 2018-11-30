@@ -60,7 +60,6 @@
             padding-left:10px;
             padding-right: 15px;
         }
-
     </style>
 </head>
 <body>
@@ -365,8 +364,20 @@
     <!-- Deleta linha da tabela Modal -->
     <script>
         function deleteRowModal(r) {
-            var i = r.parentNode.parentNode.rowIndex;
-            document.getElementById("edicao-escola").deleteRow(i);
+
+            var retVal = confirm("Você realmente deseja prosseguir com essa exclusão ?");
+
+            if( retVal == true ) {
+
+                var i = r.parentNode.parentNode.rowIndex;
+                document.getElementById("edicao-escola").deleteRow(i);
+                return true;
+            }
+
+            else{
+
+                return false;
+            }
         }
     </script>
 
