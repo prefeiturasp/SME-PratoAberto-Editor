@@ -6,7 +6,7 @@ import requests
 import flask_login
 import app
 
-from flask import render_template, request,Blueprint
+from flask import render_template, request,Blueprint,flash
 from utils.utils import data_semana_format,get_url_json
 
 pendencias_app = Blueprint('pendencias_app',__name__)

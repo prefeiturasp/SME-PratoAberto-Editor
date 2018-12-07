@@ -109,7 +109,7 @@ def atualiza_config_cardapio():
 
     if request.form:
 
-        return (redirect(url_for('config_cardapio')))
+        return (redirect(url_for('outros_app.config_cardapio')))
     else:
 
         return ('', 200)

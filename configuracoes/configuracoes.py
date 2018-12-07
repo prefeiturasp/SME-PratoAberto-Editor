@@ -38,7 +38,7 @@ def atualiza_configuracoes():
 
     if request.form:
 
-        return (redirect(url_for('config')))
+        return (redirect(url_for('config_app.config')))
     else:
 
         return ('', 200)
