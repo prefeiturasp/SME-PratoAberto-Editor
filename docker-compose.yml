@@ -1,0 +1,22 @@
+version: '3'
+#TODO: usar .env file
+
+services:
+
+  editor:
+    build: .
+    environment:
+      FLASK_DEBUG: 1
+      FLASK_APP: ./app.py
+    command: python app.py
+    ports:
+      - 5002:5002
+    volumes:
+      - .:/code
+    networks:
+      - prato_aberto
+
+networks:
+  prato_aberto:
+    external:
+      name: smepratoabertoapi_default
