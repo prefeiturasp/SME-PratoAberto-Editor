@@ -1,5 +1,4 @@
 import collections
-import configparser
 import datetime
 import itertools
 import json
@@ -8,7 +7,8 @@ from operator import itemgetter
 
 import flask_login
 import requests
-from flask import (Flask, flash, redirect, render_template, request, url_for, make_response)
+from flask import (Flask, flash, redirect, render_template,
+                   request, url_for, make_response)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -22,13 +22,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
-BASE_DIR = os.path.dirname(__file__)
-config = configparser.ConfigParser()
-config.read(os.path.join(BASE_DIR, 'config/integracao.conf'))
-api = config.get('ENDPOINTS', 'PRATOABERTO_API')
-_user = config.get('LOGIN', 'USER')
-_password = config.get('LOGIN', 'PASSWORD')
-app.secret_key = config.get("TOKENS", "APPLICATION_KEY")
+
+api = os.environ.get('PRATOABERTO_API')
+_user = os.environ.get('USER')
+_password = os.environ.get('PASSWORD')
+app.secret_key = os.environ.get('APPLICATION_KEY')
 
 # BLOCO LOGIN
 login_manager = flask_login.LoginManager()

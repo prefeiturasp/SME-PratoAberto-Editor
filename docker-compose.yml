@@ -5,9 +5,8 @@ services:
 
   editor:
     build: .
-    environment:
-      FLASK_DEBUG: 1
-      FLASK_APP: ./app.py
+    env_file:
+      - .env
     command: python app.py
     ports:
       - 5002:5002
