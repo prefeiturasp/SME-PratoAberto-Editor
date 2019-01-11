@@ -13,10 +13,8 @@ services:
       - 5002:5002
     volumes:
       - .:/code
-    networks:
-      - prato_aberto
 
 networks:
-  prato_aberto:
+  default:
     external:
-      name: smepratoabertoapi_default
+      name: pratoaberto
