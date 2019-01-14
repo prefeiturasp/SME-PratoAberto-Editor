@@ -1242,4 +1242,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(debug=True, port=5002, host='0.0.0.0')
+    app.run()

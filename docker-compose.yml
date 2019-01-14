@@ -7,9 +7,7 @@ services:
     build: .
     env_file:
       - .env
-    command: python app.py
-    ports:
-      - 5002:5002
+    command: gunicorn app:app --timeout 120 --log-level DEBUG -w 1 -b 0.0.0.0:8001
     volumes:
       - .:/code
 
