@@ -1,11 +1,11 @@
 import collections
 import datetime
-import itertools
 import json
 import os
 from operator import itemgetter
 
 import flask_login
+import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response)
@@ -22,9 +22,8 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
-
 api = os.environ.get('PRATOABERTO_API')
-_user = os.environ.get('USER')
+_user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
 
@@ -137,15 +136,14 @@ def publicados():
 @app.route('/upload', methods=['POST'])
 @flask_login.login_required
 def upload_file():
-
     if 'file' not in request.files:
-        flash('Nenhum arquivo foi selecionado!','danger')
+        flash('Nenhum arquivo foi selecionado!', 'danger')
         return redirect(url_for('backlog'))
 
     file = request.files['file']
 
     if file.filename == '':
-        flash('Nenhum arquivo foi selecionado!','danger')
+        flash('Nenhum arquivo foi selecionado!', 'danger')
         return redirect(url_for('backlog'))
 
     if file and allowed_file(file.filename):
@@ -181,6 +179,7 @@ def upload_file():
 
                                 cardapio = query
                                 cardapio['data'] = data
+                                cardapio['data_publicacao'] = datetime.date.today().strftime('%Y%m%d')
                                 if responses[_key]:
                                     cardapio.update({
                                         'cardapio': {'DUPLICADO': ['DUPLICADO']},
@@ -229,10 +228,8 @@ def upload_terceirizadas():
     jdata = json.loads(data)
     cardapios = []
 
-
-
     if len(jdata) == 0:
-        flash('Nenhum cardápio foi adicionado, adicione as informações e gerar a tabela!','danger')
+        flash('Nenhum cardápio foi adicionado, adicione as informações e gerar a tabela!', 'danger')
         return redirect(url_for('cria_terceirizada'))
 
     for refeicao in jdata:
@@ -287,11 +284,11 @@ def upload_terceirizadas():
                 quebra_aux['cardapio'][refeicao['tipo_refeicao']] = []
                 quebra_aux['cardapio_original'][refeicao['tipo_refeicao']] = []
                 cardapios[posicao] = quebra_aux
-
+    # post de dados no cardapio terceirizada
     r = requests.post(api + '/editor/cardapios', data=json.dumps(cardapios), headers=headers)
 
     if request.form:
-        flash('Cardápio terceirizada salva com sucesso.','success')
+        flash('Cardápio terceirizada salva com sucesso.', 'success')
         return (redirect(url_for('backlog')))
     else:
         return ('', 200)
@@ -301,12 +298,14 @@ def upload_terceirizadas():
 @app.route('/atualiza_cardapio', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio():
+    """Colocar o campode ultima modificação aqui..."""
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
+    # post de dados nos cardapios atualiza cardapio
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
-        flash('Cardápio do XML salvo com sucesso','success')
+        flash('Cardápio do XML salvo com sucesso', 'success')
         return (redirect(url_for('backlog')))
     else:
         return ('', 200)
@@ -541,7 +540,7 @@ def atualiza_configuracoes():
         db_functions.add_replacements(row[0], row[1], row[2], row[3])
 
     if request.form:
-        flash('Novo ingrediente adicionado com sucesso','success')
+        flash('Novo ingrediente adicionado com sucesso', 'success')
         return (redirect(url_for('config')))
     else:
         return ('', 200)
@@ -564,7 +563,7 @@ def atualiza_config_cardapio():
     db_functions.add_bulk_cardapio(json.loads(data))
 
     if request.form:
-        flash('Cardápio terceirizado adicionado com sucesso.','success')
+        flash('Cardápio terceirizado adicionado com sucesso.', 'success')
         return (redirect(url_for('config_cardapio')))
     else:
         return ('', 200)
@@ -716,11 +715,10 @@ def atualiza_historico_escolas():
 @app.route("/download_publicacao", methods=["GET", "POST"])
 @flask_login.login_required
 def publicacao():
-
-    opt_status = ('STATUS','PUBLICADO','PENDENTE','SALVO','DELETADO')
+    opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
 
     if request.method == "GET":
-        return render_template("download_publicações.html", data_inicio_fim='disabled',status=opt_status)
+        return render_template("download_publicações.html", data_inicio_fim='disabled', status=opt_status)
 
     else:
         data_inicial = request.form.get('data-inicial', request.data)
@@ -731,16 +729,14 @@ def publicacao():
             data_final = datetime.datetime.strptime(data_final, '%d/%m/%Y').strftime('%Y%m%d')
         except Exception as e:
             print(e)
-            flash('Data de inicio ou fim não foram informadas!','danger')
-
-
+            flash('Data de inicio ou fim não foram informadas!', 'danger')
 
         filtro = request.form.get('filtro', request.data)
 
         if filtro == 'STATUS':
             return render_template("download_publicações.html",
                                    data_inicio_fim=str(data_inicial + '-' + data_final),
-                                   filtro_selected=filtro,status=opt_status)
+                                   filtro_selected=filtro, status=opt_status)
 
         else:
             cardapio_aux = []
@@ -761,7 +757,8 @@ def publicacao():
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
             return render_template("download_publicações.html", publicados=sort_array_by_date_and_index(cardapio_aux),
                                    data_inicio_fim=str(data_inicial + '-' + data_final),
-                                   filtro_selected=filtro,inicio=data_inicial,fim=data_final,status=opt_status,selected=filtro)
+                                   filtro_selected=filtro, inicio=data_inicial, fim=data_final, status=opt_status,
+                                   selected=filtro)
 
 
 @app.route('/download_csv', methods=['POST'])
