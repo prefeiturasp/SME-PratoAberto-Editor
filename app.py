@@ -1025,6 +1025,15 @@ def get_publicados():
             [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial,
              data_final, status, href, _key_semana, data_publicacao])
 
+    for pendente in pendentes:
+        _key = frozenset([pendente[2],
+                          pendente[1],
+                          pendente[0],
+                          pendente[6],
+                          pendente[3],
+                          pendente[8]])
+        pendente.append(','.join(_ids[_key]))
+
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
 
