@@ -8,7 +8,7 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response)
+                   request, url_for, make_response, Response)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -17,6 +17,10 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
+
+
+from dotenv import  load_dotenv
+load_dotenv('.env')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -875,6 +879,18 @@ def mapa_pendencias():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
 
 
+@app.route('/remove-cardapio',methods=['POST'])
+@flask_login.login_required
+def remove_menus():
+    if request.method == 'POST':
+
+        resp = request.form['data']
+
+        print(resp)
+
+        return Response(resp,200,mimetype='text/json')
+
+
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
@@ -944,6 +960,7 @@ def get_deletados():
     r = requests.get(url)
     refeicoes = r.json()
 
+
     # Formatar as chaves
     semanas = {}
     for refeicao in refeicoes:
@@ -956,6 +973,9 @@ def get_deletados():
     pendentes = []
     _ids = collections.defaultdict(list)
     for refeicao in refeicoes:
+
+        id_mongo = refeicao['_id']['$oid']
+
         agrupamento = str(refeicao['agrupamento'])
         tipo_unidade = refeicao['tipo_unidade']
         tipo_atendimento = refeicao['tipo_atendimento']
@@ -972,12 +992,13 @@ def get_deletados():
         href = query_str.format(*_args)
 
         pendentes.append(
-            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
+            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana,id_mongo])
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
 
     for pendente in pendentes:
+        # print(pendente)
         _key = frozenset([pendente[2],
                           pendente[1],
                           pendente[0],
@@ -985,8 +1006,11 @@ def get_deletados():
                           pendente[3],
                           pendente[8]])
         pendente.append(','.join(_ids[_key]))
+        # pendente.append()
 
+    print(pendentes)
     return pendentes
+
 
 
 def get_publicados():
@@ -1239,4 +1263,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run()
+    app.run(debug=True,port=5002)

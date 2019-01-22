@@ -174,8 +174,8 @@
                     <div class="panel panel-default">
                         <table class="table table-hover table-striped" id="task-table">
                             <thead>
-                                <tr>
-                                    <th style="display: none;"></th>
+                                <tr id="thead-table">
+                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 50px;max-width: 50px;"><input type="checkbox" id="check_all" /></th>
                                     <th style="display: none;"></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
@@ -183,16 +183,17 @@
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')" style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')" style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')" style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS<i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th width="2%"></th>
                                     <th width="2%"></th>
                                     <th width="2%" style="display: none;"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for linha in pendentes: %}
+                                {% for linha in pendentes %}
                                 <tr class="item" style="display: none;">
-                                    <td class="ids" style="display: none;">{{ linha[9] }}</td>
+                                   <td class="id_mongo"><input type="checkbox" class="check_remove"  value="{{ linha[9] }}" /></td>
+                                    <td class="ids" style="display: none;">{{ linha[10] }}</td>
                                     <td class="semana" style="display: none;">{{ linha[8] }}</td>
                                     <td class="tipo_gestao">{{ linha[0] }}</td>
                                     <td class="tipo_escola">{{ linha[1] }}</td>
@@ -212,6 +213,9 @@
                 </div>
             </div>
         </div>
+    <div align="center">
+        <button id="remover" class="btn btn-danger btn-lg">Remover Selecionados</button>
+    </div>
         <footer class="container-fluid text-center">
             <br>
             <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
@@ -290,7 +294,7 @@
             var $text = $row.find(".ids").text(); // Find the text
             var lista_ids = $text.split(',');
             var cardapios = []
-            console.log(lista_ids)
+            {#console.log(lista_ids)#}
             $.each(lista_ids, function (index, value) {
 
                 cardapios.push({
@@ -306,7 +310,7 @@
                 contentType: 'application/json',
                 //dataType: 'json',
                 success: function(data, textStatus, jqXHR){
-                    console.log("Cardapio publicado com sucesso");
+                    //console.log("Cardapio publicado com sucesso");
                     $row.hide();
                 }
             });
@@ -320,7 +324,7 @@
         $(document).ready(function() {
             var semana_filtro = $('#filtro_semana').val()
             $('#task-table tr').not(':first').each(function() {
-                var semana_linha = $($(this).children('td')[11]).text()
+                var semana_linha = $($(this).children('td')[12]).text()
                 if (semana_linha == semana_filtro) {
                     $(this).show();
                 } else {
@@ -349,17 +353,62 @@
         });
     </script>
 
-<script>
-    $(function(){
 
-        var param = window.location.search;
+    <!-- Função para informar remoção efetuada -->
+    <script>
+        $(function () {
 
-        if(param == '?removed=1'){
-            alert('Cardápio(s) removido(s) com sucesso.');
-        }
+            var param = window.location.search;
 
-    });
-</script>
+            if (param == '?removed=1') {
+                alert('Cardápio(s) removido(s) com sucesso.');
+            }
+
+        });
+    </script>
+    <!-- Função de selecionar todos -->
+    <script>
+        $(function(){
+            $('#check_all').click(function(){
+                $('input:checkbox').not(this).prop('checked', this.checked);
+            });
+        });
+    </script>
+
+
+    <!-- Função de remover selecionados -->
+    <script>
+        $(function(){
+            $('#remover').click(function(){
+                var ids = [];
+                var total = 0;
+
+                $('.check_remove').each(function(){
+                    if($(this).is(':checked')){
+                        total++;
+                        json = new Object();
+                        json._id = $(this).val();
+                        ids.push(json);
+                    }
+                });
+
+                if(total == 0){
+                    alert('Nenhum cardápio foi selecionado!');
+                }else{
+                    console.log(JSON.stringify(ids));
+                    jQuery.ajax({
+                        url: '/remove-cardapio',
+                        type: 'POST',
+                        data: {data : JSON.stringify(ids)},
+                        dataType : 'json',
+                        success : function (res) {
+                            console.log(res);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
 
 </body>
