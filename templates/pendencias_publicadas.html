@@ -176,8 +176,8 @@
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')" style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')" style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')" style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
                                     <th></th>
                                     <th></th>
@@ -188,14 +188,14 @@
                             <tbody>
                                 {% for linha in pendentes: %}
                                 <tr class="item" style="display: none;">
-                                    <td class="ids" style="display: none;">{{ linha[9] }}</td>
+                                    <td class="ids" style="display: none;">{{ linha[10] }}</td>
                                     <td class="semana" style="display: none;">{{ linha[8] }}</td>
                                     <td class="tipo_gestao">{{ linha[0] }}</td>
                                     <td class="tipo_escola">{{ linha[1] }}</td>
                                     <td class="agrupamento">{{ linha[2] }}</td>
                                     <td class="idade">{{ linha[3] }}</td>
-                                    <td class="data_inicial">{{ linha[4] }}</td>
-                                    <td class="data_final">{{ linha[5] }}</td>
+                                    <td class="data_inicial">{{ linha[4] }} - {{ linha[5] }}</td>
+                                    <td class="data_final">{{ linha[9] }}</td>
                                     <td class="status">{{ linha[6] }}</td>
                                     <td><a class="btn btn-info" href="/visualizador_cardapio?{{ linha[7] }}">VER</a></td>
                                     <td><button class="btn btn-warning pendente" value="PENDENTE">PENDENTE</button></td>
