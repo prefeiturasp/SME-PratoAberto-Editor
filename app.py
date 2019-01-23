@@ -18,8 +18,8 @@ import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
 
+from dotenv import load_dotenv
 
-from dotenv import  load_dotenv
 load_dotenv('.env')
 
 app = Flask(__name__)
@@ -118,6 +118,7 @@ def deletados():
     if request.method == "GET":
         deletados = get_deletados()
         deletados = sort_array_date_br(deletados)
+
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in deletados])
         return render_template("pendencias_deletadas.html",
                                pendentes=deletados,
@@ -878,16 +879,14 @@ def mapa_pendencias():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
 
 
-@app.route('/remove-cardapio',methods=['POST'])
+@app.route('/remove-cardapio', methods=['DELETE'])
 @flask_login.login_required
 def remove_menus():
-    if request.method == 'POST':
+    if request.method == 'DELETE':
+        req = request.form['data']
+        resp = remover_menus_api(req)
 
-        resp = request.form['data']
-
-        print(resp)
-
-        return Response(resp,200,mimetype='text/json')
+        return Response(resp, 200, mimetype='text/json')
 
 
 # FUNÇÕES AUXILIARES
@@ -959,7 +958,6 @@ def get_deletados():
     r = requests.get(url)
     refeicoes = r.json()
 
-
     # Formatar as chaves
     semanas = {}
     for refeicao in refeicoes:
@@ -972,7 +970,6 @@ def get_deletados():
     pendentes = []
     _ids = collections.defaultdict(list)
     for refeicao in refeicoes:
-
         id_mongo = refeicao['_id']['$oid']
 
         agrupamento = str(refeicao['agrupamento'])
@@ -991,13 +988,13 @@ def get_deletados():
         href = query_str.format(*_args)
 
         pendentes.append(
-            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana,id_mongo])
+            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana,
+             id_mongo])
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
 
     for pendente in pendentes:
-        # print(pendente)
         _key = frozenset([pendente[2],
                           pendente[1],
                           pendente[0],
@@ -1005,11 +1002,9 @@ def get_deletados():
                           pendente[3],
                           pendente[8]])
         pendente.append(','.join(_ids[_key]))
-        # pendente.append()
+        # print(pendente)
 
-    print(pendentes)
     return pendentes
-
 
 
 def get_publicados():
@@ -1133,6 +1128,12 @@ def get_grupo_publicacoes(status):
         pendente.append(','.join(_ids[_key]))
 
     return pendentes
+
+
+def remover_menus_api(params):
+    url = api + '/editor/remove-cardapio'
+    r = requests.post(url, data={'ids': params})
+    return r.text
 
 
 def get_pendencias_terceirizadas():
@@ -1264,4 +1265,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(debug=True,port=5002)
+    app.run(debug=True, port=5002)
