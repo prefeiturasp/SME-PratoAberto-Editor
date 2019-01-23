@@ -74,33 +74,34 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- NAVBAR -->
-        <div class="row" style="padding-top: 20px;">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Downloads</a>
-                    </div>
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
-                                <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
-                            </a>
-                        </ul>
-                    </div>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row" style="padding-top: 20px;">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Downloads</a>
                 </div>
-            </nav>
-        </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
+                            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
 
-        {% include 'messages.html' %}
+    {% include 'messages.html' %}
 
 
-         <!-- Campos GERAÇAO TABELA -->
-        <div class ="panel panel-default">
-            <div class="row">
-                <form method="post" action="/download_publicacao">
+    <!-- Campos GERAÇAO TABELA -->
+    <div class ="panel panel-default">
+        <div class="row">
+            <form method="post" action="/download_publicacao">
+                <div>
                     <div class="col-sm-3" style="width: 9%; padding-top: 13px; padding-left: 20px;">
                         <label for="data-inicial">Data Inicial:</label>
                     </div>
@@ -113,83 +114,118 @@
                     <div class="col-sm-3" style="width: 17%">
                         <input required="required" autocomplete="Off" type="text" id="data-final" name="data-final" value="{{ fim }}" class="form-control">
                     </div>
+                </div>
+
+
+                <div>
                     <div class="col-sm-3 dropdown" style="width: 10%">
+                        <label for="atendimento">Status:</label>
                         <select class="form-control input"  id="filtro" name="filtro">
                             {% for st in status %}
-                                <option {{ 'selected' if st == selected }}>{{ st }}</option>
+                            <option {{'selected' if st == selected }}>{{ st }}</option>
                             {% endfor %}
                         </select>
+                    </div>
 
+                    <div class="col-sm-3" style="width: 8%">
+                        <label for="atendimento">Atendimento:</label>
+                        <select id="atendimento" name="atendimento" class="form-control">
+                            <option>TODOS</option>
+                            <option>DIRETA</option>
+                            <option>MISTA</option>
+                            <option>TERCEIRIZADA</option>
+                        </select>
                     </div>
-                    <div class="col-sm-3" style="width: 15%">
-                        <button type="submit" class="btn btn-success">GERAR TABELA</button>
+                    <div class="col-sm-3" style="width: 8%">
+                        <label for="tipo_unidade">Tipo de unidade:</label>
+                        <select id="tipo_unidade" name="tipo_unidade" class="form-control">
+                            <option>TODOS</option>
+                            <option>CEI_MUNICIPAL</option>
+                            <option>CEI_PARCEIRO_(RP)</option>
+                            <option>CCI</option>
+                            <option>EMEF</option>
+                            <option>CEMEI</option>
+                            <option>CEI_CONVENIADO</option>
+                            <option>SME_CONVÊNIO</option>
+                            <option>EMEBS</option>
+                            <option>PROJETO_CECI</option>
+                            <option>CIEJA</option>
+                            <option>CEU_GESTÃO</option>
+                            <option>CMCT</option>
+                        </select>
                     </div>
-                </form>
-                <form method="post" action="/download_csv">
-                    <div class="col-sm-3" style="width: 15%">
-                        <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
-                        <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
-                        <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
-                    </div>
-                </form>
-                </form>
-            </div>
+
+                </div>
+
+                <div class="col-sm-3" style="width: 15%">
+                    <button type="submit" class="btn btn-success">GERAR TABELA</button>
+                </div>
+            </form>
+            <form method="post" action="/download_csv">
+                <div class="col-sm-3" style="width: 15%">
+                    <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
+                    <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                    <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
+                </div>
+            </form>
+            </form>
         </div>
+    </div>
 
-        <div class="row tbl">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Cardápios</h3>
-                    <div class="pull-right">
+    <div class="row tbl">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cardápios</h3>
+                <div class="pull-right">
                         <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
-                    </div>
                 </div>
-                <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
-                </div>
-                <div class="table-responsive">
-                    <div class="panel panel-default">
-                        <table class="table table-hover table-striped" id="task-table">
-                            <thead>
-                                <tr>
-                                    <th style="cursor:pointer">ATENDIMENTO</th>
-                                    <th style="cursor:pointer">UNIDADE</th>
-                                    <th style="cursor:pointer">AGRUPAMENTO</th>
-                                    <th style="cursor:pointer">IDADE</th>
-                                    <th style="cursor:pointer">DATA</th>
-                                    <th style="cursor:pointer">REFEICÃO</th>
-                                    <th style="cursor:pointer">CARDÁPIO</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for linha in publicados: %}
-                                <tr class="item">
-                                    <td class="tipo_atendimento">{{ linha[0] }}</td>
-                                    <td class="tipo_unidade">{{ linha[1] }}</td>
-                                    <td class="agrupamento">{{ linha[2] }}</td>
-                                    <td class="idade">{{ linha[3] }}</td>
-                                    <td class="data">{{ linha[4] }}</td>
-                                    <td class="status">{{ linha[5] }}</td>
-                                    <td class="refeicao_dia">{{ linha[6] }}</td>
-                                    <td class="cardapio">{{ linha[7] }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+            </div>
+            <div class="panel-body">
+                <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
+            </div>
+            <div class="table-responsive">
+                <div class="panel panel-default">
+                    <table class="table table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th style="cursor:pointer">ATENDIMENTO</th>
+                            <th style="cursor:pointer">UNIDADE</th>
+                            <th style="cursor:pointer">AGRUPAMENTO</th>
+                            <th style="cursor:pointer">IDADE</th>
+                            <th style="cursor:pointer">DATA</th>
+                            <th style="cursor:pointer">REFEICÃO</th>
+                            <th style="cursor:pointer">CARDÁPIO</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for linha in publicados: %}
+                        <tr class="item">
+                            <td class="tipo_atendimento">{{ linha[0] }}</td>
+                            <td class="tipo_unidade">{{ linha[1] }}</td>
+                            <td class="agrupamento">{{ linha[2] }}</td>
+                            <td class="idade">{{ linha[3] }}</td>
+                            <td class="data">{{ linha[4] }}</td>
+                            <td class="status">{{ linha[5] }}</td>
+                            <td class="refeicao_dia">{{ linha[6] }}</td>
+                            <td class="cardapio">{{ linha[7] }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <footer class="container-fluid text-center">
-            <br>
-            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
-        </footer>
     </div>
+    <footer class="container-fluid text-center">
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+    </footer>
+</div>
 
-    <!-- Script com a funcionalidade do filtro da tabela -->
-    <script>
+<!-- Script com a funcionalidade do filtro da tabela -->
+<script>
         /**
         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
         *   but will likely encounter performance issues on larger tables.
@@ -250,27 +286,27 @@
         });
     </script>
 
-    <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
+<!-- Botões de ordenação da tabela -->
+<script src="static/js/w3.js"></script>
 
-    <!-- Deleta linha da tabela -->
-    <script>
+<!-- Deleta linha da tabela -->
+<script>
         function deleteRow(r) {
             var i = r.parentNode.parentNode.rowIndex;
             document.getElementById("task-table").deleteRow(i);
         }
     </script>
 
-    <!-- Seta Datas -->
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Referência do arquivo JS do plugin após carregar o jquery -->
-    <!-- Datepicker -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <!--Data Picker Inicial-->
-    <script>
+<!-- Seta Datas -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!-- Referência do arquivo JS do plugin após carregar o jquery -->
+<!-- Datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<!--Data Picker Inicial-->
+<script>
         $(document).ready(function () {
             $('#data-inicial').datepicker({
                 format: "dd/mm/yyyy",
@@ -278,8 +314,8 @@
             });
         });
     </script>
-    <!--Data Picker Final-->
-    <script>
+<!--Data Picker Final-->
+<script>
         $(document).ready(function () {
             $('#data-final').datepicker({
                 format: "dd/mm/yyyy",
@@ -288,8 +324,8 @@
         });
     </script>
 
-    <!-- Seta Refeições -->
-    <script>
+<!-- Seta Refeições -->
+<script>
         function adicionaRefeicao() {
             var REFEICAO = document.getElementById("REFEICAO").value;
             $('#lista-refeicao').append(
@@ -298,15 +334,15 @@
         };
     </script>
 
-    <!-- Deleta botões -->
-    <script>
+<!-- Deleta botões -->
+<script>
         function deletar(r) {
             $(r).remove()
         };
     </script>
 
-    <!-- Habilita botão de download-->
-    <script>
+<!-- Habilita botão de download-->
+<script>
         $(document).ready(function() {
             if ($('#download_input').val() == 'disabled') {
                 $('#btn_download').prop('disabled', true);
@@ -317,8 +353,8 @@
         });
     </script>
 
-    <!-- Atualiza dropdown -->
-    <script>
+<!-- Atualiza dropdown -->
+<script>
         $("#dropdown-status li a").click(function(){
             $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
             $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
