@@ -2,11 +2,17 @@ import datetime
 
 
 def datetime_to_brstring(dt):
-    return dt.strftime('%d/%m/%Y')
+    try:
+        return dt.strftime('%d/%m/%Y')
+    except AttributeError as e:
+        return ''
 
 
 def yyyymmdd_to_date_time(dt_str):
-    return datetime.datetime.strptime(dt_str, '%Y%m%d')
+    try:
+        return datetime.datetime.strptime(dt_str, '%Y%m%d')
+    except ValueError as e:
+        return ''
 
 
 def sort_array_by_datetime(unsorted_array, reverse=False):
@@ -31,6 +37,7 @@ def sort_array_date_br(data_array):
     for i in range(len(data_array)):
         data_array[i][4] = yyyymmdd_to_date_time(data_array[i][4])
         data_array[i][5] = yyyymmdd_to_date_time(data_array[i][5])
+        data_array[i][9] = yyyymmdd_to_date_time(data_array[i][9])
 
     # ordena por datetime
     data_array = sort_array_by_datetime(data_array, reverse=True)
@@ -39,6 +46,7 @@ def sort_array_date_br(data_array):
     for i in range(len(data_array)):
         data_array[i][4] = datetime_to_brstring(data_array[i][4])
         data_array[i][5] = datetime_to_brstring(data_array[i][5])
+        data_array[i][9] = datetime_to_brstring(data_array[i][9])
     return data_array
 
 

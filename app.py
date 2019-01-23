@@ -183,7 +183,6 @@ def upload_file():
 
                                 cardapio = query
                                 cardapio['data'] = data
-                                cardapio['data_publicacao'] = datetime.date.today().strftime('%Y%m%d')
                                 if responses[_key]:
                                     cardapio.update({
                                         'cardapio': {'DUPLICADO': ['DUPLICADO']},
@@ -1040,16 +1039,15 @@ def get_publicados():
         _ids[_key].append(refeicao['_id']['$oid'])
         data_inicial = min(semanas[_key_semana])
         data_final = max(semanas[_key_semana])
+        data_publicacao = refeicao.get('data_publicacao', '')
 
         _args = (tipo_atendimento, tipo_unidade, agrupamento, idade, status, data_inicial, data_final)
         query_str = 'tipo_atendimento={}&tipo_unidade={}&agrupamento={}&idade={}&status={}&data_inicial={}&data_final={}'
         href = query_str.format(*_args)
 
         pendentes.append(
-            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
-
-    pendentes.sort()
-    pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
+            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial,
+             data_final, status, href, _key_semana, data_publicacao])
 
     for pendente in pendentes:
         _key = frozenset([pendente[2],
@@ -1059,6 +1057,9 @@ def get_publicados():
                           pendente[3],
                           pendente[8]])
         pendente.append(','.join(_ids[_key]))
+
+    pendentes.sort()
+    pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
 
     return pendentes
 
