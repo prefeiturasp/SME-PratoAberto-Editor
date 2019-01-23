@@ -100,7 +100,7 @@
     <div class ="panel panel-default">
         <div class="row">
             <form method="post" action="/download_publicacao">
-                <div class="form-group">
+                <div>
                     <div class="col-sm-3" style="width: 12%; padding-top: 13px; padding-left: 20px;">
                         <label for="data-inicial">Data Inicial:</label>
                     </div>
@@ -113,28 +113,18 @@
                     <div class="col-sm-3" style="width: 17%">
                         <input required="required" autocomplete="Off" type="text" id="data-final" name="data-final" value="{{ fim }}" class="form-control">
                     </div>
-                    <div class="col-sm-3" style="width: 15%; padding-left: 10px;">
-                        <button type="submit" class="btn btn-success">GERAR TABELA</button>
-                    </div>
                 </div>
-
-                <form method="post" action="/download_csv">
-                    <div class="col-sm-3" style="width: 15%">
-                        <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
-                        <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
-                        <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
-                    </div>
-                </form>
                 <br>
                 <br>
                 <br>
-                <div class="form-group">
+                <div>
                     <div class="col-sm-3 dropdown" style="width: 12%; padding-left: 20px;">
                         <label for="filtro">Status:</label>
                         <select class="form-control input"  id="filtro" name="filtro">
-                            {% for st in status %}
-                            <option {{'selected' if st == selected }}>{{ st }}</option>
-                            {% endfor %}
+                            <option>PUBLICADO</option>
+                            <option>PUBLICADO</option>
+                            <option>PENDENTE</option>
+                            <option>SALVO</option>
                         </select>
                     </div>
 
@@ -165,7 +155,13 @@
                             <option>CMCT</option>
                         </select>
                     </div>
-
+                </div>
+                <br>
+                <br>
+                <br>
+                <br>
+                <div class="col-sm-3" style="width: 15%; padding-left: 10px;">
+                    <button type="submit" class="btn btn-success">GERAR TABELA</button>
                 </div>
             </form>
         </div>
