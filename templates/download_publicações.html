@@ -96,29 +96,40 @@
 
     {% include 'messages.html' %}
 
-
     <!-- Campos GERAÇAO TABELA -->
     <div class ="panel panel-default">
         <div class="row">
             <form method="post" action="/download_publicacao">
-                <div>
-                    <div class="col-sm-3" style="width: 9%; padding-top: 13px; padding-left: 20px;">
+                <div class="form-group">
+                    <div class="col-sm-3" style="width: 12%; padding-top: 13px; padding-left: 20px;">
                         <label for="data-inicial">Data Inicial:</label>
                     </div>
                     <div class="col-sm-3" style="width: 17%">
                         <input required="required" autocomplete="Off" type="text" id="data-inicial" name="data-inicial" value="{{ inicio }}" class="form-control">
                     </div>
-                    <div class="col-sm-3" style="width: 7%; padding-top: 13px;">
+                    <div class="col-sm-3" style="width: 12%; padding-top: 13px;">
                         <label for="data-final">Data Final:</label>
                     </div>
                     <div class="col-sm-3" style="width: 17%">
                         <input required="required" autocomplete="Off" type="text" id="data-final" name="data-final" value="{{ fim }}" class="form-control">
                     </div>
+                    <div class="col-sm-3" style="width: 15%; padding-left: 10px;">
+                        <button type="submit" class="btn btn-success">GERAR TABELA</button>
+                    </div>
                 </div>
 
-
-                <div>
-                    <div class="col-sm-3 dropdown" style="width: 10%">
+                <form method="post" action="/download_csv">
+                    <div class="col-sm-3" style="width: 15%">
+                        <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
+                        <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                        <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
+                    </div>
+                </form>
+                <br>
+                <br>
+                <br>
+                <div class="form-group">
+                    <div class="col-sm-3 dropdown" style="width: 12%; padding-left: 20px;">
                         <label for="filtro">Status:</label>
                         <select class="form-control input"  id="filtro" name="filtro">
                             {% for st in status %}
@@ -127,7 +138,7 @@
                         </select>
                     </div>
 
-                    <div class="col-sm-3" style="width: 8%">
+                    <div class="col-sm-3" style="width: 12%">
                         <label for="tipo_atendimento">Atendimento:</label>
                         <select id="tipo_atendimento" name="tipo_atendimento" class="form-control">
                             <option>TODOS</option>
@@ -136,7 +147,7 @@
                             <option>TERCEIRIZADA</option>
                         </select>
                     </div>
-                    <div class="col-sm-3" style="width: 8%">
+                    <div class="col-sm-3" style="width: 12%">
                         <label for="tipo_unidade">Tipo de unidade:</label>
                         <select id="tipo_unidade" name="tipo_unidade" class="form-control">
                             <option>TODOS</option>
@@ -156,22 +167,11 @@
                     </div>
 
                 </div>
-
-                <div class="col-sm-3" style="width: 15%">
-                    <button type="submit" class="btn btn-success">GERAR TABELA</button>
-                </div>
-            </form>
-            <form method="post" action="/download_csv">
-                <div class="col-sm-3" style="width: 15%">
-                    <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
-                    <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
-                    <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
-                </div>
-            </form>
             </form>
         </div>
     </div>
-
+    <br>
+    <br>
     <div class="row tbl">
         <div class="panel panel-success">
             <div class="panel-heading">
