@@ -742,32 +742,29 @@ def publicacao():
 
         else:
             cardapio_aux = []
-            for cardapio in get_grupo_publicacoes(filtro):
-                if (data_inicial <= cardapio[4]) or (data_inicial <= cardapio[5]):
-                    if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
-                        url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                        # filtro de  tipo de unidade e tipo de atendimento.
-                        if tipo_unidade != 'TODOS':
-                            url += '&' + tipo_unidade
-                        if tipo_atendimento != 'TODOS':
-                            url += '&' + tipo_atendimento
-                        if filtro != 'STATUS':
-                            url += '&' + filtro
-                        r = requests.get(url)
-                        refeicoes = r.json()
+            url = api + '/editor/cardapios?data_inicial={}&data_final={}'.format(data_inicial, data_final)
+            # filtro de  tipo de unidade e tipo de atendimento.
+            if tipo_unidade != 'TODOS':
+                url += '&tipo_unidade={}'.format(tipo_unidade)
+            if tipo_atendimento != 'TODOS':
+                url += '&tipo_atendimento{}'.format(tipo_atendimento)
+            if filtro != 'STATUS':
+                url += '&status={}'.format(filtro)
+            r = requests.get(url)
+            refeicoes = r.json()
 
-                        for refeicoes_dia in refeicoes:
-                            _keys = ['tipo_atendimento', 'tipo_unidade', 'agrupamento', 'idade', 'data', 'status']
-                            refeicao_dia_aux = [refeicoes_dia[_key] for _key in _keys]
-                            for refeicao in refeicoes_dia['cardapio'].keys():
-                                cardapio_aux.append(
-                                    refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
+            for refeicoes_dia in refeicoes:
+                _keys = ['tipo_atendimento', 'tipo_unidade', 'agrupamento', 'idade', 'data', 'status']
+                refeicao_dia_aux = [refeicoes_dia[_key] for _key in _keys]
+                for refeicao in refeicoes_dia['cardapio'].keys():
+                    cardapio_aux.append(
+                        refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
             data_inicial = datetime.datetime.strptime(data_inicial, '%Y%m%d').strftime('%d/%m/%Y')
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
             return render_template("download_publicações.html", publicados=sort_array_by_date_and_index(cardapio_aux),
-                                   data_inicio_fim=str(data_inicial + '-' + data_final),
-                                   filtro_selected=filtro, inicio=data_inicial, fim=data_final, status=opt_status,
-                                   selected=filtro)
+                                   data_inicio_fim=str(data_inicial + '-' + data_final), tipo_unidade=tipo_unidade,
+                                   tipo_atendimento=tipo_atendimento, filtro_selected=filtro,
+                                   inicio=data_inicial, fim=data_final, status=opt_status, selected=filtro)
 
 
 @app.route('/download_csv', methods=['POST'])

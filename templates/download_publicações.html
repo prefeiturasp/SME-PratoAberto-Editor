@@ -122,7 +122,6 @@
                         <label for="filtro">Status:</label>
                         <select class="form-control input"  id="filtro" name="filtro">
                             <option>PUBLICADO</option>
-                            <option>PUBLICADO</option>
                             <option>PENDENTE</option>
                             <option>SALVO</option>
                         </select>
@@ -168,6 +167,8 @@
                 <div class="col-sm-3" style="width: 15%">
                     <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
                     <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                    <input type="hidden" id="download_input_tipo_unidade" name="tipo_unidade_download" value="{{tipo_unidade}}">
+                    <input type="hidden" id="download_input_tipo_atendimento" name="tipo_atendimento_download" value="{{tipo_atendimento}}">
                     <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
                 </div>
             </form>
