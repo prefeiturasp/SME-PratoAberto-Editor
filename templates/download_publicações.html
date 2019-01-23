@@ -119,7 +119,7 @@
 
                 <div>
                     <div class="col-sm-3 dropdown" style="width: 10%">
-                        <label for="atendimento">Status:</label>
+                        <label for="filtro">Status:</label>
                         <select class="form-control input"  id="filtro" name="filtro">
                             {% for st in status %}
                             <option {{'selected' if st == selected }}>{{ st }}</option>
@@ -128,8 +128,8 @@
                     </div>
 
                     <div class="col-sm-3" style="width: 8%">
-                        <label for="atendimento">Atendimento:</label>
-                        <select id="atendimento" name="atendimento" class="form-control">
+                        <label for="tipo_atendimento">Atendimento:</label>
+                        <select id="tipo_atendimento" name="tipo_atendimento" class="form-control">
                             <option>TODOS</option>
                             <option>DIRETA</option>
                             <option>MISTA</option>
