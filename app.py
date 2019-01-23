@@ -732,7 +732,10 @@ def publicacao():
 
         filtro = request.form.get('filtro', request.data)
 
-        if filtro == 'STATUS':
+        tipo_unidade = request.form.get('tipo_unidade', request.data)
+        tipo_atendimento = request.form.get('tipo_atendimento', request.data)
+
+        if filtro == 'STATUS' and tipo_unidade == 'TODOS' and tipo_atendimento == 'TODOS':
             return render_template("download_publicações.html",
                                    data_inicio_fim=str(data_inicial + '-' + data_final),
                                    filtro_selected=filtro, status=opt_status)
@@ -743,6 +746,13 @@ def publicacao():
                 if (data_inicial <= cardapio[4]) or (data_inicial <= cardapio[5]):
                     if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
                         url = api + '/editor/cardapios?' + '&' + cardapio[7]
+                        # filtro de  tipo de unidade e tipo de atendimento.
+                        if tipo_unidade != 'TODOS':
+                            url += '&' + tipo_unidade
+                        if tipo_atendimento != 'TODOS':
+                            url += '&' + tipo_atendimento
+                        if filtro != 'STATUS':
+                            url += '&' + filtro
                         r = requests.get(url)
                         refeicoes = r.json()
 

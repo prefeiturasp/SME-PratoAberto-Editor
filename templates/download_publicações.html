@@ -164,6 +164,13 @@
                     <button type="submit" class="btn btn-success">GERAR TABELA</button>
                 </div>
             </form>
+            <form method="post" action="/download_csv">
+                <div class="col-sm-3" style="width: 15%">
+                    <button type="submit" id="btn_download" class="btn"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
+                    <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                    <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
+                </div>
+            </form>
         </div>
     </div>
     <br>
