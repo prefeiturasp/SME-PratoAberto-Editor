@@ -195,18 +195,18 @@
                             <th style="word-wrap: break-word;"></th>
                             <th style="word-wrap: break-word;">COD_EOL</th>
                             <th style="word-wrap: break-word;">GESTÃO</th>
-                            <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLA</th>
-                            <th style="word-wrap: break-word;">AGRUPAMENTO</th>
+                            <th style="word-wrap: break-word;min-width: 90px;max-width: 90px;">ESCOLA</th>
+                            <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
                             <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
-                            <th style="word-wrap: break-word;">DATA</th>
-                            <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
-                            <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">ENDEREÇO</th>
+                            <th style="display: none; word-wrap: break-word;">DATA</th>
+                            <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
+                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
+                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
+                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
                             <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
-                            <th style="word-wrap: break-word;">LAT</th>
-                            <th style="word-wrap: break-word;">LON</th>
+                            <th style="display: none; word-wrap: break-word;">LAT</th>
+                            <th style="display: none; word-wrap: break-word;">LON</th>
                             <th style="word-wrap: break-word;">STATUS</th>
-                            <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">REFEIÇÕES</th>
-                            <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">IDADES</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -215,27 +215,27 @@
                             <td><a class="btn btn-info" onclick='editRow(this)' href="#" data-toggle="modal"
                                    data-target="#xml_form">EDITAR</a></td>
                             <td class="cod_eol">{{ linha['_id'] }}</td>
-                            <td class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
+                            <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
                             <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
                             <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
                             <td class="edital">{{ linha['edital'] }}</td>
-                            <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
-                            <td class="nome">{{ linha['nome'] }}</td>
-                            <td class="endereco">{{ linha['endereco'] }}</td>
-                            <td class="bairro">{{ linha['bairro'] }}</td>
-                            <td class="lat">{{ linha['lat'] }}</td>
-                            <td class="lon">{{ linha['lon'] }}</td>
-                            <td class="status">{{ linha['status'] }}</td>
-                            <td class="refeicoes">
+                            <td style="display: none" class="data">{{ linha['data_inicio_vigencia'] }}</td>
+                            <td class="info" class="nome">{{ linha['nome'] }}</td>
+                            <td class="default" class="refeicoes">
                                 {% for itens in linha['refeicoes']: %}
-                                {{ itens }},
+                                    {{ itens }},
                                 {% endfor %}
                             </td>
-                            <td class="idades">
+                            <td class="success" class="idades">
                                 {% for itens in linha['idades']: %}
-                                {{ itens }},
+                                    {{ itens }},
                                 {% endfor %}
                             </td>
+                            <td title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
+                            <td class="bairro">{{ linha['bairro'] }}</td>
+                            <td style="display: none" class="lat">{{ linha['lat'] }}</td>
+                            <td style="display: none" class="lon">{{ linha['lon'] }}</td>
+                            <td class="status">{{ linha['status']}}</td>
                         </tr>
                         {% for linha_historico in linha['historico']: %}
                         <tr class="item" style="display: none;">
@@ -353,8 +353,8 @@
                     'lat': lat,
                     'lon': lon,
                     'status': status,
-                    'refeicoes': refeicoes,
-                    'idades': idades
+                    'refeicoes': jQuery.trim(refeicoes),
+                    'idades': jQuery.trim(idades)
                 }
 
                 json_dump.push(modificacao)
@@ -381,13 +381,13 @@
                     var edital = $($(this).children('td')[5]).text();
                     var data = $($(this).children('td')[6]).text();
                     var nome = $($(this).children('td')[7]).text();
-                    var endereco = $($(this).children('td')[8]).text();
-                    var bairro = $($(this).children('td')[9]).text();
-                    var lat = $($(this).children('td')[10]).text();
-                    var lon = $($(this).children('td')[11]).text();
-                    var status = $($(this).children('td')[12]).text();
-                    var refeicoes = $($(this).children('td')[13]).text();
-                    var idades = $($(this).children('td')[14]).text();
+                    var refeicoes = $($(this).children('td')[8]).text();
+                    var idades = $($(this).children('td')[9]).text();
+                    var endereco = $($(this).children('td')[10]).text();
+                    var bairro = $($(this).children('td')[11]).text();
+                    var lat = $($(this).children('td')[12]).text();
+                    var lon = $($(this).children('td')[13]).text();
+                    var status = $($(this).children('td')[14]).text();
 
                     $('#edicao-escola').append(
                         "<tr class='item'>" +
@@ -454,9 +454,21 @@
 <!-- Pop erro -->
 <script>
         if ($('#mensagem').length) {
-            window.alert($('#mensagem').text())
+            window.alert($('#mensagem').text());
         }
 
+</script>
+
+
+<script>
+    jQuery(function(){
+        jQuery('.item').each(function(){
+            jQuery(this).click(function(){
+                jQuery('.item').removeClass('danger');
+                jQuery(this).addClass('danger');
+            });
+        });
+    });
 </script>
 
 </body>
