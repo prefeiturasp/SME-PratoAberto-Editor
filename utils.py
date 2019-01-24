@@ -23,7 +23,7 @@ def sort_array_by_datetime(unsorted_array, reverse=False):
     return sorted_array
 
 
-def sort_array_date_br(data_array,opt=1):
+def sort_array_date_br(data_array, opt=1):
     """
     recebe um array, transforma a coluna 4 e 5 para datetime
     ordena
@@ -40,7 +40,6 @@ def sort_array_date_br(data_array,opt=1):
 
         data_array[i][4] = yyyymmdd_to_date_time(data_array[i][4])
         data_array[i][5] = yyyymmdd_to_date_time(data_array[i][5])
-
 
     # ordena por datetime
     data_array = sort_array_by_datetime(data_array, reverse=True)
