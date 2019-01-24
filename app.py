@@ -18,10 +18,6 @@ import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
 
-from dotenv import load_dotenv
-
-load_dotenv('.env')
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
@@ -130,7 +126,7 @@ def deletados():
 def publicados():
     if request.method == "GET":
         publicados = get_publicados()
-        publicados = sort_array_date_br(publicados)
+        publicados = sort_array_date_br(publicados, opt='bugfix')
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in publicados])
         return render_template("pendencias_publicadas.html",
                                pendentes=publicados,
@@ -1272,4 +1268,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(debug=True, port=5002)
+    app.run()
