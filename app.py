@@ -8,7 +8,7 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response)
+                   request, url_for, make_response, Response)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -17,6 +17,10 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
+
+from dotenv import load_dotenv
+
+load_dotenv('.env')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -114,6 +118,7 @@ def deletados():
     if request.method == "GET":
         deletados = get_deletados()
         deletados = sort_array_date_br(deletados)
+
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in deletados])
         return render_template("pendencias_deletadas.html",
                                pendentes=deletados,
@@ -881,6 +886,16 @@ def mapa_pendencias():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
 
 
+@app.route('/remove-cardapio', methods=['DELETE'])
+@flask_login.login_required
+def remove_menus():
+    if request.method == 'DELETE':
+        req = request.form['data']
+        resp = remover_menus_api(req)
+
+        return Response(resp, 200, mimetype='text/json')
+
+
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
@@ -962,6 +977,8 @@ def get_deletados():
     pendentes = []
     _ids = collections.defaultdict(list)
     for refeicao in refeicoes:
+        id_mongo = refeicao['_id']['$oid']
+
         agrupamento = str(refeicao['agrupamento'])
         tipo_unidade = refeicao['tipo_unidade']
         tipo_atendimento = refeicao['tipo_atendimento']
@@ -978,7 +995,8 @@ def get_deletados():
         href = query_str.format(*_args)
 
         pendentes.append(
-            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
+            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana,
+             id_mongo])
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
@@ -991,6 +1009,7 @@ def get_deletados():
                           pendente[3],
                           pendente[8]])
         pendente.append(','.join(_ids[_key]))
+        # print(pendente)
 
     return pendentes
 
@@ -1116,6 +1135,12 @@ def get_grupo_publicacoes(status):
         pendente.append(','.join(_ids[_key]))
 
     return pendentes
+
+
+def remover_menus_api(params):
+    url = api + '/editor/remove-cardapio'
+    r = requests.post(url, data={'ids': params})
+    return r.text
 
 
 def get_pendencias_terceirizadas():
@@ -1247,4 +1272,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run()
+    app.run(debug=True, port=5002)
