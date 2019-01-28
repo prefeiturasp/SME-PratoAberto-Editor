@@ -109,7 +109,7 @@
                                     <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">ESCOLA</th>
                                     <th style="word-wrap: break-word;">AGRUPAMENTO</th>
                                     <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
-                                    <th style="word-wrap: break-word;">DATA</th>
+                                    <th style="word-wrap: break-word">DATA</th>
                                     <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
                                     <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">ENDEREÇO</th>
                                     <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
@@ -198,7 +198,7 @@
                             <th style="word-wrap: break-word;min-width: 90px;max-width: 90px;">ESCOLA</th>
                             <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
                             <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
-                            <th style="display: none; word-wrap: break-word;">DATA</th>
+                            <th style="word-wrap: break-word;">DATA</th>
                             <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
@@ -219,7 +219,7 @@
                             <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
                             <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
                             <td class="edital">{{ linha['edital'] }}</td>
-                            <td style="display: none" class="data">{{ linha['data_inicio_vigencia'] }}</td>
+                            <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
                             <td class="info" class="nome">{{ linha['nome'] }}</td>
                             <td class="default" class="refeicoes">
                                 {% for itens in linha['refeicoes']: %}
