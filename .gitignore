@@ -158,4 +158,4 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-.configuracoes_editor_merenda.db
+*.db
