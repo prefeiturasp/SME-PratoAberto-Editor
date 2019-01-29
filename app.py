@@ -783,7 +783,7 @@ def publicacao():
             if tipo_unidade != 'TODOS':
                 url += '&tipo_unidade={}'.format(tipo_unidade)
             if tipo_atendimento != 'TODOS':
-                url += '&tipo_atendimento{}'.format(tipo_atendimento)
+                url += '&tipo_atendimento={}'.format(tipo_atendimento)
             if filtro != 'STATUS':
                 url += '&status={}'.format(filtro)
             r = requests.get(url)
