@@ -135,14 +135,14 @@
 
         <!-- Informações do agrupamento -->
         <div class="row">
-            <div style="text-align: left">
-                <a href="/pendencias_publicacoes" class="btn btn-lg btn-primary" >Cardápios Pendentes</a>
-                <a href="/pendencias_publicadas" class="btn btn-lg btn-default disabled">Cardápios Publicados</a>
-                <a href="/pendencias_deletadas" class="btn btn-lg btn-danger">Cardápios Deletados</a>
+            <div class="col-12" style="text-align: left">
+                <a href="/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary" >Cardápios Pendentes</a>
+                <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios Publicados</a>
+                <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios Deletados</a>
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6 col-sm-10 dropdown" style="width: 22%">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
                 <label> Selecione a extensão das datas:</label>
                 <select class="form-control input"  id="filtro_periodo" name="filtro_periodo">
                     {% for periodo in periodos.keys(): %}
@@ -150,10 +150,30 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-lg-6 col-sm-10 dropdown" style="width: 22%">
-                <label> Selecione a semana:</label>
-                <select class="form-control input"  id="filtro_semana" name="filtro_semana">
-                    {% for semana in semanas: %}
+            <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
+                <label> Selecione a data:</label>
+                <select class="form-control input"  id="filtro_semana_mes" name="filtro_semana_mes">
+                    {% for semana in periodos['último mês']: %}
+                        <option>{{ semana }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control input"  id="filtro_semana_3_meses" name="filtro_semana_3_meses">
+                    {% for semana in periodos['últimos 3 meses']: %}
+                        <option>{{ semana }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control input"  id="filtro_semana_6_meses" name="filtro_semana_6_meses">
+                    {% for semana in periodos['últimos 6 meses']: %}
+                        <option>{{ semana }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control input"  id="filtro_semana_12_meses" name="filtro_semana_12_meses">
+                    {% for semana in periodos['últimos 12 meses']: %}
+                        <option>{{ semana }}</option>
+                    {% endfor %}
+                </select>
+                <select class="form-control input"  id="filtro_semana_todos" name="filtro_semana_todos">
+                    {% for semana in periodos['todos']: %}
                         <option>{{ semana }}</option>
                     {% endfor %}
                 </select>
@@ -355,7 +375,41 @@
         $(function(){
             $('#filtro_periodo').change(function(){
                 var periodo_filtro = $(this).val();
-                console.log(periodo_filtro);
+                if (periodo_filtro == 'último mês') {
+                    $('#filtro_semana_mes').show()
+                    $('#filtro_semana_3_meses').hide()
+                    $('#filtro_semana_6_meses').hide()
+                    $('#filtro_semana_12_meses').hide()
+                    $('#filtro_semana_todos').hide()
+                }
+                else if (periodo_filtro == 'últimos 3 meses') {
+                    $('#filtro_semana_mes').hide()
+                    $('#filtro_semana_3_meses').show()
+                    $('#filtro_semana_6_meses').hide()
+                    $('#filtro_semana_12_meses').hide()
+                    $('#filtro_semana_todos').hide()
+                }
+                else if (periodo_filtro == 'últimos 6 meses') {
+                    $('#filtro_semana_mes').hide()
+                    $('#filtro_semana_3_meses').hide()
+                    $('#filtro_semana_6_meses').show()
+                    $('#filtro_semana_12_meses').hide()
+                    $('#filtro_semana_todos').hide()
+                }
+                else if (periodo_filtro == 'últimos 12 meses') {
+                    $('#filtro_semana_mes').hide()
+                    $('#filtro_semana_3_meses').hide()
+                    $('#filtro_semana_6_meses').hide()
+                    $('#filtro_semana_12_meses').show()
+                    $('#filtro_semana_todos').hide()
+                }
+                else if (periodo_filtro == 'todos') {
+                    $('#filtro_semana_mes').hide()
+                    $('#filtro_semana_3_meses').hide()
+                    $('#filtro_semana_6_meses').hide()
+                    $('#filtro_semana_12_meses').hide()
+                    $('#filtro_semana_todos').show()
+                }
             });
         });
     </script>
@@ -363,7 +417,11 @@
     <!-- Filtro da semana ao carregar a pagina -->
     <script>
         $(document).ready(function() {
-            var semana_filtro = $('#filtro_semana').val()
+            $('#filtro_semana_3_meses').hide()
+            $('#filtro_semana_6_meses').hide()
+            $('#filtro_semana_12_meses').hide()
+            $('#filtro_semana_todos').hide()
+            var semana_filtro = $('#filtro_semana_mes').val()
             $('#task-table tr').not(':first').each(function() {
                 var semana_linha = $($(this).children('td')[12]).text()
                 if (semana_linha == semana_filtro) {
@@ -379,7 +437,55 @@
     <script>
         $(function(){
             //change to two ? how?
-            $('#filtro_semana').change(function(){
+            $('#filtro_semana_mes').change(function(){
+                var semana_filtro = $(this).val();
+                $('#task-table tr').not(':first').each(function() {
+                    var semana_linha = $($(this).children('td')[12]).text()
+                    if (semana_linha == semana_filtro) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+
+                });
+            });
+            $('#filtro_semana_3_meses').change(function(){
+                var semana_filtro = $(this).val();
+                $('#task-table tr').not(':first').each(function() {
+                    var semana_linha = $($(this).children('td')[12]).text()
+                    if (semana_linha == semana_filtro) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+
+                });
+            });
+            $('#filtro_semana_6_meses').change(function(){
+                var semana_filtro = $(this).val();
+                $('#task-table tr').not(':first').each(function() {
+                    var semana_linha = $($(this).children('td')[12]).text()
+                    if (semana_linha == semana_filtro) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+
+                });
+            });
+            $('#filtro_semana_12_meses').change(function(){
+                var semana_filtro = $(this).val();
+                $('#task-table tr').not(':first').each(function() {
+                    var semana_linha = $($(this).children('td')[12]).text()
+                    if (semana_linha == semana_filtro) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+
+                });
+            });
+            $('#filtro_semana_todos').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
                     var semana_linha = $($(this).children('td')[12]).text()

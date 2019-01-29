@@ -156,15 +156,11 @@ def publicados():
         last_six_months_dates += last_three_months_dates
         last_year_months_dates += last_six_months_dates
         all += last_year_months_dates
-        if request.args.get('range_dates') == 'last_month_dates':
-            semanas = last_month_dates
-        else:
-            semanas = all
         periodos_para_buscar = {
-            'último mês': last_month_dates,
-            'últimos 3 meses': last_three_months_dates,
-            'últimos 6 meses': last_year_months_dates,
-            'últimos 12 meses': last_year_months_dates,
+            'último mês': list(reversed(last_month_dates)),
+            'últimos 3 meses': list(reversed(last_three_months_dates)),
+            'últimos 6 meses': list(reversed(last_six_months_dates)),
+            'últimos 12 meses': list(reversed(last_year_months_dates)),
             'todos': all
         }
         return render_template("pendencias_publicadas.html",
