@@ -142,7 +142,15 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-10 dropdown" style="width: 22%">
+            <div class="col-lg-6 col-sm-10 dropdown" style="width: 22%">
+                <label> Selecione a extensão das datas:</label>
+                <select class="form-control input"  id="filtro_periodo" name="filtro_periodo">
+                    {% for periodo in periodos.keys(): %}
+                        <option value="{{periodo}}">{{ periodo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-6 col-sm-10 dropdown" style="width: 22%">
                 <label> Selecione a semana:</label>
                 <select class="form-control input"  id="filtro_semana" name="filtro_semana">
                     {% for semana in semanas: %}
@@ -151,7 +159,6 @@
                 </select>
             </div>
         </div>
-
         <div class="row">
             <div class="panel panel-success">
                 <div class="panel-heading">
@@ -342,6 +349,15 @@
 
         });
 
+    </script>
+
+    <script>
+        $(function(){
+            $('#filtro_periodo').change(function(){
+                var periodo_filtro = $(this).val();
+                console.log(periodo_filtro);
+            });
+        });
     </script>
 
     <!-- Filtro da semana ao carregar a pagina -->

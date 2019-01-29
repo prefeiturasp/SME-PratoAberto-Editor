@@ -18,6 +18,10 @@ import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
 
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
@@ -126,12 +130,47 @@ def deletados():
 def publicados():
     if request.method == "GET":
         publicados = get_publicados()
-        publicados = sort_array_date_br(publicados, opt='bugfix')
+        publicados = sort_array_date_br(publicados)
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in publicados])
+        last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        last_three_months = datetime.datetime.utcnow() - datetime.timedelta(days=90)
+        last_six_months = datetime.datetime.utcnow() - datetime.timedelta(days=180)
+        last_year = datetime.datetime.utcnow() - datetime.timedelta(days=365)
+        last_month_dates = []
+        last_three_months_dates = []
+        last_six_months_dates = []
+        last_year_months_dates = []
+        all = []
+        for semana in semanas:
+            if datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_month:
+                last_month_dates.append(semana)
+            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_three_months:
+                last_three_months_dates.append(semana)
+            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_six_months:
+                last_six_months_dates.append(semana)
+            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_year:
+                last_year_months_dates.append(semana)
+            else:
+                all.append(semana)
+        last_three_months_dates += last_month_dates
+        last_six_months_dates += last_three_months_dates
+        last_year_months_dates += last_six_months_dates
+        all += last_year_months_dates
+        if request.args.get('range_dates') == 'last_month_dates':
+            semanas = last_month_dates
+        else:
+            semanas = all
+        periodos_para_buscar = {
+            'último mês': last_month_dates,
+            'últimos 3 meses': last_three_months_dates,
+            'últimos 6 meses': last_year_months_dates,
+            'últimos 12 meses': last_year_months_dates,
+            'todos': all
+        }
         return render_template("pendencias_publicadas.html",
                                pendentes=publicados,
-                               semanas=semanas)
-
+                               semanas=semanas,
+                               periodos=periodos_para_buscar)
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
 @app.route('/upload', methods=['POST'])
@@ -1268,4 +1307,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run()
+    app.run(host='0.0.0.0', port=5002)
