@@ -120,9 +120,11 @@
                 <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios Publicados</a>
                 <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-danger">Cardápios Deletados</a>
             </div>
-            <div class="col-sm-4" style="text-align: right">
+        </div>
+        <div class="row">
+            <div class="col-12">
                 <form method="post" action="/calendario_editor_grupo">
-                    <button  class="btn btn-lg btn-info pull-right"  type="submit" style="display: none" id="botao_edicao_grupo">EDITAR GRUPO</button>
+                    <button  class="col-sm-offset-8 col-sm-3 btn btn-lg btn-info"  type="submit" style="margin-top: 20px; display: none" id="botao_edicao_grupo">EDITAR GRUPO</button>
                     <input type="hidden" name="json_dump" id="json_dump" value="json_dump">
                 </form>
             </div>
