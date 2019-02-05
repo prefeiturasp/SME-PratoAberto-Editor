@@ -355,8 +355,6 @@
     <script>
         $(".deletar").click(function() {
 
-            if(confirm('Deseja realmente remover este cardápio?')){
-
                 var $row = $(this).closest("tr");    // Find the row
                 var $text = $row.find(".ids").text(); // Find the text
                 var lista_ids = $text.split(',');
@@ -378,15 +376,10 @@
                     contentType: 'application/json',
                     //dataType: 'json',
                     success: function(data, textStatus, jqXHR){
-                        //console.log("Cardapio publicado com sucesso");
-                        //alert('Cardápio removido com sucesso.');
-                        window.location.href = '/pendencias_deletadas?removed=1';
+                        alert('Cardápio removido com sucesso.');
                         $row.hide();
                     }
                 });
-
-
-            }
 
         });
     </script>
