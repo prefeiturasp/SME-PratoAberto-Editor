@@ -334,6 +334,7 @@ def atualiza_cardapio():
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
+
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -367,11 +368,13 @@ def calendario():
     # Monta json - Semana anterior a da requisicao
     jdata_anterior = get_cardapio(args_semana_anterior)
 
+
     jdata_aux = []
     for cardapio_atual in jdata:
         dia = datetime.datetime.strptime(str(cardapio_atual['data']), '%Y%m%d').weekday()
         cardapio_atual['dia_semana'] = dia_semana(dia)
         jdata_aux.append(cardapio_atual)
+
 
     jdata_anterior_aux = []
     for cardapio_anterior in jdata_anterior:
@@ -379,12 +382,17 @@ def calendario():
         cardapio_anterior['dia_semana'] = dia_semana(dia)
         jdata_anterior_aux.append(cardapio_anterior)
 
-    for tipo_refeicao, refeicao in jdata_aux[0]['cardapio_original'].items():
-        jdata_aux[0]['cardapio_original'][tipo_refeicao] = normaliza_str(refeicao)
-        jdata_aux[0]['cardapio'][tipo_refeicao] = normaliza_str(refeicao)
 
-    jdata = jdata_aux
+    # Here remove saved publication
+    # for tipo_refeicao, refeicao in jdata_aux[0]['cardapio_original'].items():
+    #     print(tipo_refeicao)
+    #     jdata_aux[0]['cardapio_original'][tipo_refeicao] = normaliza_str(refeicao)
+    #     jdata_aux[0]['cardapio'][tipo_refeicao] = normaliza_str(refeicao)
+
+    #jdata = jdata_aux
+
     jdata_anterior = jdata_anterior_aux
+
 
     # Liga o cardapio atual com o da semana anterior
     dias_da_semana = set([x['dia_semana'] for x in list(jdata + jdata_anterior)])
@@ -412,6 +420,7 @@ def calendario():
                                                            args['tipo_unidade'],
                                                            args['agrupamento'],
                                                            args['idade'])
+
 
         return render_template("editor_terceirizadas.html",
                                url=api + '/editor/cardapios',

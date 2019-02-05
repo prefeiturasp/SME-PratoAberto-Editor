@@ -201,7 +201,7 @@
                 <div class="col-sm-8">
                     <div id="lista-idade" style="text-align: left">
                         {% for idade in idades: %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ idade }}">{{ idade }} &times;</span>
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px;cursor: pointer;" id="{{ idade }}">{{ idade }} &times;</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -344,8 +344,10 @@
     <!-- Deleta linha da tabela -->
     <script>
         function deleteRow(r) {
-            var i = r.parentNode.parentNode.rowIndex;
-            document.getElementById("task-table").deleteRow(i);
+            if(confirm('Deseja realmente remover esta edição?')){
+                var i = r.parentNode.parentNode.rowIndex;
+                document.getElementById("task-table").deleteRow(i);
+            }
         }
     </script>
 
@@ -421,7 +423,7 @@
                             $('#lista-refeicao > span').each(function () {
                                 var Refeicao = $(this).attr('id')
                                 $('#task-table').append(
-                                    "<tr class='item'><td>TERCEIRIZADA</td><td>" + Escola + "</td><td>" + Edital + "</td><td>" + Idade + "</td><td>" + Data + "</td><td>" + Refeicao + "</td><td></td><td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td></tr>"
+                                    "<tr class='item'><td>TERCEIRIZADA</td><td>" + Escola + "</td><td>" + Edital + "</td><td>" + Idade + "</td><td>" + Data + "</td><td>" + Refeicao + "</td><td></td><td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor : pointer;' class='fa'></i></a></td></tr>"
                                 );
                             });
                         });

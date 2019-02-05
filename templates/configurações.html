@@ -74,7 +74,7 @@
 					<div class="navbar-header">
 						<a class="navbar-brand" href="#">Prato Aberto - DE-PARA Geral dos Alimentos</a>
 					</div>
-					<form method="post" action="/atualiza_configuracoes">
+					<form method="post" id="form_from_to" action="/atualiza_configuracoes">
 						<div class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
 								<button onclick="geraTabela()" type="submit" class="btn btn-success">
@@ -246,20 +246,31 @@
 
 	</script>
 
+    <script>
+        function strip_tag(value){
+            r =  value.replace(/(<([^>]+)>)/ig,"");
+            r = r.replace(/(&nbsp;)/ig,"");
+            r = r.replace(/(&amp;)/ig,"");
+            return r;
+        }
+    </script>
+
 	<!-- Monta tabela -->
 	<script>
 		function geraTabela() {
 			json_dump = [];
+
 			$('#task-table tr.item').each(function () {
 				var substitution_group = $(this).find(".substitution_group").html();
 				var substitution_scope = $(this).find(".substitution_scope").html();
 				var from_word = $(this).find(".from_word").html();
 				var to_word = $(this).find(".to_word").html();
-				var Tabela = [substitution_group, substitution_scope, from_word, to_word]
+
+				var Tabela = [substitution_group, substitution_scope, strip_tag(from_word), strip_tag(to_word)]
 				json_dump.push(Tabela);
 			});
-			$('#json_dump').attr('value', JSON.stringify(json_dump))
 
+            $('#json_dump').attr('value', JSON.stringify(json_dump));
 		}
 	</script>
 

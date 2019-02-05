@@ -14,7 +14,7 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:40px;
+            margin-top: 40px;
             padding: 0 10px;
         }
 
@@ -22,7 +22,7 @@
             width: 80%;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -31,18 +31,18 @@
             font-size: 15px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
         .table-responsive {
-            height:500px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
         .table > tbody > tr > th,
@@ -57,7 +57,7 @@
 
         .navbar-nav {
             margin-top: 8px;
-            padding-left:10px;
+            padding-left: 10px;
             padding-right: 15px;
         }
 
@@ -199,7 +199,7 @@
                             <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
                             <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
                             <th style="word-wrap: break-word;">DATA</th>
-                            <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
+                            <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
@@ -211,63 +211,67 @@
                         </thead>
                         <tbody>
                         {% for linha in escolas: %}
-                        <tr class="item">
-                            <td><a class="btn btn-info" onclick='editRow(this)' href="#" data-toggle="modal"
-                                   data-target="#xml_form">EDITAR</a></td>
-                            <td class="cod_eol">{{ linha['_id'] }}</td>
-                            <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
-                            <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
-                            <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
-                            <td class="edital">{{ linha['edital'] }}</td>
-                            <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
-                            <td class="info" class="nome">{{ linha['nome'] }}</td>
-                            <td class="default" class="refeicoes">
-                                {% for itens in linha['refeicoes']: %}
-                                    {{ itens }},
-                                {% endfor %}
-                            </td>
-                            <td class="success" class="idades">
-                                {% for itens in linha['idades']: %}
-                                    {{ itens }},
-                                {% endfor %}
-                            </td>
-                            <td title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
-                            <td class="bairro">{{ linha['bairro'] }}</td>
-                            <td style="display: none" class="lat">{{ linha['lat'] }}</td>
-                            <td style="display: none" class="lon">{{ linha['lon'] }}</td>
-                            <td class="status">{{ linha['status']}}</td>
-                        </tr>
-                        {% for linha_historico in linha['historico']: %}
-                        <tr class="item" style="display: none;">
-                            <td><a value='Delete' onclick='deleteRowModal(this)'><i
-                                    style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>
-                            <td class="cod_eol" contenteditable='true'>{{ linha['_id'] }}</td>
-                            <td class="tipo_atendimento" contenteditable='true'>{{ linha_historico['tipo_atendimento']
-                                }}
-                            </td>
-                            <td class="tipo_unidade" contenteditable='true'>{{ linha_historico['tipo_unidade'] }}</td>
-                            <td class="agrupamento" contenteditable='true'>{{ linha_historico['agrupamento_regiao'] }}
-                            </td>
-                            <td class="edital" contenteditable='true'>{{ linha_historico['edital'] }}</td>
-                            <td class="data" contenteditable='true'>{{ linha_historico['data_inicio_vigencia'] }}</td>
-                            <td class="nome" contenteditable='true'>{{ linha_historico['nome'] }}</td>
-                            <td class="endereco" contenteditable='true'>{{ linha_historico['endereco'] }}</td>
-                            <td class="bairro" contenteditable='true'>{{ linha_historico['bairro'] }}</td>
-                            <td class="lat" contenteditable='true'>{{ linha_historico['lat'] }}</td>
-                            <td class="lon" contenteditable='true'>{{ linha_historico['lon'] }}</td>
-                            <td class="status" contenteditable='true'>{{ linha_historico['status'] }}</td>
-                            <td class="refeicoes" contenteditable='true'>
-                                {% for itens in linha_historico['refeicoes']: %}
-                                {{ itens }},
-                                {% endfor %}
-                            </td>
-                            <td class="idades">
-                                {% for itens in linha_historico['idades']: %}
-                                {{ itens }},
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                            <tr class="item">
+                                <td><a class="btn btn-info" onclick='editRow(this)' href="#" data-toggle="modal"
+                                       data-target="#xml_form">EDITAR</a></td>
+                                <td class="cod_eol">{{ linha['_id'] }}</td>
+                                <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
+                                <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
+                                <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
+                                <td class="edital">{{ linha['edital'] }}</td>
+                                <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
+                                <td class="info" class="nome">{{ linha['nome'] }}</td>
+                                <td class="default" class="refeicoes">
+                                    {% for itens in linha['refeicoes']: %}
+                                        {{ itens }},
+                                    {% endfor %}
+                                </td>
+                                <td class="success" class="idades">
+                                    {% for itens in linha['idades']: %}
+                                        {{ itens }},
+                                    {% endfor %}
+                                </td>
+                                <td title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
+                                <td class="bairro">{{ linha['bairro'] }}</td>
+                                <td style="display: none" class="lat">{{ linha['lat'] }}</td>
+                                <td style="display: none" class="lon">{{ linha['lon'] }}</td>
+                                <td class="status">{{ linha['status'] }}</td>
+                            </tr>
+                            {% for linha_historico in linha['historico']: %}
+                                <tr class="item" style="display: none;">
+                                    <td><a value='Delete' onclick='deleteRowModal(this)'><i
+                                            style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a>
+                                    </td>
+                                    <td class="cod_eol" contenteditable='true'>{{ linha['_id'] }}</td>
+                                    <td class="tipo_atendimento"
+                                        contenteditable='true'>{{ linha_historico['tipo_atendimento'] }}
+                                    </td>
+                                    <td class="tipo_unidade"
+                                        contenteditable='true'>{{ linha_historico['tipo_unidade'] }}</td>
+                                    <td class="agrupamento"
+                                        contenteditable='true'>{{ linha_historico['agrupamento_regiao'] }}
+                                    </td>
+                                    <td class="edital" contenteditable='true'>{{ linha_historico['edital'] }}</td>
+                                    <td class="data"
+                                        contenteditable='true'>{{ linha_historico['data_inicio_vigencia'] }}</td>
+                                    <td class="nome" contenteditable='true'>{{ linha_historico['nome'] }}</td>
+                                    <td class="endereco" contenteditable='true'>{{ linha_historico['endereco'] }}</td>
+                                    <td class="bairro" contenteditable='true'>{{ linha_historico['bairro'] }}</td>
+                                    <td class="lat" contenteditable='true'>{{ linha_historico['lat'] }}</td>
+                                    <td class="lon" contenteditable='true'>{{ linha_historico['lon'] }}</td>
+                                    <td class="status" contenteditable='true'>{{ linha_historico['status'] }}</td>
+                                    <td class="refeicoes" contenteditable='true'>
+                                        {% for itens in linha_historico['refeicoes']: %}
+                                            {{ itens }},
+                                        {% endfor %}
+                                    </td>
+                                    <td class="idades">
+                                        {% for itens in linha_historico['idades']: %}
+                                            {{ itens }},
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
                         {% endfor %}
                         </tbody>
                     </table>
@@ -284,48 +288,96 @@
         </table>
     </footer>
     {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <ul class=flashes>
-        {% for category, message in messages %}
-        <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for category, message in messages %}
+                    <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% endwith %}
 </div>
 
 <!-- Adiciona linhas na tabela -->
 <script>
-        function addRow() {
-            $('#task-table').append(
-                "<tr class='item' id=''>" +
-                "<td><a class='btn btn-info' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a></td>" +
-                "<td class='cod_eol' contenteditable='true'>COD EOL</td>" +
-                "<td class='tipo_atendimento' contenteditable='true'>GESTÃO</td>" +
-                "<td class='tipo_unidade' contenteditable='true'>ESCOLA</td>" +
-                "<td class='agrupamento' contenteditable='true'>A DEFINIR</td>" +
-                "<td class='edital' contenteditable='true'>EDITAL </td>" +
-                "<td class='data' contenteditable='true'></td>" +
-                "<td class='nome' contenteditable='true'></td>" +
-                "<td class='endereco' contenteditable='true'></td>" +
-                "<td class='bairro' contenteditable='true'></td>" +
-                "<td class='lat' contenteditable='true'></td>" +
-                "<td class='lon' contenteditable='true'></td>" +
-                "<td class='status' contenteditable='true'></td>" +
-                "<td class='refeicoes' contenteditable='true'></td>" +
-                "<td class='idades' contenteditable='true'></td>" +
-                "</tr>"
-            );
-        };
+    function addRow() {
+        $('#task-table').append(
+            "<tr class='item' id=''>" +
+            "<td><a class='btn btn-info' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a></td>" +
+            "<td class='cod_eol' contenteditable='true'>COD EOL</td>" +
+            "<td class='tipo_atendimento' contenteditable='true'>GESTÃO</td>" +
+            "<td class='tipo_unidade' contenteditable='true'>ESCOLA</td>" +
+            "<td class='agrupamento' contenteditable='true'>A DEFINIR</td>" +
+            "<td class='edital' contenteditable='true'>EDITAL </td>" +
+            "<td class='data' contenteditable='true'></td>" +
+            "<td class='nome' contenteditable='true'></td>" +
+            "<td class='endereco' contenteditable='true'></td>" +
+            "<td class='bairro' contenteditable='true'></td>" +
+            "<td class='lat' contenteditable='true'></td>" +
+            "<td class='lon' contenteditable='true'></td>" +
+            "<td class='status' contenteditable='true'></td>" +
+            "<td class='refeicoes' contenteditable='true'></td>" +
+            "<td class='idades' contenteditable='true'></td>" +
+            "</tr>"
+        );
+    };
 
 
 </script>
 
 <!-- Cria json da tabela -->
 <script>
-        $('#post_json').submit(function() {
-            json_dump = [];
-            $('#edicao-escola tr.item').each(function () {
+    $('#post_json').submit(function () {
+        json_dump = [];
+        $('#edicao-escola tr.item').each(function () {
+            var cod_eol = $($(this).children('td')[1]).text();
+            var tipo_atendimento = $($(this).children('td')[2]).text();
+            var tipo_unidade = $($(this).children('td')[3]).text();
+            var agrupamento = $($(this).children('td')[4]).text();
+            var edital = $($(this).children('td')[5]).text();
+            var data = $($(this).children('td')[6]).text();
+            var nome = $($(this).children('td')[7]).text();
+            var endereco = $($(this).children('td')[8]).text();
+            var bairro = $($(this).children('td')[9]).text();
+            var lat = $($(this).children('td')[10]).text();
+            var lon = $($(this).children('td')[11]).text();
+            var status = $($(this).children('td')[12]).text();
+            var refeicoes = $($(this).children('td')[13]).text();
+            var idades = $($(this).children('td')[14]).text();
+            modificacao = {
+                '_id': cod_eol,
+                'tipo_atendimento': tipo_atendimento,
+                'tipo_unidade': tipo_unidade,
+                'agrupamento': agrupamento,
+                'edital': edital,
+                'data_inicio_vigencia': data,
+                'nome': nome,
+                'endereco': endereco,
+                'bairro': bairro,
+                'lat': lat,
+                'lon': lon,
+                'status': status,
+                'refeicoes': jQuery.trim(refeicoes),
+                'idades': jQuery.trim(idades)
+            }
+
+            json_dump.push(modificacao)
+        });
+        $('#json_dump').attr('value', JSON.stringify(json_dump))
+        return true; // return false to cancel form action
+
+    });
+
+
+</script>
+
+<!-- Edita escola -->
+<script>
+    function editRow(r) {
+        $('#edicao-escola tbody').empty();
+        $('#task-table tr.item').each(function () {
+            var semana_linha = $($(this).children('td')[1]).text()
+            if (semana_linha == $($($(r).closest('tr')).children('td')[1]).text()) {
                 var cod_eol = $($(this).children('td')[1]).text();
                 var tipo_atendimento = $($(this).children('td')[2]).text();
                 var tipo_unidade = $($(this).children('td')[3]).text();
@@ -333,137 +385,91 @@
                 var edital = $($(this).children('td')[5]).text();
                 var data = $($(this).children('td')[6]).text();
                 var nome = $($(this).children('td')[7]).text();
-                var endereco = $($(this).children('td')[8]).text();
-                var bairro = $($(this).children('td')[9]).text();
-                var lat = $($(this).children('td')[10]).text();
-                var lon = $($(this).children('td')[11]).text();
-                var status = $($(this).children('td')[12]).text();
-                var refeicoes = $($(this).children('td')[13]).text();
-                var idades = $($(this).children('td')[14]).text();
-                modificacao = {
-                    '_id': cod_eol,
-                    'tipo_atendimento': tipo_atendimento,
-                    'tipo_unidade': tipo_unidade,
-                    'agrupamento': agrupamento,
-                    'edital': edital,
-                    'data_inicio_vigencia': data,
-                    'nome': nome,
-                    'endereco': endereco,
-                    'bairro': bairro,
-                    'lat': lat,
-                    'lon': lon,
-                    'status': status,
-                    'refeicoes': jQuery.trim(refeicoes),
-                    'idades': jQuery.trim(idades)
-                }
+                var refeicoes = $($(this).children('td')[8]).text();
+                var idades = $($(this).children('td')[9]).text();
+                var endereco = $($(this).children('td')[10]).text();
+                var bairro = $($(this).children('td')[11]).text();
+                var lat = $($(this).children('td')[12]).text();
+                var lon = $($(this).children('td')[13]).text();
+                var status = $($(this).children('td')[14]).text();
 
-                json_dump.push(modificacao)
-            });
-            $('#json_dump').attr('value', JSON.stringify(json_dump))
-            return true; // return false to cancel form action
-
+                $('#edicao-escola').append(
+                    "<tr class='item'>" +
+                    "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor: pointer;' class='fa'></i></a></td>" +
+                    "<td class='cod_eol' contenteditable='true'>" + cod_eol + "</td>" +
+                    "<td class='tipo_atendimento' contenteditable='true'>" + tipo_atendimento + "</td>" +
+                    "<td class='tipo_unidade' contenteditable='true'>" + tipo_unidade + "</td>" +
+                    "<td class='agrupamento' contenteditable='true'>" + agrupamento + "</td>" +
+                    "<td class='edital' contenteditable='true'>" + edital + "</td>" +
+                    "<td class='data' contenteditable='true'>" + data + "</td>" +
+                    "<td class='nome' contenteditable='true'>" + nome + "</td>" +
+                    "<td class='endereco' contenteditable='true'>" + endereco + "</td>" +
+                    "<td class='bairro' contenteditable='true'>" + bairro + "</td>" +
+                    "<td class='lat' contenteditable='true'>" + lat + "</td>" +
+                    "<td class='lon' contenteditable='true'>" + lon + "</td>" +
+                    "<td class='status' contenteditable='true'>" + status + "</td>" +
+                    "<td class='refeicoes' contenteditable='true'>" + refeicoes + "</td>" +
+                    "<td class='idades' contenteditable='true'>" + idades + "</td>" +
+                    "</tr>"
+                );
+            }
         });
-
-
-</script>
-
-<!-- Edita escola -->
-<script>
-        function editRow(r) {
-            $('#edicao-escola tbody').empty();
-            $('#task-table tr.item').each(function() {
-                var semana_linha = $($(this).children('td')[1]).text()
-                if (semana_linha == $($($(r).closest('tr')).children('td')[1]).text()) {
-                    var cod_eol = $($(this).children('td')[1]).text();
-                    var tipo_atendimento = $($(this).children('td')[2]).text();
-                    var tipo_unidade = $($(this).children('td')[3]).text();
-                    var agrupamento = $($(this).children('td')[4]).text();
-                    var edital = $($(this).children('td')[5]).text();
-                    var data = $($(this).children('td')[6]).text();
-                    var nome = $($(this).children('td')[7]).text();
-                    var refeicoes = $($(this).children('td')[8]).text();
-                    var idades = $($(this).children('td')[9]).text();
-                    var endereco = $($(this).children('td')[10]).text();
-                    var bairro = $($(this).children('td')[11]).text();
-                    var lat = $($(this).children('td')[12]).text();
-                    var lon = $($(this).children('td')[13]).text();
-                    var status = $($(this).children('td')[14]).text();
-
-                    $('#edicao-escola').append(
-                        "<tr class='item'>" +
-                        "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>" +
-                        "<td class='cod_eol' contenteditable='true'>"+cod_eol+"</td>" +
-                        "<td class='tipo_atendimento' contenteditable='true'>"+tipo_atendimento+"</td>" +
-                        "<td class='tipo_unidade' contenteditable='true'>"+tipo_unidade+"</td>" +
-                        "<td class='agrupamento' contenteditable='true'>"+agrupamento+"</td>" +
-                        "<td class='edital' contenteditable='true'>"+edital+"</td>" +
-                        "<td class='data' contenteditable='true'>"+data+"</td>" +
-                        "<td class='nome' contenteditable='true'>"+nome+"</td>" +
-                        "<td class='endereco' contenteditable='true'>"+endereco+"</td>" +
-                        "<td class='bairro' contenteditable='true'>"+bairro+"</td>" +
-                        "<td class='lat' contenteditable='true'>"+lat+"</td>" +
-                        "<td class='lon' contenteditable='true'>"+lon+"</td>" +
-                        "<td class='status' contenteditable='true'>"+status+"</td>" +
-                        "<td class='refeicoes' contenteditable='true'>"+refeicoes+"</td>" +
-                        "<td class='idades' contenteditable='true'>"+idades+"</td>" +
-                        "</tr>"
-                    );
-                }
-            });
-        }
+    }
 
 
 </script>
 
 <!-- Deleta linha da tabela Modal -->
 <script>
-        function deleteRowModal(r) {
+    function deleteRowModal(r) {
+        if (confirm('Deseja realmente remover esta edição?')) {
             var i = r.parentNode.parentNode.rowIndex;
             document.getElementById("edicao-escola").deleteRow(i);
         }
+    }
 
 </script>
 
 <!-- Adiciona linhas na tabela Modal -->
 <script>
-        function addRowModal() {
-            $('#edicao-escola').append(
-                "<tr class='item' id=''>" +
-                "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>" +
-                "<td class='cod_eol' contenteditable='true'>Código EOL</td>" +
-                "<td class='tipo_atendimento' contenteditable='true'>Tipo Atendimento</td>" +
-                "<td class='tipo_unidade' contenteditable='true'>Tipo Unidade</td>" +
-                "<td class='agrupamento' contenteditable='true'>Agrupamento</td>" +
-                "<td class='edital' contenteditable='true'>EDITAL1</td>" +
-                "<td class='data' contenteditable='true'>Data</td>" +
-                "<td class='nome' contenteditable='true'>Nome Escola</td>" +
-                "<td class='endereco' contenteditable='true'>Endereço</td>" +
-                "<td class='bairro' contenteditable='true'>Bairro</td>" +
-                "<td class='lat' contenteditable='true'></td>" +
-                "<td class='lon' contenteditable='true'></td>" +
-                "<td class='status' contenteditable='true'></td>" +
-                "<td class='refeicoes' contenteditable='true'></td>" +
-                "<td class='idades' contenteditable='true'></td>" +
-                "</tr>"
-            );
-        };
+    function addRowModal() {
+        $('#edicao-escola').append(
+            "<tr class='item' id=''>" +
+            "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>" +
+            "<td class='cod_eol' contenteditable='true'>Código EOL</td>" +
+            "<td class='tipo_atendimento' contenteditable='true'>Tipo Atendimento</td>" +
+            "<td class='tipo_unidade' contenteditable='true'>Tipo Unidade</td>" +
+            "<td class='agrupamento' contenteditable='true'>Agrupamento</td>" +
+            "<td class='edital' contenteditable='true'>EDITAL1</td>" +
+            "<td class='data' contenteditable='true'>Data</td>" +
+            "<td class='nome' contenteditable='true'>Nome Escola</td>" +
+            "<td class='endereco' contenteditable='true'>Endereço</td>" +
+            "<td class='bairro' contenteditable='true'>Bairro</td>" +
+            "<td class='lat' contenteditable='true'></td>" +
+            "<td class='lon' contenteditable='true'></td>" +
+            "<td class='status' contenteditable='true'></td>" +
+            "<td class='refeicoes' contenteditable='true'></td>" +
+            "<td class='idades' contenteditable='true'></td>" +
+            "</tr>"
+        );
+    };
 
 
 </script>
 
 <!-- Pop erro -->
 <script>
-        if ($('#mensagem').length) {
-            window.alert($('#mensagem').text());
-        }
+    if ($('#mensagem').length) {
+        window.alert($('#mensagem').text());
+    }
 
 </script>
 
 
 <script>
-    jQuery(function(){
-        jQuery('.item').each(function(){
-            jQuery(this).click(function(){
+    jQuery(function () {
+        jQuery('.item').each(function () {
+            jQuery(this).click(function () {
                 jQuery('.item').removeClass('danger');
                 jQuery(this).addClass('danger');
             });
