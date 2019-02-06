@@ -249,7 +249,8 @@ def cria_terceirizada():
                                editais=editais,
                                tipo_unidade=tipo_unidade,
                                idades=idade,
-                               refeicoes=refeicao)
+                               refeicoes=refeicao,
+                               referrer=request.referrer)
 
 
 @app.route('/upload_terceirizada', methods=['POST'])
@@ -349,6 +350,7 @@ def atualiza_cardapio():
 @flask_login.login_required
 def calendario():
     args = request.args
+
     depara = db_functions.select_all()
     depara = [x[3:5] for x in depara if x[2] == 'INGREDIENTES']
 
@@ -429,7 +431,8 @@ def calendario():
                                tipo_unidade=args['tipo_unidade'],
                                idade=args['idade'],
                                agrupamento=args['agrupamento'],
-                               historicos_cardapios=historicos_cardapios)
+                               historicos_cardapios=historicos_cardapios,
+                               referrer=request.referrer)
 
     else:
         return render_template("editor_direto_misto_conveniada.html",
@@ -439,13 +442,21 @@ def calendario():
                                tipo_unidade=args['tipo_unidade'],
                                idade=args['idade'],
                                agrupamento=args['agrupamento'],
-                               depara=depara)
+                               depara=depara,
+                               referrer=request.referrer)
 
 
 @app.route("/visualizador_cardapio", methods=["GET"])
 @flask_login.login_required
 def visualizador():
     args = request.args
+
+    ##### Optimation referrer #####
+    if args.get('status') == 'PUBLICADO':
+        referrer = '/pendencias_publicadas'
+    else:
+        referrer = '/pendencias_deletadas'
+
     # Monta json
     jdata = get_cardapio(args)
     jdata = [d for d in jdata if d['tipo_atendimento'] in args['tipo_atendimento']]
@@ -465,7 +476,8 @@ def visualizador():
                            tipo_atendimento=args['tipo_atendimento'],
                            tipo_unidade=args['tipo_unidade'],
                            idade=args['idade'],
-                           agrupamento=args['agrupamento'])
+                           agrupamento=args['agrupamento'],
+                           referrer=referrer)
 
 
 @app.route("/calendario_editor_grupo", methods=["POST"])
@@ -566,8 +578,9 @@ def calendario_grupo_cardapio():
 @flask_login.login_required
 def config():
     if request.method == "GET":
+
         config_editor = db_functions.select_all()
-        return render_template("configurações.html", config=config_editor)
+        return render_template("configurações.html", config=config_editor,referrer=request.referrer)
 
 
 @app.route('/atualiza_configuracoes', methods=['POST'])
@@ -592,7 +605,7 @@ def atualiza_configuracoes():
 def config_cardapio():
     if request.method == "GET":
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor)
+        return render_template("configurações_receitas.html", config=config_editor,referrer=request.referrer)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
@@ -615,7 +628,7 @@ def atualiza_config_cardapio():
 def escolas():
     if request.method == "GET":
         escolas = get_escolas(params=request.args)
-        return render_template("configurações_escolas.html", escolas=escolas)
+        return render_template("configurações_escolas.html", escolas=escolas,referrer=request.referrer)
 
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
@@ -759,7 +772,7 @@ def publicacao():
     opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
 
     if request.method == "GET":
-        return render_template("download_publicações.html", data_inicio_fim='disabled', status=opt_status)
+        return render_template("download_publicações.html",referrer=request.referrer,data_inicio_fim='disabled', status=opt_status)
 
     else:
         data_inicial = request.form.get('data-inicial', request.data)
@@ -779,6 +792,7 @@ def publicacao():
 
         if filtro == 'STATUS' and tipo_unidade == 'TODOS' and tipo_atendimento == 'TODOS':
             return render_template("download_publicações.html",
+                                   referrer=request.referrer,
                                    data_inicio_fim=str(data_inicial + '-' + data_final),
                                    filtro_selected=filtro, status=opt_status)
 
@@ -803,7 +817,7 @@ def publicacao():
                         refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
             data_inicial = datetime.datetime.strptime(data_inicial, '%Y%m%d').strftime('%d/%m/%Y')
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
-            return render_template("download_publicações.html", publicados=sort_array_by_date_and_index(cardapio_aux),
+            return render_template("download_publicações.html",referrer=request.referrer, publicados=sort_array_by_date_and_index(cardapio_aux),
                                    data_inicio_fim=str(data_inicial + '-' + data_final), tipo_unidade=tipo_unidade,
                                    tipo_atendimento=tipo_atendimento, filtro_selected=filtro,
                                    inicio=data_inicial, fim=data_final, status=opt_status, selected=filtro)
@@ -889,7 +903,8 @@ def mapa_pendencias():
                 mapa_final.append(args)
         mapa_final = fix_date_mapa_final(mapa_final)
         return render_template("mapa_pendencias.html", publicados=mapa_final,
-                               data_inicio_fim=str(data_inicial + '-' + data_final))
+                               data_inicio_fim=str(data_inicial + '-' + data_final),
+                               referrer=request.referrer)
 
     if request.method == "POST":
         mapa = get_quebras_escolas()
