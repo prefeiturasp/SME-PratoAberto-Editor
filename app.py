@@ -510,7 +510,6 @@ def calendario_grupo_cardapio():
     for url in data:
         args = dict([tuple(x.split('=')) for x in url.split('?')[1].split('&')])
         jdata = get_cardapio(args)
-
         # Obtem data semana anterior
         args_semana_anterior = args.copy()
         args_semana_anterior['status'] = 'SALVO&status=PUBLICADO'
@@ -536,6 +535,7 @@ def calendario_grupo_cardapio():
 
         jdata = jdata_aux
         jdata_anterior = jdata_anterior_aux
+
 
         # Liga o cardapio atual com o da semana anterior
         dias_da_semana = set([x['dia_semana'] for x in list(jdata + jdata_anterior)])
