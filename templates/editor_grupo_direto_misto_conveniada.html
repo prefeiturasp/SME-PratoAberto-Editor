@@ -142,7 +142,8 @@
                     <table class="table table-hover table-striped" id="task-table">
                         <thead>
                         <tr>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer; word-wrap: break-word;min-width: 80px;max-width: 80px;">DIA<i
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 80px;max-width: 80px;">DIA<i
                                     class="fa fa-sort" aria-hidden="true"></i></th>
                             <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
                                 style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">SEMANA <i
@@ -174,7 +175,8 @@
                         {% for cardapio in cardapios %}
                             {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
                                 <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                                    <td class="data_cardapio" data-val="{{ cardapio['data'] }}">{{ cardapio['data'] }}</td>
+                                    <td class="data_cardapio"
+                                        data-val="{{ cardapio['data'] }}">{{ cardapio['data'] }}</td>
                                     <td>{{ cardapio['dia_semana'] }}</td>
                                     <td>{{ cardapio['tipo_atendimento'] }}</td>
                                     <td>{{ cardapio['tipo_unidade'] }}</td>
@@ -446,7 +448,6 @@
                 }
             });
         });
-
     });
 </script>
 </body>
