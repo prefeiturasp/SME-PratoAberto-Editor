@@ -14,7 +14,7 @@
     <style>
 
         .row {
-            margin-top:20px;
+            margin-top: 20px;
             margin-bottom: 20px;
             padding: 0 10px;
         }
@@ -47,14 +47,14 @@
             margin-top: 8px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
         .table-responsive {
-            height:500px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
         .panel-heading div {
@@ -62,104 +62,133 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- NAVBAR -->
-        <div class="row">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápio</a>
-                    </div>
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown" style="padding-right: 7px">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="/configuracoes_gerais">DE-PARA</a></li>
-                                    <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
-                                </ul>
-                            </li>
-                            <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
-                                <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
-                            </a>
-                            <a type="button" class="btn btn-success" onclick="salvaCardapio()">
-                                <span class="glyphicon glyphicon glyphicon-floppy-disk"></span> SALVAR CARDÁPIO
-                            </a>
-                        </ul>
-                    </div>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápio</a>
                 </div>
-            </nav>
-        </div>
-
-        <!-- Informações do agrupamento -->
-        {% for arg in args %}
-            <div style="text-align: left">
-                <tr>
-                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ arg['tipo_atendimento'] }}</span>
-                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ arg['tipo_unidade'] }}</span>
-                    <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ arg['idade'] }}</span>
-                    <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ arg['agrupamento'] }}</span>
-                </tr>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown" style="padding-right: 7px">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/configuracoes_gerais">DE-PARA</a></li>
+                                <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
+                            </ul>
+                        </li>
+                        <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
+                            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
+                        </a>
+                        <a type="button" class="btn btn-success" onclick="salvaCardapio()">
+                            <span class="glyphicon glyphicon glyphicon-floppy-disk"></span> SALVAR CARDÁPIO
+                        </a>
+                    </ul>
+                </div>
             </div>
-        {% endfor %}
+        </nav>
+    </div>
 
-        <div class="row">
-            <span type="button" onclick='substituir()' class="btn btn-primary pull-right" id="de-para">APLICAR DE-PARA</span>
-        </div>
-        <!-- Acrescentar a tabela para o calendario -->
-        <div class="row tbl">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Editor de Cardápio</h3>
-                    <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+    <!-- Informações do agrupamento -->
+    {#        {% for arg in args %}#}
+    {#            <div style="text-align: left">#}
+    {#                <tr>#}
+    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ arg['tipo_atendimento'] }}</span>#}
+    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ arg['tipo_unidade'] }}</span>#}
+    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ arg['idade'] }}</span>#}
+    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ arg['agrupamento'] }}</span>#}
+    {#                </tr>#}
+    {#            </div>#}
+    {#        {% endfor %}#}
+
+    <div class="row">
+        <span type="button" onclick='substituir()' class="btn btn-primary pull-right"
+              id="de-para">APLICAR DE-PARA</span>
+    </div>
+    <!-- Acrescentar a tabela para o calendario -->
+    <div class="row tbl">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Editor de Cardápio</h3>
+                <div class="pull-right">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                              data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
-                    </div>
                 </div>
-                <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
-                </div>
-                <div class="table-responsive">
-                    <div class="panel panel-default">
-                        <table class="table table-hover table-striped" id="task-table">
-                            <thead>
-                                <tr>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">DIA<i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">SEMANA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer; word-wrap: break-word;min-width: 100px;max-width: 100px;">TIPO REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">PUBLICAÇÃO</th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA ANTERIOR</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for cardapio in cardapios %}
-                                {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
+            </div>
+            <div class="panel-body">
+                <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                       data-filters="#task-table" placeholder="Filter Tasks"/>
+            </div>
+            <div class="table-responsive">
+                <div class="panel panel-default">
+                    <table class="table table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer; word-wrap: break-word;min-width: 80px;max-width: 80px;">DIA<i
+                                    class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">SEMANA <i
+                                    class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">
+                                GESTÃO
+                            </th>
+                            <th style="word-wrap: break-word;min-width: 120px;max-width: 120px;">UNIDADE</th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 130px;max-width: 130px;">IDADE
+                            </th>
+                            <th>AGRUP.</th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 100px;max-width: 100px;">TIPO
+                                REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA
+                                DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th>DE</th>
+                            <th>PARA</th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">
+                                PUBLICAÇÃO
+                            </th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA
+                                ANTERIOR
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for cardapio in cardapios %}
+                            {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
                                 <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                                    <td>{{ cardapio['data'] }}</td>
+                                    <td class="data_cardapio" data-val="{{ cardapio['data'] }}">{{ cardapio['data'] }}</td>
                                     <td>{{ cardapio['dia_semana'] }}</td>
+                                    <td>{{ cardapio['tipo_atendimento'] }}</td>
+                                    <td>{{ cardapio['tipo_unidade'] }}</td>
+                                    <td>{{ cardapio['idade'] }}</td>
+                                    <td>{{ cardapio['agrupamento'] }}</td>
                                     <td>{{ tipo_refeicao }}</td>
                                     <td class="lista-alimentos">
                                         {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
-                                            {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe}},
+                                            {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe }},
                                         {% endfor %}
                                     </td>
-                                    <td contenteditable="true" style="background-color: #FFEEAD">
+                                    <td><input name="ctrl_c" value="{{ cardapio['_id']['$oid'] }}" type="radio"/></td>
+                                    <td><input class="ctrl_v" name="ctrl_v" type="checkbox"/></td>
+                                    <td class="publicacao" contenteditable="true" style="background-color: #FFEEAD">
                                         {% for ingrediente in lista_alimentos %}
                                             {{ ingrediente }},
                                         {% endfor %}
@@ -170,180 +199,255 @@
                                         {% endfor %}
                                     </td>
                                 </tr>
-                                {% endfor %}
                             {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+    <div align="center">
+        <button id="paste" class="btn-lg btn-primary">COPIAR e COLAR</button>
+    </div>
+</div>
 
-    <!-- Mantem a aba selecionada mesmo depois de mudar de data -->
-    <script>
-        $(function() {
-            // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
-            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                // save the latest tab; use cookies if you like 'em better:
-                localStorage.setItem('lastTab', $(this).attr('href'));
-            });
+<!-- Mantem a aba selecionada mesmo depois de mudar de data -->
+<script>
+    $(function () {
+        // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            // save the latest tab; use cookies if you like 'em better:
+            localStorage.setItem('lastTab', $(this).attr('href'));
+        });
 
-            // go to the latest tab, if it exists:
-            var lastTab = localStorage.getItem('lastTab');
-            if (lastTab) {
-                $('[href="' + lastTab + '"]').tab('show');
+        // go to the latest tab, if it exists:
+        var lastTab = localStorage.getItem('lastTab');
+        if (lastTab) {
+            $('[href="' + lastTab + '"]').tab('show');
+        }
+    });
+</script>
+
+<!-- Botões de ordenação da tabela -->
+<script src="static/js/w3.js"></script>
+
+<!-- Script com a funcionalidade do filtro da tabela -->
+<script>
+    /**
+     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+     *   but will likely encounter performance issues on larger tables.
+     *
+     *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+     *       $(input-element).filterTable()
+     *
+     *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+     */
+    (function () {
+        'use strict';
+        var $ = jQuery;
+        $.fn.extend({
+            filterTable: function () {
+                return this.each(function () {
+                    $(this).on('keyup', function (e) {
+                        $('.filterTable_no_results').remove();
+                        var $this = $(this),
+                            search = $this.val().toLowerCase(),
+                            target = $this.attr('data-filters'),
+                            $target = $(target),
+                            $rows = $target.find('tbody tr');
+
+                        if (search == '') {
+                            $rows.show();
+                        } else {
+                            $rows.each(function () {
+                                var $this = $(this);
+                                $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+                            })
+                            if ($target.find('tbody tr:visible').size() === 0) {
+                                var col_count = $target.find('tr').first().find('td').size();
+                                var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
+                                $target.find('tbody').append(no_results);
+                            }
+                        }
+                    });
+                });
             }
         });
-    </script>
+        $('[data-action="filter"]').filterTable();
+    })(jQuery);
 
-    <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
+    $(function () {
+        // attach table filter plugin to inputs
+        $('[data-action="filter"]').filterTable();
 
-    <!-- Script com a funcionalidade do filtro da tabela -->
-    <script>
-        /**
-        *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
-        *   but will likely encounter performance issues on larger tables.
-        *
-        *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
-        *       $(input-element).filterTable()
-        *
-        *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
-        */
-        (function(){
-            'use strict';
-            var $ = jQuery;
-            $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
-                            $('.filterTable_no_results').remove();
-                            var $this = $(this),
-                                search = $this.val().toLowerCase(),
-                                target = $this.attr('data-filters'),
-                                $target = $(target),
-                                $rows = $target.find('tbody tr');
+        $('.container').on('click', '.panel-heading span.filter', function (e) {
+            var $this = $(this),
+                $panel = $this.parents('.panel');
 
-                            if(search == '') {
-                                $rows.show();
-                            } else {
-                                $rows.each(function(){
-                                    var $this = $(this);
-                                    $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
-                                })
-                                if($target.find('tbody tr:visible').size() === 0) {
-                                    var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
-                                    $target.find('tbody').append(no_results);
-                                }
-                            }
-                        });
-                    });
-                }
-            });
-            $('[data-action="filter"]').filterTable();
-        })(jQuery);
+            $panel.find('.panel-body').slideToggle();
+            if ($this.css('display') != 'none') {
+                $panel.find('.panel-body input').focus();
+            }
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
 
-        $(function(){
-            // attach table filter plugin to inputs
-            $('[data-action="filter"]').filterTable();
+<!-- Substitui palavras da lista de alimentos por receita -->
+<script>
+    function substituir() {
+        var lista_depara = {{ depara|tojson|safe }};
+        $.each(lista_depara, function (index, value) {
+            var DE = $.trim(value[0]);
+            var PARA = value[1];
 
-            $('.container').on('click', '.panel-heading span.filter', function(e){
-                var $this = $(this),
-                    $panel = $this.parents('.panel');
-
-                $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
-                    $panel.find('.panel-body input').focus();
-                }
-            });
-            $('[data-toggle="tooltip"]').tooltip();
-        })
-    </script>
-
-    <!-- Substitui palavras da lista de alimentos por receita -->
-    <script>
-        function substituir() {
-            var lista_depara = {{ depara|tojson|safe }};
-            $.each(lista_depara, function(index, value) {
-                var DE = $.trim(value[0]);
-                var PARA = value[1];
-                $('#task-table tr').each(function() {
-                    var ingredientes = $($(this).children('td')[4]).text();
-                    var ingredientes = ingredientes.replace(DE, PARA);
-                    $($(this).children('td')[4]).html(ingredientes);
-                });
-            });
-        }
-    </script>
-
-    <!-- Cria nota na Merenda -->
-    <script>
-        function notaRodape() {
-            var NOTA = document.getElementById("NOTA").value;
-
-            $('#task-table tr').each(function() {
-                var texto_inicial = $($(this).children('td')[3]).text();
-                if (texto_inicial == '') {
-                    $($(this).children('td')[4]).html(NOTA);
-                }
-                else {
-                    $($(this).children('td')[4]).html(texto_inicial + ', ' + NOTA);
-                }
-
-            });
-        }
-    </script>
-
-    <!-- POST Salvar modificações-->
-    <script>
-        function salvaCardapio() {
-            var cardapio = {};
-
-            /* itera em cada linha para construir o post */
             $('#task-table tr').each(function () {
-                var id = $(this).attr('id');
-                //var data = $($(this).children('td')[0]).text();
-                if (id === undefined) return; /* pula header */
-                var tipo_refeicao = $($(this).children('td')[2]).text();
-                var refeicao = $.map($($(this).children('td')[4]).text().split(','),
-                                        function (v) {
-                                            return $.trim(v) === "" ? null : $.trim(v);
-                                        });
-
-                if (cardapio[id] === undefined) {
-                    item_cardapio = {};
-                    item_cardapio[tipo_refeicao] = refeicao;
-                    cardapio[id] = item_cardapio;
-                }
-
-                else {
-                    cardapio[id][tipo_refeicao] = refeicao;
-                }
+                var ingredientes = $($(this).children('td')[10]).text();
+                var ingredientes = ingredientes.replace(DE, PARA);
+                $($(this).children('td')[10]).html(ingredientes);
             });
+        });
+    }
+</script>
 
-            var cardapios = []
+<!-- Cria nota na Merenda -->
+<script>
+    function notaRodape() {
+        var NOTA = document.getElementById("NOTA").value;
 
-            $.each(cardapio, function( key, value ) {
-                cardapios.push({
-                    "_id": {"$oid": key},
-                    "status": "SALVO",
-                    "cardapio": value
+        $('#task-table tr').each(function () {
+            var texto_inicial = $($(this).children('td')[3]).text();
+            if (texto_inicial == '') {
+                $($(this).children('td')[4]).html(NOTA);
+            } else {
+                $($(this).children('td')[4]).html(texto_inicial + ', ' + NOTA);
+            }
+
+        });
+    }
+</script>
+
+<!-- POST Salvar modificações-->
+<script>
+    function salvaCardapio() {
+        var cardapio = {};
+
+        /* itera em cada linha para construir o post */
+        $('#task-table tr').each(function () {
+            var id = $(this).attr('id');
+            //var data = $($(this).children('td')[0]).text();
+            if (id === undefined) return; /* pula header */
+            var tipo_refeicao = $($(this).children('td')[6]).text();
+            var refeicao = $.map($($(this).children('td')[10]).text().split(','),
+                function (v) {
+                    return $.trim(v) === "" ? null : $.trim(v);
                 });
-            });
 
-            $.ajax({
-                type: 'POST',
-                url: '/atualiza_cardapio',
-                data: JSON.stringify(cardapios),
-                contentType: 'application/json',
-                //dataType: 'json',
-                success: function(data, textStatus, jqXHR){
-                    window.alert("Cardápio salvo com sucesso");
+            if (cardapio[id] === undefined) {
+                item_cardapio = {};
+                item_cardapio[tipo_refeicao] = refeicao;
+                cardapio[id] = item_cardapio;
+            } else {
+                cardapio[id][tipo_refeicao] = refeicao;
+            }
+        });
+
+        var cardapios = []
+
+        $.each(cardapio, function (key, value) {
+            cardapios.push({
+                "_id": {"$oid": key},
+                "status": "SALVO",
+                "cardapio": value
+            });
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '/atualiza_cardapio',
+            data: JSON.stringify(cardapios),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                window.alert("Cardápio salvo com sucesso");
+            }
+        });
+    }
+</script>
+
+<!-- FORMATANDO DATA -->
+<script>
+    jQuery(function () {
+        jQuery('.data_cardapio').each(function () {
+            var date_menu = jQuery(this).text();
+            var year = date_menu.substring(0, 4);
+            var month = date_menu.substring(4, 6);
+            var day = date_menu.substring(6, 8);
+            jQuery(this).text(day + '/' + month + '/' + year);
+        });
+    });
+</script>
+<script>
+    jQuery(function () {
+        jQuery('[name=ctrl_c]').click(function () {
+            if (jQuery(this).attr('checked', true)) {
+
+                jQuery('.item').find('.ctrl_v').prop('checked', false);
+                jQuery('.item').removeClass('danger');
+                jQuery('.item').removeClass('success');
+                jQuery('.item').find('.ctrl_v').each(function () {
+                    jQuery(this).removeAttr('disabled');
+
+                });
+
+                jQuery(this).parent().parent().addClass('danger');
+                jQuery(this).parent().parent().find('input:checkbox[name=ctrl_v]').attr('disabled', 'disabled');
+            }
+        });
+
+
+        jQuery('.ctrl_v').click(function () {
+            if (jQuery(this).is(':checked')) {
+                var selected = 0;
+                jQuery('.item').find('input:radio').each(function () {
+                    if (jQuery(this).is(':checked')) {
+                        selected++;
+                    }
+                });
+                if (selected == 0) {
+                    alert('Nenhuma origem de  cópia (CTRL + C) foi selecionado!');
+                    jQuery(this).prop('checked', false);
+                } else {
+                    jQuery(this).parent().parent().addClass('success');
+                }
+            } else {
+                jQuery(this).parent().parent().removeClass('success');
+            }
+        });
+
+
+        // EFEITO CLICK NO BOTÃO PARA COPIAR
+        jQuery('#paste').click(function () {
+
+            ctrl_c = null;
+
+            jQuery('.item').find('input:radio').each(function () {
+                if (jQuery(this).is(':checked')) {
+                    ctrl_c = jQuery(this).parent().parent().find('.publicacao').text();
+
                 }
             });
-        }
-    </script>
+
+            jQuery('.item').find('input:checkbox').each(function () {
+                if (jQuery(this).is(':checked')) {
+                    jQuery(this).parent().parent().find('.publicacao').text(ctrl_c);
+
+                }
+            });
+        });
+
+    });
+</script>
 </body>
 </html>

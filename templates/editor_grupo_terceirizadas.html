@@ -141,27 +141,33 @@
                     <table class="table table-hover table-bordered table-striped" id="task-table">
                         <thead>
                         <tr>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 83px;max-width: 83px;">DIA<i
+                            class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+                            style="cursor:pointer; word-wrap: break-word;">SEMANA<i
+                            class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">
+                            REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">TIPO
+                            GESTÃO
+                            </th>
+                            <th style="word-wrap: break-word;min-width: 120px;max-width: 120px;">UNIDADE</th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 130px;max-width: 130px;">IDADE
+                            </th>
+                            <th>AGRUPAMENTO</th>
                             <th>DE</th>
                             <th>PARA</th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 83px;max-width: 83px;">DIA<i
-                                    class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
-                                style="cursor:pointer; word-wrap: break-word;">SEMANA<i
-                                    class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">TIPO GESTÃO</th>
-                            <th>UNIDADE</th>
-                            <th style="cursor:pointer; word-wrap: break-word;min-width: 130px;max-width: 130px;">IDADE</th>
-                            <th>AGRUPAMENTO</th>
                             <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
                                 style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA
                                 DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
                             <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">
                                 PUBLICAÇÃO
-                             </th>
-                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA ANTERIOR</th>
+                            </th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA
+                                ANTERIOR
+                            </th>
                             <th style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">AÇÃO</th>
                         </tr>
                         </thead>
@@ -169,8 +175,6 @@
                         {% for cardapio in cardapios %}
                             {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
                                 <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                                    <td><input name="ctrl_c" value="{{ cardapio['_id']['$oid'] }}" type="radio" /></td>
-                                    <td><input class="ctrl_v" name="ctrl_v" type="checkbox" /></td>
                                     <td class="data_cardapio" data-val="{{ cardapio['data'] }}">{{ cardapio['data'] }}</td>
                                     <td>{{ cardapio['dia_semana'] }}</td>
                                     <td>{{ tipo_refeicao }}</td>
@@ -178,26 +182,28 @@
                                     <td>{{ cardapio['tipo_unidade'] }}</td>
                                     <td>{{ cardapio['idade'] }}</td>
                                     <td>{{ cardapio['agrupamento'] }}</td>
+                                    <td><input name="ctrl_c" value="{{ cardapio['_id']['$oid'] }}" type="radio"/></td>
+                                    <td><input class="ctrl_v" name="ctrl_v" type="checkbox"/></td>
                                     <td class="lista-alimentos">
                                         {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
                                             {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe }},
                                         {% endfor %}
                                     </td>
-                                    <td contenteditable="true" style="background-color: #FFEEAD">
-                                            {% for ingrediente in lista_alimentos %}
-                                                {{ ingrediente }},
-                                            {% endfor %}
+                                    <td class="publicacao" contenteditable="true" style="background-color: #FFEEAD">
+                                        {% for ingrediente in lista_alimentos %}
+                                            {{ ingrediente }},
+                                        {% endfor %}
                                     </td>
                                     <td>
-                                            {% for ingrediente in cardapio['cardapio_semana_anterior'][tipo_refeicao] %}
-                                                {{ ingrediente }},
-                                            {% endfor %}
+                                        {% for ingrediente in cardapio['cardapio_semana_anterior'][tipo_refeicao] %}
+                                            {{ ingrediente }},
+                                        {% endfor %}
                                     </td>
 
                                     <td>
-                                            <button onclick="get_cardapio(this)" class="btn btn-primary"
-                                                    style="padding: 5px 9px;"><span
-                                                    class="glyphicon glyphicon-refresh"></span></button>
+                                        <button onclick="get_cardapio(this)" class="btn btn-primary"
+                                                style="padding: 5px 9px;"><span
+                                                class="glyphicon glyphicon-refresh"></span></button>
                                     </td>
 
                                 </tr>
@@ -208,9 +214,9 @@
                 </div>
             </div>
         </div>
-    <div align="center">
-        <button id="paste" class="btn-lg btn-primary">COPIAR e COLAR</button>
-    </div>
+        <div align="center">
+            <button id="paste" class="btn-lg btn-primary">COPIAR e COLAR</button>
+        </div>
     </div>
     <footer class="container-fluid text-center">
         <div id="historicos_cardapios" style="display:none;">{{ historicos_cardapios }}</div>
@@ -344,7 +350,7 @@
             //var data = $($(this).children('td')[0]).text();
             if (id === undefined) return; /* pula header */
             var tipo_refeicao = $($(this).children('td')[2]).text();
-            var refeicao = $.map($($(this).children('td')[4]).text().split(','),
+            var refeicao = $.map($($(this).children('td')[10]).text().split(','),
                 function (v) {
                     return $.trim(v) === "" ? null : $.trim(v);
                 });
@@ -389,22 +395,22 @@
         /*$($(r).children('td')).css({ 'background-color':'#fff' });*/
         var i = r.parentNode.parentNode.rowIndex;
         dia_semana = document.getElementById("task-table").rows[i].cells[1].innerHTML
-        refeicao = document.getElementById("task-table").rows[i].cells[2].innerHTML
+        refeicao = document.getElementById("task-table").rows[i].cells[10].innerHTML
         cardapio = cardapios[dia_semana][refeicao]
 
         var randomNumber = Math.floor(Math.random() * cardapio.length);
-        document.getElementById("task-table").rows[i].cells[4].innerHTML = cardapio[randomNumber];
+        document.getElementById("task-table").rows[i].cells[10].innerHTML = cardapio[randomNumber];
     }
 </script>
 <!-- FORMATANDO DATA -->
 <script>
-    jQuery(function(){
+    jQuery(function () {
         jQuery('.data_cardapio').each(function () {
             var date_menu = jQuery(this).text();
-            var year = date_menu.substring(0,4);
-            var month = date_menu.substring(4,6);
-            var day = date_menu.substring(6,8);
-            jQuery(this).text(day + '/'+month+'/'+year);
+            var year = date_menu.substring(0, 4);
+            var month = date_menu.substring(4, 6);
+            var day = date_menu.substring(6, 8);
+            jQuery(this).text(day + '/' + month + '/' + year);
         });
     });
 </script>
@@ -412,9 +418,9 @@
 <script>
     jQuery(function () {
         jQuery('[name=ctrl_c]').click(function () {
-            if(jQuery(this).attr('checked',true)){
+            if (jQuery(this).attr('checked', true)) {
 
-                jQuery('.item').find('.ctrl_v').prop('checked',false);
+                jQuery('.item').find('.ctrl_v').prop('checked', false);
                 jQuery('.item').removeClass('danger');
                 jQuery('.item').removeClass('success');
                 jQuery('.item').find('.ctrl_v').each(function () {
@@ -423,32 +429,49 @@
                 });
 
                 jQuery(this).parent().parent().addClass('danger');
-                jQuery(this).parent().parent().find('input:checkbox[name=ctrl_v]').attr('disabled','disabled');
+                jQuery(this).parent().parent().find('input:checkbox[name=ctrl_v]').attr('disabled', 'disabled');
             }
         });
 
 
         jQuery('.ctrl_v').click(function () {
-            if(jQuery(this).is(':checked')){
+            if (jQuery(this).is(':checked')) {
                 var selected = 0;
                 jQuery('.item').find('input:radio').each(function () {
-                    if(jQuery(this).is(':checked')){
-                        selected ++;
+                    if (jQuery(this).is(':checked')) {
+                        selected++;
                     }
                 });
-                if(selected == 0){
-                    alert('Nenhuma origem de  cópia (DE) foi selecionado!');
-                    jQuery(this).prop('checked',false);
-                }else{
+                if (selected == 0) {
+                    alert('Nenhuma origem de  cópia (CTRL + C) foi selecionado!');
+                    jQuery(this).prop('checked', false);
+                } else {
                     jQuery(this).parent().parent().addClass('success');
                 }
-            }else{
+            } else {
                 jQuery(this).parent().parent().removeClass('success');
             }
         });
 
+
+        // EFEITO CLICK NO BOTÃO PARA COPIAR
         jQuery('#paste').click(function () {
-            alert('Come on boy');
+
+            ctrl_c = null;
+
+            jQuery('.item').find('input:radio').each(function () {
+                if (jQuery(this).is(':checked')) {
+                    ctrl_c = jQuery(this).parent().parent().find('.publicacao').text();
+
+                }
+            });
+
+            jQuery('.item').find('input:checkbox').each(function () {
+                if (jQuery(this).is(':checked')) {
+                    jQuery(this).parent().parent().find('.publicacao').text(ctrl_c);
+
+                }
+            });
         });
 
     });
