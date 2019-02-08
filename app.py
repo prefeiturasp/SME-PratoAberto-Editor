@@ -403,15 +403,30 @@ def calendario():
     for dia in dias_da_semana:
         cardapio_atual = filtro_dicionarios(jdata, 'dia_semana', dia)
         cardapio_anterior = filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
-
+        if cardapio_atual:
+            if '/' in cardapio_atual['data']:
+                d = datetime.datetime.strptime(cardapio_atual['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio_atual['data'], '%Y%m%d')
+            cardapio_atual['data'] = d.strftime('%d/%m/%Y')
+        if cardapio_anterior:
+            if '/' in cardapio_anterior['data']:
+                d = datetime.datetime.strptime(cardapio_anterior['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio_anterior['data'], '%Y%m%d')
+            cardapio_anterior['data'] = d.strftime('%d/%m/%Y')
         if cardapio_atual and cardapio_anterior:
             cardapio_atual['cardapio_semana_anterior'] = cardapio_anterior['cardapio']
+
             cardapios.append(cardapio_atual)
+
 
         else:
             if cardapio_atual:
                 cardapio_atual['cardapio_semana_anterior'] = []
                 cardapios.append(cardapio_atual)
+
+
 
             # elif cardapio_anterior:
             #    cardapio_atual['cardapio_semana_anterior'] = []
@@ -468,7 +483,13 @@ def visualizador():
     for cardapio in jdata:
         dia = datetime.datetime.strptime(str(cardapio['data']), '%Y%m%d').weekday()
         cardapio['dia_semana'] = dia_semana(dia)
+        if '/' in cardapio['data']:
+            d = datetime.datetime.strptime(cardapio['data'], '%d/%m/%Y')
+        else:
+            d = datetime.datetime.strptime(cardapio['data'], '%Y%m%d')
+        cardapio['data'] = d.strftime('%d/%m/%Y')
         cardapios.append(cardapio)
+
 
     return render_template("visualizador_cardapio.html",
                            url=api + '/editor/cardapios',
@@ -552,6 +573,12 @@ def calendario_grupo_cardapio():
                 if cardapio_atual:
                     cardapio_atual['cardapio_semana_anterior'] = []
                     cardapios.append(cardapio_atual)
+        for cardapio in cardapios:
+            if '/' in cardapio['data']:
+                d = datetime.datetime.strptime(cardapio['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio['data'], '%Y%m%d')
+            cardapio['data'] = d.strftime('%d/%m/%Y')
 
     if lista_args[0]['tipo_atendimento'] == 'TERCEIRIZADA':
         historicos_cardapios = get_cardapios_terceirizadas(lista_args[0]['tipo_atendimento'],
