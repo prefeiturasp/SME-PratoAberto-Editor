@@ -18,6 +18,10 @@ import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
 
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
