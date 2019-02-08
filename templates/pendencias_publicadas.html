@@ -226,7 +226,6 @@
                                     <td class="status">{{ linha[6] }}</td>
                                     <td><a class="btn btn-info" href="/visualizador_cardapio?{{ linha[7] }}">VER</a></td>
                                     <td><button class="btn btn-warning pendente" value="PENDENTE">PENDENTE</button></td>
-                                    <td><a value="DELETAR" class="deletar"><i style="color:#D9534F;font-size:30px;text-align: center" class="fa">&#xf2d3;</i></a></td>
                                     <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
                                 </tr>
                                 {% endfor %}
@@ -423,7 +422,7 @@
             $('#filtro_semana_todos').hide()
             var semana_filtro = $('#filtro_semana_mes').val()
             $('#task-table tr').not(':first').each(function() {
-                var semana_linha = $($(this).children('td')[12]).text()
+                var semana_linha = $($(this).children('td')[11]).text()
                 if (semana_linha == semana_filtro) {
                     $(this).show();
                 } else {
@@ -440,7 +439,7 @@
             $('#filtro_semana_mes').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[12]).text()
+                    var semana_linha = $($(this).children('td')[11]).text()
                     if (semana_linha == semana_filtro) {
                         $(this).show();
                     } else {
@@ -452,7 +451,7 @@
             $('#filtro_semana_3_meses').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[12]).text()
+                    var semana_linha = $($(this).children('td')[11]).text()
                     if (semana_linha == semana_filtro) {
                         $(this).show();
                     } else {
@@ -464,7 +463,7 @@
             $('#filtro_semana_6_meses').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[12]).text()
+                    var semana_linha = $($(this).children('td')[11]).text()
                     if (semana_linha == semana_filtro) {
                         $(this).show();
                     } else {
@@ -476,7 +475,7 @@
             $('#filtro_semana_12_meses').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[12]).text()
+                    var semana_linha = $($(this).children('td')[11]).text()
                     if (semana_linha == semana_filtro) {
                         $(this).show();
                     } else {
@@ -488,7 +487,7 @@
             $('#filtro_semana_todos').change(function(){
                 var semana_filtro = $(this).val();
                 $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[12]).text()
+                    var semana_linha = $($(this).children('td')[11]).text()
                     if (semana_linha == semana_filtro) {
                         $(this).show();
                     } else {
