@@ -654,8 +654,9 @@ def atualiza_config_cardapio():
 @flask_login.login_required
 def escolas():
     if request.method == "GET":
-        escolas = get_escolas(params=request.args)
-        return render_template("configurações_escolas.html", escolas=escolas,referrer=request.referrer)
+        escolas, pagination = get_escolas(params=request.args)
+        return render_template("configuracoes_escola_v2.html", escolas=escolas,
+                               pagination=pagination, referrer=request.referrer)
 
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
@@ -1146,14 +1147,17 @@ def get_publicados():
 
 
 def get_escolas(params=None):
-    url = api + '/editor/escolas'
+    url = api + '/v2/editor/escolas'
     if params:
         extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
         url += extra
     r = requests.get(url)
-    escolas = r.json()
-
-    return escolas
+    if 'erro' in r.json():
+        return r.json()
+    else:
+        escolas = r.json()[0]
+        pagination = r.json()[1]
+        return escolas, pagination
 
 
 def get_escola(cod_eol):
@@ -1314,7 +1318,7 @@ def get_cardapios_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
 
 
 def get_quebras_escolas():
-    escolas = get_escolas()
+    escolas, pagination = get_escolas()
     mapa_base = collections.defaultdict(list)
     for escola in escolas:
         agrupamento = str(escola['agrupamento'])
