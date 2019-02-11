@@ -668,6 +668,7 @@ def atualiza_historico_escolas():
     flag_verificacoes = True
     mensagens = []
 
+
     # Vefificações
     if len(set([x['_id'] for x in jdata])) > 1:
         flag_verificacoes = False

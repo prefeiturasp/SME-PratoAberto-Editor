@@ -204,14 +204,14 @@
         </button>
     </div>
 
-    <div class="row">
+    <div class="row main">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h2 class="panel-title">Escolas</h2>
             </div>
             <div class="table-responsive">
                 <div>
-                    <table class="table table-hover table-striped" id="task-table">
+                    <table class="table table-bordered table-hover table-striped" id="task-table">
                         <thead>
                         <tr>
                             <th style="word-wrap: break-word;"></th>
@@ -219,20 +219,20 @@
                             <th style="word-wrap: break-word;">GESTÃO</th>
                             <th style="word-wrap: break-word;min-width: 90px;max-width: 90px;">ESCOLA</th>
                             <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
-                            <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
                             <th style="word-wrap: break-word;">DATA</th>
                             <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
                             <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
-                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
-                            <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
                             <th style="display: none; word-wrap: break-word;">LAT</th>
                             <th style="display: none; word-wrap: break-word;">LON</th>
-                            <th style="word-wrap: break-word;">STATUS</th>
+                            <th style="display: none;word-wrap: break-word;">STATUS</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for linha in escolas: %}
+                        {% for linha in escolas %}
                         <tr class="item">
                             <td><a class="btn btn-info" onclick='editRow(this)' href="#" data-toggle="modal"
                                    data-target="#xml_form">EDITAR</a></td>
@@ -240,26 +240,26 @@
                             <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
                             <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
                             <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
-                            <td class="edital">{{ linha['edital'] }}</td>
+                            <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">{{ linha['edital'] }}</td>
                             <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
                             <td class="info" class="nome">{{ linha['nome'] }}</td>
                             <td class="default" class="refeicoes">
-                                {% for itens in linha['refeicoes']: %}
+                                {% for itens in linha['refeicoes'] %}
                                     {{ itens }},
                                 {% endfor %}
                             </td>
                             <td class="success" class="idades">
-                                {% for itens in linha['idades']: %}
+                                {% for itens in linha['idades'] %}
                                     {{ itens }},
                                 {% endfor %}
                             </td>
-                            <td title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
-                            <td class="bairro">{{ linha['bairro'] }}</td>
+                            <td style="display: none;" title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
+                            <td style="display: none;" class="bairro">{{ linha['bairro'] }}</td>
                             <td style="display: none" class="lat">{{ linha['lat'] }}</td>
                             <td style="display: none" class="lon">{{ linha['lon'] }}</td>
-                            <td class="status">{{ linha['status']}}</td>
+                            <td style="display: none;" class="status">{{ linha['status']}}</td>
                         </tr>
-                        {% for linha_historico in linha['historico']: %}
+                        {% for linha_historico in linha['historico'] %}
                         <tr class="item" style="display: none;">
                             <td><a value='Delete' onclick='deleteRowModal(this)'><i
                                     style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>
@@ -279,12 +279,12 @@
                             <td class="lon" contenteditable='true'>{{ linha_historico['lon'] }}</td>
                             <td class="status" contenteditable='true'>{{ linha_historico['status'] }}</td>
                             <td class="refeicoes" contenteditable='true'>
-                                {% for itens in linha_historico['refeicoes']: %}
+                                {% for itens in linha_historico['refeicoes'] %}
                                 {{ itens }},
                                 {% endfor %}
                             </td>
                             <td class="idades">
-                                {% for itens in linha_historico['idades']: %}
+                                {% for itens in linha_historico['idades'] %}
                                 {{ itens }},
                                 {% endfor %}
                             </td>
@@ -356,23 +356,23 @@
 <!-- Adiciona linhas na tabela -->
 <script>
         function addRow() {
-            $('#task-table').append(
+            $('#task-table').prepend(
                 "<tr class='item' id=''>" +
-                "<td><a class='btn btn-info' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a></td>" +
-                "<td class='cod_eol' contenteditable='true'>COD EOL</td>" +
-                "<td class='tipo_atendimento' contenteditable='true'>GESTÃO</td>" +
-                "<td class='tipo_unidade' contenteditable='true'>ESCOLA</td>" +
-                "<td class='agrupamento' contenteditable='true'>A DEFINIR</td>" +
-                "<td class='edital' contenteditable='true'>EDITAL </td>" +
-                "<td class='data' contenteditable='true'></td>" +
-                "<td class='nome' contenteditable='true'></td>" +
-                "<td class='endereco' contenteditable='true'></td>" +
-                "<td class='bairro' contenteditable='true'></td>" +
-                "<td class='lat' contenteditable='true'></td>" +
-                "<td class='lon' contenteditable='true'></td>" +
-                "<td class='status' contenteditable='true'></td>" +
-                "<td class='refeicoes' contenteditable='true'></td>" +
-                "<td class='idades' contenteditable='true'></td>" +
+                "<td><a class='btn btn-info btn-sm' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a>  <a style='cursor:pointer' onclick='delete_row(this)' class='btn btn-danger btn-sm'>Excluir</a></td>" +
+                "<td class='cod_eol' contenteditable='false'>COD EOL</td>" +
+                "<td class='tipo_atendimento' contenteditable='false'>GESTÃO</td>" +
+                "<td class='tipo_unidade' contenteditable='false'>ESCOLA</td>" +
+                //"<td class='agrupamento' contenteditable='false'>A DEFINIR</td>" +
+                //"<td class='edital' contenteditable='false'>EDITAL </td>" +
+                "<td class='data' contenteditable='false'></td>" +
+                "<td class='nome' contenteditable='false'></td>" +
+                //"<td class='endereco' contenteditable='false'></td>" +
+                //"<td class='bairro' contenteditable='false'></td>" +
+                //"<td class='lat' contenteditable='false'></td>" +
+                //"<td class='lon' contenteditable='false'></td>" +
+                //"<td class='status' contenteditable='false'></td>" +
+                "<td class='refeicoes' contenteditable='false'></td>" +
+                "<td class='idades' contenteditable='false'></td>" +
                 "</tr>"
             );
         };
@@ -415,10 +415,12 @@
                     'refeicoes': jQuery.trim(refeicoes),
                     'idades': jQuery.trim(idades)
                 }
-
                 json_dump.push(modificacao)
             });
-            $('#json_dump').attr('value', JSON.stringify(json_dump))
+
+            console.log(json_dump);
+
+            $('#json_dump').attr('value', JSON.stringify(json_dump));
             return true; // return false to cancel form action
 
         });
@@ -437,7 +439,7 @@
                     var tipo_atendimento = $($(this).children('td')[2]).text();
                     var tipo_unidade = $($(this).children('td')[3]).text();
                     var agrupamento = $($(this).children('td')[4]).text();
-                    var edital = $($(this).children('td')[5]).text();
+                    var edital = $($(this).children('td')[5]).attr('data-edital');
                     var data = $($(this).children('td')[6]).text();
                     var nome = $($(this).children('td')[7]).text();
                     var refeicoes = $($(this).children('td')[8]).text();
@@ -482,6 +484,13 @@
         }
 
 </script>
+<script>
+    function delete_row(row){
+        if(confirm('Deseja remover nova escola?')){
+            row.parentElement.parentElement.remove();
+        }
+    }
+</script>
 
 <!-- Adiciona linhas na tabela Modal -->
 <script>
@@ -493,7 +502,7 @@
                 "<td class='tipo_atendimento' contenteditable='true'>Tipo Atendimento</td>" +
                 "<td class='tipo_unidade' contenteditable='true'>Tipo Unidade</td>" +
                 "<td class='agrupamento' contenteditable='true'>Agrupamento</td>" +
-                "<td class='edital' contenteditable='true'>EDITAL1</td>" +
+                "<td class='edital' contenteditable='true'>EDITAL</td>" +
                 "<td class='data' contenteditable='true'>Data</td>" +
                 "<td class='nome' contenteditable='true'>Nome Escola</td>" +
                 "<td class='endereco' contenteditable='true'>Endereço</td>" +
