@@ -111,6 +111,9 @@
             <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ tipo_unidade }}</span>
             <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ idade }}</span>
             <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ agrupamento }}</span>
+            <!--TODO: seguir a loucura e colocar algum onclick da vida com chamadas de requisicoes via js...-->
+            <span type="button" class="btn btn-warning" onclick="marcarConferencia()" id="step1-conferencia">MARCAR PARA CONFERÊNCIA</span>
+            <span type="button" class="btn btn-success" onclick="marcarConferido()" id="step2-conferencia">MARCAR COMO CONFERIDO</span>
         </div>
 
         <div class="row">
@@ -353,6 +356,23 @@
                     window.alert("Cardápio salvo com sucesso");
                 }
             });
+        }
+    </script>
+
+    <script>
+        function marcarConferencia(){
+            <!--caça os ids e tira os repetidos...-->
+            var refeicoes = document.getElementsByClassName("item");
+            var refeicoes_lst_id = []
+            for (var i = 0; i < refeicoes.length; i++) {
+                 if ($.inArray(refeicoes[i].id, refeicoes_lst_id)  === -1){
+                    refeicoes_lst_id.push(refeicoes[i].id)
+                 }
+            }
+        }
+
+        function marcarConferido(){
+            alert('sistema bugado')
         }
     </script>
 
