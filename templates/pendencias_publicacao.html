@@ -224,7 +224,7 @@
                                     <!--o conteudo eh o mesmo do acima, indice 7 vem argumentos e o ultimo inice vem uma lista de ids do mongo...-->
                                     <!--quando se clica aqui ta fazendo uma requisição maluca que vem la de tras metodo backlog()-->
                                     <td ><a class="btn btn-info" href="/calendario?{{ linha[7] }}">EDITAR</a></td>
-                                    <td ><button class="btn btn-success publicar" value="PUBLICAR">PUBLICAR</button></td>
+                                    <td ><button class="btn btn-success publicar {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }}" value="PUBLICAR">PUBLICAR</button></td>
                                     <td ><a value="DELETAR" class="deletar"><i style="color:#D9534F;font-size:30px;text-align: center;cursor: pointer" class="fa">&#xf2d3;</i></a></td>
                                     <td class="url" style="display: none;">/cardapios?{{ linha[7] }}</td>
                                     <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
