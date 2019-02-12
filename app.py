@@ -659,6 +659,16 @@ def escolas():
                                pagination=pagination, referrer=request.referrer)
 
 
+@app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
+@flask_login.login_required
+def excluir_escola(id_escola):
+    headers = {'Content-type': 'application/json'}
+    r = requests.delete(api + '/editor/escola/{}'.format(str(id_escola)),
+                      headers=headers)
+
+    flash('Escola excluída com sucesso')
+    return ('', 200)
+
 @app.route('/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
 def atualiza_historico_escolas():
@@ -713,11 +723,11 @@ def atualiza_historico_escolas():
         # Atualiza informacoes atuais da escola
         if escola_aux['tipo_atendimento'] == 'TERCEIRIZADA':
             escola_atual['agrupamento'] = escola_aux['edital']
-            _keys = ['nome', 'tipo_unidade', 'endereco', 'bairro', 'lat', 'lon', 'edital', 'data_inicio_vigencia']
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'endereco', 'bairro', 'lat', 'lon', 'edital', 'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
         else:
-            _keys = ['nome', 'tipo_unidade', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
                      'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
@@ -790,7 +800,7 @@ def atualiza_historico_escolas():
                           headers=headers)
 
         flash('Informações salvas com sucesso')
-        return redirect(url_for('escolas'))
+        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 # BLOCO DE DOWNLOAD DAS PUBLICAÇÕES
@@ -1318,19 +1328,22 @@ def get_cardapios_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
 
 
 def get_quebras_escolas():
-    escolas, pagination = get_escolas()
+    escolas, paginacao = get_escolas()
     mapa_base = collections.defaultdict(list)
     for escola in escolas:
-        agrupamento = str(escola['agrupamento'])
-        tipo_unidade = escola['tipo_unidade']
-        tipo_atendimento = escola['tipo_atendimento']
-        if 'idades' in escola.keys():
-            for idade in escola['idades']:
-                _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
-                mapa_base[_key].append(escola['_id'])
-        else:
+        try:
+            agrupamento = str(escola['agrupamento'])
+            tipo_unidade = escola['tipo_unidade']
+            tipo_atendimento = escola['tipo_atendimento']
+            if 'idades' in escola.keys():
+                for idade in escola['idades']:
+                    _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
+                    mapa_base[_key].append(escola['_id'])
+            else:
+                pass
+                # print(escola)
+        except:
             pass
-            # print(escola)
 
     mapa = []
     for row in mapa_base:

@@ -239,7 +239,7 @@
                             <td class="cod_eol">{{ linha['_id'] }}</td>
                             <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
                             <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
-                            <td class="agrupamento">{{ linha['agrupamento_regiao'] }}</td>
+                            <td class="agrupamento">{{ linha['agrupamento'] }}</td>
                             <td class="edital">{{ linha['edital'] }}</td>
                             <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
                             <td class="info" class="nome">{{ linha['nome'] }}</td>
@@ -258,6 +258,28 @@
                             <td style="display: none" class="lat">{{ linha['lat'] }}</td>
                             <td style="display: none" class="lon">{{ linha['lon'] }}</td>
                             <td class="status">{{ linha['status']}}</td>
+                            <td><a class="btn btn-info" data-toggle="modal" data-target="#exampleModal" href="#"
+                                   data-target="#xml_form">EXCLUIR</a></td>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Exclusão de escola</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    Tem certeza que deseja excluir essa escola?
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-primary">Excluir</a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                         </tr>
                         {% for linha_historico in linha['historico']: %}
                         <tr class="item" style="display: none;">
@@ -268,7 +290,7 @@
                                 }}
                             </td>
                             <td class="tipo_unidade" contenteditable='true'>{{ linha_historico['tipo_unidade'] }}</td>
-                            <td class="agrupamento" contenteditable='true'>{{ linha_historico['agrupamento_regiao'] }}
+                            <td class="agrupamento" contenteditable='true'>{{ linha_historico['agrupamento'] }}
                             </td>
                             <td class="edital" contenteditable='true'>{{ linha_historico['edital'] }}</td>
                             <td class="data" contenteditable='true'>{{ linha_historico['data_inicio_vigencia'] }}</td>
@@ -352,7 +374,6 @@
     {% endif %}
     {% endwith %}
 </div>
-
 <!-- Adiciona linhas na tabela -->
 <script>
         function addRow() {
@@ -472,6 +493,22 @@
         }
 
 
+</script>
+
+<script>
+    function deleteSchool(school) {
+        $.ajax({
+                type: 'DELETE',
+                url: '/excluir_escola/' + school._id.toString(),
+                data: JSON.stringify(school),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function(data, textStatus, jqXHR){
+                    location.reload();
+                }
+            });
+;
+    }
 </script>
 
 <!-- Deleta linha da tabela Modal -->
