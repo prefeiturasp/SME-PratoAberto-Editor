@@ -219,6 +219,10 @@
                                     <td class="data_inicial">{{ linha[4] }}</td>
                                     <td class="data_final">{{ linha[5] }}</td>
                                     <td class="status">{{ linha[6] }}</td>
+                                    <!--linha [7] vem de pendentes-->
+                                    <!--['TERCEIRIZADA', 'CCI', 'EDITAL 78/2016', 'D - 0 A 5 MESES', '14/01/2019', '18/01/2019', 'PENDENTE', 'tipo_atendimento=TERCEIRIZADA&tipo_unidade=CCI&agrupamento=EDITAL 78/2016&idade=D - 0 A 5 MESES&status=PENDENTE&data_inicial=20190114&data_final=20190118', '2019-3', '5c2de6c354e6257eebc8a2c3,5c2de6c354e6257eebc8a2c2,5c2de6c354e6257eebc8a2c1,5c2de6c354e6257eebc8a2c0,5c2de6c354e6257eebc8a2bf']-->
+                                    <!--o conteudo eh o mesmo do acima, indice 7 vem argumentos e o ultimo inice vem uma lista de ids do mongo...-->
+                                    <!--quando se clica aqui ta fazendo uma requisição maluca que vem la de tras metodo backlog()-->
                                     <td ><a class="btn btn-info" href="/calendario?{{ linha[7] }}">EDITAR</a></td>
                                     <td ><button class="btn btn-success publicar" value="PUBLICAR">PUBLICAR</button></td>
                                     <td ><a value="DELETAR" class="deletar"><i style="color:#D9534F;font-size:30px;text-align: center;cursor: pointer" class="fa">&#xf2d3;</i></a></td>

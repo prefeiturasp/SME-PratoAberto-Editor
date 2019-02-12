@@ -321,7 +321,6 @@
         var cardapios = []
         {#console.log(lista_ids)#}
         $.each(lista_ids, function (index, value) {
-
             cardapios.push({
                 "_id": {"$oid": value},
                 "status": "PENDENTE"
@@ -339,9 +338,7 @@
                 $row.hide();
             }
         });
-
     });
-
 </script>
 
 <!-- Filtro da semana ao carregar a pagina -->

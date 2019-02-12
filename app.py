@@ -106,6 +106,8 @@ def backlog():
     if request.method in ["GET", "POST"]:
         pendentes = get_pendencias()
         pendentes = sort_array_date_br(pendentes)
+        # aqui tem um array com varios dados e em cada linha tem uma string com varios
+        # ids mongo separados por ,
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in pendentes])
         return render_template("pendencias_publicacao.html",
                                pendentes=pendentes,
@@ -353,35 +355,48 @@ def atualiza_cardapio():
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required
 def calendario():
+    """
+    do pendencias_publicacao vem pra ca quando se clica em href="/calendario?
+
+    """
+    # aqui vem algo do tipo 'tipo_atendimento=TERCEIRIZADA&tipo_unidade=CCI&agrupamento=EDITAL 78/2016&idade=D - 0 A 5 MESES&status=PENDENTE&data_inicial=20190114&data_final=20190118'
     args = request.args
 
+    # nao ta vindo nada...
     depara = db_functions.select_all()
     depara = [x[3:5] for x in depara if x[2] == 'INGREDIENTES']
 
-    # Monta json - Semana da requisicao
+    # Monta json - Semana da requisicao, faz requisição montando uma maluquice total...
+    # url = api + '/editor/cardapios?' + '&'.join(['%s=%s' % item for item in args.items()])
     jdata = get_cardapio(args)
 
     # Obtem data semana anterior
+    # copia args
     args_semana_anterior = args.copy()
     args_semana_anterior['status'] = 'SALVO'
-    args_semana_anterior.add('status', 'PUBLICADO')
+    args_semana_anterior.add('status', 'PUBLICADO')       # esse trecho nao faz nada
 
     delta_dias = datetime.timedelta(days=7)
     data_final_semana_anterior = datetime.datetime.strptime(str(args['data_final']), '%Y%m%d') - delta_dias
     data_inicial_semana_anterior = datetime.datetime.strptime(str(args['data_inicial']), '%Y%m%d') - delta_dias
+    # substitui a data final e inicial
     args_semana_anterior['data_final'] = datetime.datetime.strftime(data_final_semana_anterior, '%Y%m%d')
     args_semana_anterior['data_inicial'] = datetime.datetime.strftime(data_inicial_semana_anterior, '%Y%m%d')
     # Monta json - Semana anterior a da requisicao
+    # troca os argumentos e pesquisa novamente, dessa vez com a semana anterior...
     jdata_anterior = get_cardapio(args_semana_anterior)
 
-
+    # o monstrinho acima faz pesquisa de acordo com os parametros e uma pesquisa 7 dias pra tras...
+    # jdata é o oficial, jdata anterior é o da semana antetior
     jdata_aux = []
     for cardapio_atual in jdata:
         dia = datetime.datetime.strptime(str(cardapio_atual['data']), '%Y%m%d').weekday()
-        cardapio_atual['dia_semana'] = dia_semana(dia)
+        cardapio_atual['dia_semana'] = dia_semana(dia)  # troca um int por uma str de dia de semana
+        # cardapio atual>
+        # {'_id': {'$oid': '5c2de6c354e6257eebc8a2c3'}, 'tipo_unidade': 'CCI', 'tipo_atendimento': 'TERCEIRIZADA', 'data_publicacao': '2019-02-08T17:13:51.100Z', 'data': '20190118', 'idade': 'D - 0 A 5 MESES', 'cardapio': {'J - JANTAR': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'D - DESJEJUM': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'A - ALMOCO': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'L - LANCHE': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)']}, 'status': 'PENDENTE', 'agrupamento': 'EDITAL 78/2016', 'cardapio_original': {'J - JANTAR': [], 'D - DESJEJUM': [], 'A - ALMOCO': [], 'L - LANCHE': []}, 'dia_semana': 'Sex'}
         jdata_aux.append(cardapio_atual)
-
-
+    # jdata_aux é um array maluco cheio de dicionarios
+    # mesma coisa da maluquice acima, so que para semana anterior...
     jdata_anterior_aux = []
     for cardapio_anterior in jdata_anterior:
         dia = datetime.datetime.strptime(str(cardapio_anterior['data']), '%Y%m%d').weekday()
@@ -405,21 +420,29 @@ def calendario():
 
     cardapios = []
     for dia in dias_da_semana:
+        # faz um filtro de doido.
         cardapio_atual = filtro_dicionarios(jdata, 'dia_semana', dia)
         cardapio_anterior = filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
 
+        # se os dois vierem populados o maluco faz alguma coisa
         if cardapio_atual and cardapio_anterior:
             cardapio_atual['cardapio_semana_anterior'] = cardapio_anterior['cardapio']
             cardapios.append(cardapio_atual)
 
         else:
             if cardapio_atual:
+                # faz uma limpa no campo do dicionario, mas por que?
                 cardapio_atual['cardapio_semana_anterior'] = []
                 cardapios.append(cardapio_atual)
 
             # elif cardapio_anterior:
             #    cardapio_atual['cardapio_semana_anterior'] = []
-            #    cardapios.append(cardapio_atual)
+            #    cardapios.append(cardapio_atual)cardapios[0]['status']
+
+
+    #
+    # cardapios[0]['status'] altera pro novo...
+    #
 
     if args['tipo_atendimento'] == 'TERCEIRIZADA':
         historicos_cardapios = get_cardapios_terceirizadas(args['tipo_atendimento'],
@@ -427,7 +450,7 @@ def calendario():
                                                            args['agrupamento'],
                                                            args['idade'])
 
-
+        # SE TIPO ATENDIMENTO EH TERCEIRIZADA...
         return render_template("editor_terceirizadas.html",
                                url=api + '/editor/cardapios',
                                cardapios=cardapios,
@@ -437,7 +460,7 @@ def calendario():
                                agrupamento=args['agrupamento'],
                                historicos_cardapios=historicos_cardapios,
                                referrer=request.referrer)
-
+        # QUALQUER OUTRA COISA...
     else:
         return render_template("editor_direto_misto_conveniada.html",
                                url=api + '/editor/cardapios',
