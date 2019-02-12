@@ -391,7 +391,7 @@ def calendario():
     # copia args
     args_semana_anterior = args.copy()
     args_semana_anterior['status'] = 'SALVO'
-    args_semana_anterior.add('status', 'PUBLICADO')       # esse trecho nao faz nada
+    args_semana_anterior.add('status', 'PUBLICADO')  # esse trecho nao faz nada
 
     delta_dias = datetime.timedelta(days=7)
     data_final_semana_anterior = datetime.datetime.strptime(str(args['data_final']), '%Y%m%d') - delta_dias
@@ -420,17 +420,15 @@ def calendario():
         cardapio_anterior['dia_semana'] = dia_semana(dia)
         jdata_anterior_aux.append(cardapio_anterior)
 
-
     # Here remove saved publication
     # for tipo_refeicao, refeicao in jdata_aux[0]['cardapio_original'].items():
     #     print(tipo_refeicao)
     #     jdata_aux[0]['cardapio_original'][tipo_refeicao] = normaliza_str(refeicao)
     #     jdata_aux[0]['cardapio'][tipo_refeicao] = normaliza_str(refeicao)
 
-    #jdata = jdata_aux
+    # jdata = jdata_aux
 
     jdata_anterior = jdata_anterior_aux
-
 
     # Liga o cardapio atual com o da semana anterior
     dias_da_semana = set([x['dia_semana'] for x in list(jdata + jdata_anterior)])
@@ -455,7 +453,6 @@ def calendario():
             # elif cardapio_anterior:
             #    cardapio_atual['cardapio_semana_anterior'] = []
             #    cardapios.append(cardapio_atual)cardapios[0]['status']
-
 
     #
     # cardapios[0]['status'] altera pro novo...
@@ -622,9 +619,8 @@ def calendario_grupo_cardapio():
 @flask_login.login_required
 def config():
     if request.method == "GET":
-
         config_editor = db_functions.select_all()
-        return render_template("configurações.html", config=config_editor,referrer=request.referrer)
+        return render_template("configurações.html", config=config_editor, referrer=request.referrer)
 
 
 @app.route('/atualiza_configuracoes', methods=['POST'])
@@ -649,7 +645,7 @@ def atualiza_configuracoes():
 def config_cardapio():
     if request.method == "GET":
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor,referrer=request.referrer)
+        return render_template("configurações_receitas.html", config=config_editor, referrer=request.referrer)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
@@ -672,7 +668,7 @@ def atualiza_config_cardapio():
 def escolas():
     if request.method == "GET":
         escolas = get_escolas(params=request.args)
-        return render_template("configurações_escolas.html", escolas=escolas,referrer=request.referrer)
+        return render_template("configurações_escolas.html", escolas=escolas, referrer=request.referrer)
 
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
@@ -816,7 +812,8 @@ def publicacao():
     opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
 
     if request.method == "GET":
-        return render_template("download_publicações.html",referrer=request.referrer,data_inicio_fim='disabled', status=opt_status)
+        return render_template("download_publicações.html", referrer=request.referrer, data_inicio_fim='disabled',
+                               status=opt_status)
 
     else:
         data_inicial = request.form.get('data-inicial', request.data)
@@ -861,7 +858,8 @@ def publicacao():
                         refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
             data_inicial = datetime.datetime.strptime(data_inicial, '%Y%m%d').strftime('%d/%m/%Y')
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
-            return render_template("download_publicações.html",referrer=request.referrer, publicados=sort_array_by_date_and_index(cardapio_aux),
+            return render_template("download_publicações.html", referrer=request.referrer,
+                                   publicados=sort_array_by_date_and_index(cardapio_aux),
                                    data_inicio_fim=str(data_inicial + '-' + data_final), tipo_unidade=tipo_unidade,
                                    tipo_atendimento=tipo_atendimento, filtro_selected=filtro,
                                    inicio=data_inicial, fim=data_final, status=opt_status, selected=filtro)
@@ -1007,7 +1005,8 @@ def get_cardapio(args):
 
 
 def get_pendencias():
-    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO'
+    url = api + '/editor/cardapios?status={}&status={}&status={}&status={}'.format(
+        'PENDENTE', 'SALVO', 'A_CONFERIR', 'CONFERIDO')
     r = requests.get(url)
     refeicoes = r.json()
 
