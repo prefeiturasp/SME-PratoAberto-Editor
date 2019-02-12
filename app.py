@@ -351,6 +351,23 @@ def atualiza_cardapio():
         return ('', 200)
 
 
+@app.route('/atualiza_cardapio2', methods=['POST'])
+@flask_login.login_required
+def atualiza_cardapio2():
+    """Usado somente para alterar os status dos cardapios"""
+    headers = {'Content-type': 'application/json'}
+    data = request.form.get('json_dump', request.data)
+    # post de dados nos cardapios atualiza cardapio
+
+    r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
+
+    if request.form:
+        flash('Status dos cardápios foram atualizados', 'success')
+        return ('', 200)
+    else:
+        return ('', 200)
+
+
 # comments = []
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required

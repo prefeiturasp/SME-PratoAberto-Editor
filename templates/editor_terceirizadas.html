@@ -361,18 +361,48 @@
 
     <script>
         function marcarConferencia(){
-            <!--caça os ids e tira os repetidos...-->
             var refeicoes = document.getElementsByClassName("item");
             var refeicoes_lst_id = []
             for (var i = 0; i < refeicoes.length; i++) {
-                 if ($.inArray(refeicoes[i].id, refeicoes_lst_id)  === -1){
-                    refeicoes_lst_id.push(refeicoes[i].id)
-                 }
+                refeicoes_lst_id.push({
+                            "_id": {"$oid": refeicoes[i].id},
+                            "status": "A_CONFERIR",
+                      });
             }
+            console.log(refeicoes_lst_id)
+
+            $.ajax({
+                type: 'POST',
+                url: '/atualiza_cardapio2',
+                data: JSON.stringify(refeicoes_lst_id),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function(data, textStatus, jqXHR){
+                    window.alert("Cardápio salvo com sucesso");
+                }
+            });
         }
 
         function marcarConferido(){
-            alert('sistema bugado')
+            var refeicoes = document.getElementsByClassName("item");
+            var refeicoes_lst_id = []
+            for (var i = 0; i < refeicoes.length; i++) {
+                refeicoes_lst_id.push({
+                            "_id": {"$oid": refeicoes[i].id},
+                            "status": "CONFERIDO",
+                      });
+            }
+            console.log(refeicoes_lst_id)
+            $.ajax({
+                type: 'POST',
+                url: '/atualiza_cardapio2',
+                data: JSON.stringify(refeicoes_lst_id),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function(data, textStatus, jqXHR){
+                    window.alert("Cardápio salvo com sucesso");
+                }
+            });
         }
     </script>
 
