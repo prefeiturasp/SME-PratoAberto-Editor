@@ -68,17 +68,19 @@
 <div class="container">
     <!-- NAVBAR -->
     <div class="row">
+        <a type="button" class="btn btn-default " href="{{ referrer }}">
+            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
+        </a>
+        <button onclick="addRow()" class="pull-right btn btn-primary" style="float: right">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span style="font-family: inherit">ADICIONAR ESCOLA</span>
+        </button>
+    <div class="row">
         <nav class="navbar navbar-default">
             <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                     <a class="navbar-brand" href="#">Prato Aberto - Lista Escolas</a>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
-                        <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
-                    </a>
-                </ul>
             </div>
         </nav>
     </div>
@@ -138,16 +140,6 @@
     <!-- Campos GERAÇAO TABELA -->
     <div class="panel panel-default">
         <form method="get" action="/escolas">
-            <div style="margin-top: 15px" class="row">
-                <div style="text-align: center" class="col-12">
-                    <div class="col-sm-8 col-xs-12">
-                        <p><strong>FILTROS</strong></p>
-                    </div>
-                    <div class="col-sm-4 col-xs-12">
-                        <p><strong>CONFIGURAÇÕES</strong></p>
-                    </div>
-                </div>
-            </div>
             <div class="row" style="margin-top: 15px">
                 <div class="col-sm-4 col-xs-12">
                     <label for="nome">Nome ou EOL</label>
@@ -157,9 +149,43 @@
                     <label for="tipo_unidade">Escola</label>
                     <input value="{{request.args.get('tipo_unidade') or ''}}" type="text" id="tipo_unidade" name="tipo_unidade" class="form-control">
                 </div>
-                <div class="col-sm-4 col-xs-12">
-                    <label for="agrupamento">Resultados por página</label>
-                    <select value="{{request.args.get('limit')}}" id="limit" name="limit" class="form-control">
+                <div class="col-sm-2 col-xs-12">
+                    <label for="agrupamento">Agrupamento</label>
+                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
+                        <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
+                        <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
+                        <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
+                        <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                    <label for="tipo_atendimento">Tipo de gestão</label>
+                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom: 15px; margin-top: 15px">
+                <div class="col-12">
+                    <div class="pull-left col-sm-2">
+                        <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS">
+                            <button type="button" class="btn btn-success">LIMPAR FILTROS</button>
+                        </a>
+                    </div>
+                    <div class="pull-right col-sm-2">
+                        <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12" style="margin-top: 15px; padding-right: 0px">
+                <div class="pull-right" style="display: flex; padding: 0;">
+                    <label for="agrupamento" style="padding-right: 10px; margin-top: 6px;">Resultados por página</label>
+                    <select onchange="this.form.submit()" value="{{request.args.get('limit')}}" id="limit" name="limit" class="form-control" style="width: 80px">
                         <option {% if request.args.get('limit') == '10' %} selected {% endif %}>10</option>
                         <option {% if request.args.get('limit') == '50' %} selected {% endif %}>50</option>
                         <option {% if request.args.get('limit') in ['100', None]  %} selected {% endif %}>100</option>
@@ -168,43 +194,9 @@
                     </select>
                 </div>
             </div>
-            <div class="row" style="padding-bottom: 15px; margin-top: 15px">
-                <div class="col-12">
-                    <div class="col-sm-4 col-xs-12">
-                        <label for="agrupamento">Agrupamento</label>
-                        <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
-                            <option>TODOS</option>
-                            <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
-                            <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
-                            <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
-                            <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
-                            <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-4 col-xs-12">
-                        <label for="tipo_atendimento">Tipo de gestão</label>
-                        <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
-                            <option>TODOS</option>
-                            <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
-                            <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
-                            <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-4" style="margin-top: 25px">
-                        <button type="submit" class="pull-right col-sm-6 btn btn-success">FILTRAR</button>
-                    </div>
-                </div>
-            </div>
         </form>
     </div>
-    <div class="row">
-        <button onclick="addRow()" class="btn btn-primary" style="float: right">
-            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-            <span style="font-family: inherit">ADICIONAR ESCOLA</span>
-        </button>
-    </div>
-
-    <div class="row main">
+    <div class="row main" style="padding-top: 30px;">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h2 class="panel-title">Escolas</h2>
@@ -258,10 +250,10 @@
                             <td style="display: none" class="lat">{{ linha['lat'] }}</td>
                             <td style="display: none" class="lon">{{ linha['lon'] }}</td>
                             <td style="display: none;" class="status">{{ linha['status']}}</td>
-                            <td><a class="btn btn-info" data-toggle="modal" data-target="#exampleModal" href="#"
+                            <td><a class="btn btn-info" data-toggle="modal" data-target="#exampleModal{{linha['_id']}}" href="#"
                                    data-target="#xml_form">EXCLUIR</a></td>
                             <!-- Modal -->
-                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="exampleModal{{linha['_id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                   <div class="modal-header">
@@ -274,7 +266,7 @@
                                     Tem certeza que deseja excluir essa escola?
                                   </div>
                                   <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    <button type="button" class="btn btn-secondary" id="{{linha['_id']}}" data-dismiss="modal">Fechar</button>
                                     <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-primary">Excluir</a>
                                   </div>
                                 </div>
@@ -379,7 +371,7 @@
         function addRow() {
             $('#task-table').prepend(
                 "<tr class='item' id=''>" +
-                "<td><a class='btn btn-info btn-sm' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a>  <a style='cursor:pointer' onclick='delete_row(this)' class='btn btn-danger btn-sm'>Excluir</a></td>" +
+                "<td><a class='btn btn-info btn-sm' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a>  <a style='cursor:pointer' onclick='delete_row(this)' class='btn btn-danger btn-sm'>REMOVER</a></td>" +
                 "<td class='cod_eol' contenteditable='false'>COD EOL</td>" +
                 "<td class='tipo_atendimento' contenteditable='false'>GESTÃO</td>" +
                 "<td class='tipo_unidade' contenteditable='false'>ESCOLA</td>" +
@@ -500,16 +492,15 @@
 <script>
     function deleteSchool(school) {
         $.ajax({
-                type: 'DELETE',
-                url: '/excluir_escola/' + school._id.toString(),
-                data: JSON.stringify(school),
-                contentType: 'application/json',
-                //dataType: 'json',
-                success: function(data, textStatus, jqXHR){
-                    location.reload();
-                }
-            });
-;
+            type: 'DELETE',
+            url: '/excluir_escola/' + school._id.toString(),
+            data: JSON.stringify(school),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function(data, textStatus, jqXHR){
+                location.reload();
+            }
+        });
     }
 </script>
 
