@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  editor:
+    build: .
+    env_file:
+      - .env
+    command: gunicorn app:app --timeout 120 --log-level DEBUG -w 1 -b 0.0.0.0:8001
+    volumes:
+      - .:/code
+    ports:
+      - 8080:8001
+
+networks:
+  default:
+    external:
+      name: pratoaberto
