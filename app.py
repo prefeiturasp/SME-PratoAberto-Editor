@@ -18,10 +18,6 @@ import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
 
-from dotenv import load_dotenv
-
-load_dotenv('.env')
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
@@ -420,14 +416,6 @@ def calendario():
         cardapio_anterior['dia_semana'] = dia_semana(dia)
         jdata_anterior_aux.append(cardapio_anterior)
 
-    # Here remove saved publication
-    # for tipo_refeicao, refeicao in jdata_aux[0]['cardapio_original'].items():
-    #     print(tipo_refeicao)
-    #     jdata_aux[0]['cardapio_original'][tipo_refeicao] = normaliza_str(refeicao)
-    #     jdata_aux[0]['cardapio'][tipo_refeicao] = normaliza_str(refeicao)
-
-    # jdata = jdata_aux
-
     jdata_anterior = jdata_anterior_aux
 
     # Liga o cardapio atual com o da semana anterior
@@ -449,14 +437,6 @@ def calendario():
                 # faz uma limpa no campo do dicionario, mas por que?
                 cardapio_atual['cardapio_semana_anterior'] = []
                 cardapios.append(cardapio_atual)
-
-            # elif cardapio_anterior:
-            #    cardapio_atual['cardapio_semana_anterior'] = []
-            #    cardapios.append(cardapio_atual)cardapios[0]['status']
-
-    #
-    # cardapios[0]['status'] altera pro novo...
-    #
 
     if args['tipo_atendimento'] == 'TERCEIRIZADA':
         historicos_cardapios = get_cardapios_terceirizadas(args['tipo_atendimento'],
