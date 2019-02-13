@@ -428,9 +428,23 @@ def calendario():
         cardapio_anterior = filtro_dicionarios(jdata_anterior, 'dia_semana', dia)
 
         # se os dois vierem populados o maluco faz alguma coisa
+        if cardapio_atual:
+            if '/' in cardapio_atual['data']:
+                d = datetime.datetime.strptime(cardapio_atual['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio_atual['data'], '%Y%m%d')
+            cardapio_atual['data'] = d.strftime('%d/%m/%Y')
+        if cardapio_anterior:
+            if '/' in cardapio_anterior['data']:
+                d = datetime.datetime.strptime(cardapio_anterior['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio_anterior['data'], '%Y%m%d')
+            cardapio_anterior['data'] = d.strftime('%d/%m/%Y')
         if cardapio_atual and cardapio_anterior:
             cardapio_atual['cardapio_semana_anterior'] = cardapio_anterior['cardapio']
+
             cardapios.append(cardapio_atual)
+
 
         else:
             if cardapio_atual:
@@ -489,7 +503,13 @@ def visualizador():
     for cardapio in jdata:
         dia = datetime.datetime.strptime(str(cardapio['data']), '%Y%m%d').weekday()
         cardapio['dia_semana'] = dia_semana(dia)
+        if '/' in cardapio['data']:
+            d = datetime.datetime.strptime(cardapio['data'], '%d/%m/%Y')
+        else:
+            d = datetime.datetime.strptime(cardapio['data'], '%Y%m%d')
+        cardapio['data'] = d.strftime('%d/%m/%Y')
         cardapios.append(cardapio)
+
 
     return render_template("visualizador_cardapio.html",
                            url=api + '/editor/cardapios',
@@ -573,6 +593,12 @@ def calendario_grupo_cardapio():
                 if cardapio_atual:
                     cardapio_atual['cardapio_semana_anterior'] = []
                     cardapios.append(cardapio_atual)
+        for cardapio in cardapios:
+            if '/' in cardapio['data']:
+                d = datetime.datetime.strptime(cardapio['data'], '%d/%m/%Y')
+            else:
+                d = datetime.datetime.strptime(cardapio['data'], '%Y%m%d')
+            cardapio['data'] = d.strftime('%d/%m/%Y')
 
     if lista_args[0]['tipo_atendimento'] == 'TERCEIRIZADA':
         historicos_cardapios = get_cardapios_terceirizadas(lista_args[0]['tipo_atendimento'],
@@ -647,9 +673,20 @@ def atualiza_config_cardapio():
 @flask_login.login_required
 def escolas():
     if request.method == "GET":
-        escolas = get_escolas(params=request.args)
-        return render_template("configurações_escolas.html", escolas=escolas, referrer=request.referrer)
+        escolas, pagination = get_escolas(params=request.args)
+        return render_template("configuracoes_escola_v2.html", escolas=escolas,
+                               pagination=pagination, referrer=request.referrer)
 
+
+@app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
+@flask_login.login_required
+def excluir_escola(id_escola):
+    headers = {'Content-type': 'application/json'}
+    r = requests.delete(api + '/editor/escola/{}'.format(str(id_escola)),
+                      headers=headers)
+
+    flash('Escola excluída com sucesso')
+    return ('', 200)
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
@@ -659,6 +696,7 @@ def atualiza_historico_escolas():
     jdata = [dict(t) for t in set([tuple(d.items()) for d in jdata])]
     flag_verificacoes = True
     mensagens = []
+
 
     # Vefificações
     if len(set([x['_id'] for x in jdata])) > 1:
@@ -705,11 +743,11 @@ def atualiza_historico_escolas():
         # Atualiza informacoes atuais da escola
         if escola_aux['tipo_atendimento'] == 'TERCEIRIZADA':
             escola_atual['agrupamento'] = escola_aux['edital']
-            _keys = ['nome', 'tipo_unidade', 'endereco', 'bairro', 'lat', 'lon', 'edital', 'data_inicio_vigencia']
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'endereco', 'bairro', 'lat', 'lon', 'edital', 'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
         else:
-            _keys = ['nome', 'tipo_unidade', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
                      'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
@@ -782,7 +820,7 @@ def atualiza_historico_escolas():
                           headers=headers)
 
         flash('Informações salvas com sucesso')
-        return redirect(url_for('escolas'))
+        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 # BLOCO DE DOWNLOAD DAS PUBLICAÇÕES
@@ -1142,14 +1180,17 @@ def get_publicados():
 
 
 def get_escolas(params=None):
-    url = api + '/editor/escolas'
+    url = api + '/v2/editor/escolas'
     if params:
         extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
         url += extra
     r = requests.get(url)
-    escolas = r.json()
-
-    return escolas
+    if 'erro' in r.json():
+        return r.json()
+    else:
+        escolas = r.json()[0]
+        pagination = r.json()[1]
+        return escolas, pagination
 
 
 def get_escola(cod_eol):
@@ -1310,19 +1351,22 @@ def get_cardapios_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
 
 
 def get_quebras_escolas():
-    escolas = get_escolas()
+    escolas, paginacao = get_escolas()
     mapa_base = collections.defaultdict(list)
     for escola in escolas:
-        agrupamento = str(escola['agrupamento'])
-        tipo_unidade = escola['tipo_unidade']
-        tipo_atendimento = escola['tipo_atendimento']
-        if 'idades' in escola.keys():
-            for idade in escola['idades']:
-                _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
-                mapa_base[_key].append(escola['_id'])
-        else:
+        try:
+            agrupamento = str(escola['agrupamento'])
+            tipo_unidade = escola['tipo_unidade']
+            tipo_atendimento = escola['tipo_atendimento']
+            if 'idades' in escola.keys():
+                for idade in escola['idades']:
+                    _key = ', '.join([agrupamento, tipo_unidade, tipo_atendimento, idade])
+                    mapa_base[_key].append(escola['_id'])
+            else:
+                pass
+                # print(escola)
+        except:
             pass
-            # print(escola)
 
     mapa = []
     for row in mapa_base:
