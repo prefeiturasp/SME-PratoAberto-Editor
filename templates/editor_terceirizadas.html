@@ -70,133 +70,153 @@
             display: none;
         }
 
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- NAVBAR -->
-        <div class="row">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápio</a>
-                    </div>
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown" style="padding-right: 7px">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="/configuracoes_gerais">DE-PARA</a></li>
-                                    <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
-                                </ul>
-                            </li>
-                            <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
-                                <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
-                            </a>
-                            <a type="button" class="btn btn-success" onclick="salvaCardapio()">
-                                <span class="glyphicon glyphicon glyphicon-floppy-disk"></span> SALVAR CARDÁPIO
-                            </a>
-                        </ul>
-                    </div>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápio</a>
                 </div>
-            </nav>
-        </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown" style="padding-right: 7px">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/configuracoes_gerais">DE-PARA</a></li>
+                                <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
+                            </ul>
+                        </li>
+                        <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
+                            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS PENDENTES
+                        </a>
+                        <a type="button" class="btn btn-success" onclick="salvaCardapio()">
+                            <span class="glyphicon glyphicon glyphicon-floppy-disk"></span> SALVAR CARDÁPIO
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
 
-        <!-- Informações do agrupamento -->
-        <div style="text-align: left">
-            <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ tipo_atendimento }}</span>
-            <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ tipo_unidade }}</span>
-            <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ idade }}</span>
-            <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ agrupamento }}</span>
-            <!--TODO: seguir a loucura e colocar algum onclick da vida com chamadas de requisicoes via js...-->
-            <span type="button" class="btn btn-warning" onclick="marcarConferencia()" id="step1-conferencia">MARCAR PARA CONFERÊNCIA</span>
-            <span type="button" class="btn btn-success" onclick="marcarConferido()" id="step2-conferencia">MARCAR COMO CONFERIDO</span>
-        </div>
+    <!-- Informações do agrupamento -->
+    <div style="text-align: left">
+        <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ tipo_atendimento }}</span>
+        <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ tipo_unidade }}</span>
+        <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ idade }}</span>
+        <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ agrupamento }}</span>
+        <span type="button" class="btn btn-warning" onclick="marcarConferencia()" id="step1-conferencia">MARCAR PARA CONFERÊNCIA</span>
+        <span type="button" class="btn btn-success" onclick="marcarConferido()" id="step2-conferencia">MARCAR COMO CONFERIDO</span>
+    </div>
 
-        <div class="row">
-            <button onclick="addRow()" class="btn btn-primary" style="float: right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
-        </div>
+    <div class="row">
+        <button onclick="addRow()" class="btn btn-primary" style="float: right"><span class="glyphicon glyphicon-plus"
+                                                                                      aria-hidden="true"></span>
+        </button>
+    </div>
 
-        <!-- Acrescentar a tabela para o calendario -->
-        <div class="row tbl">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Editor de Cardápio</h3>
-                    <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+    <!-- Acrescentar a tabela para o calendario -->
+    <div class="row tbl">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Editor de Cardápio</h3>
+                <div class="pull-right">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                              data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
-                    </div>
                 </div>
-                <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
-                </div>
-                <div class="table-responsive">
-                    <div class="panel panel-default">
-                        <table class="table table-hover table-striped" id="task-table">
-                            <thead>
-                                <tr>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">DIA<i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">SEMANA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer; word-wrap: break-word;min-width: 100px;max-width: 100px;">TIPO REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">PUBLICAÇÃO</th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA ANTERIOR</th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 30px;max-width: 30px;"></th>
-                                    <th style="cursor:pointer; word-wrap: break-word;min-width: 30px;max-width: 30px;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for cardapio in cardapios %}
-                                {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
-                                <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                                    <td>{{ cardapio['data'] }}</td>
-                                    <td>{{ cardapio['dia_semana'] }}</td>
-                                    <td contenteditable="true">{{ tipo_refeicao }}</td>
-                                    <td class="lista-alimentos">
-                                        {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
-                                            {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe}},
-                                        {% endfor %}
-                                    </td>
-                                    <!-- PUBLICAÇÕES -->
-                                    <td contenteditable="true" style="background-color: #FFEEAD">
-                                        {% for ingrediente in lista_alimentos %}
-                                            {{ ingrediente }},
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        {% for ingrediente in cardapio['cardapio_semana_anterior'][tipo_refeicao] %}
-                                            {{ ingrediente }},
-                                        {% endfor %}
-                                    </td>
-                                    <td>
-                                        <button onclick="get_cardapio(this)" class="btn btn-primary" style="padding: 5px 9px;"><span class="glyphicon glyphicon-refresh"></span></button>
-                                    </td>
-                                    <td>
-                                        <button onclick="deleteRow(this)" value='Delete' class="btn btn-danger" style="padding: 5px 9px;"><span class="glyphicon glyphicon-remove"></span></button>
-                                    </td>
-
-                                </tr>
+            </div>
+            <div class="panel-body">
+                <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                       data-filters="#task-table" placeholder="Filter Tasks"/>
+            </div>
+            <div class="table-responsive">
+                <div class="panel panel-default">
+                    <table class="table table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">DIA<i
+                                    class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 60px;max-width: 60px;">SEMANA <i
+                                    class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 100px;max-width: 100px;">TIPO
+                                REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA
+                                DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">
+                                PUBLICAÇÃO
+                            </th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">SEMANA
+                                ANTERIOR
+                            </th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 30px;max-width: 30px;"></th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 30px;max-width: 30px;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for cardapio in cardapios %}
+                        {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
+                        <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
+                            <td>{{ cardapio['data'] }}</td>
+                            <td>{{ cardapio['dia_semana'] }}</td>
+                            <td contenteditable="true">{{ tipo_refeicao }}</td>
+                            <td class="lista-alimentos">
+                                {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
+                                {{ ingrediente | replace("*", "<span class='warning'>*</span>") | safe}},
                                 {% endfor %}
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                            </td>
+                            <!-- PUBLICAÇÕES -->
+                            <td contenteditable="true" style="background-color: #FFEEAD">
+                                {% for ingrediente in lista_alimentos %}
+                                {{ ingrediente }},
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for ingrediente in cardapio['cardapio_semana_anterior'][tipo_refeicao] %}
+                                {{ ingrediente }},
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <button onclick="get_cardapio(this)" class="btn btn-primary" style="padding: 5px 9px;">
+                                    <span class="glyphicon glyphicon-refresh"></span></button>
+                            </td>
+                            <td>
+                                <button onclick="deleteRow(this)" value='Delete' class="btn btn-danger"
+                                        style="padding: 5px 9px;"><span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <footer class="container-fluid text-center">
-            <div id="historicos_cardapios" style="display:none;">{{historicos_cardapios}}</div>
-            <br>
-            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
-        </footer>
     </div>
+    <footer class="container-fluid text-center">
+        <div id="historicos_cardapios" style="display:none;">{{historicos_cardapios}}</div>
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        </p>
+    </footer>
+</div>
 
-    <!-- Mantem a aba selecionada mesmo depois de mudar de data -->
-    <script>
+<!-- Mantem a aba selecionada mesmo depois de mudar de data -->
+<script>
         $(function() {
             // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -210,13 +230,14 @@
                 $('[href="' + lastTab + '"]').tab('show');
             }
         });
-    </script>
 
-    <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
+</script>
 
-    <!-- Script com a funcionalidade do filtro da tabela -->
-    <script>
+<!-- Botões de ordenação da tabela -->
+<script src="static/js/w3.js"></script>
+
+<!-- Script com a funcionalidade do filtro da tabela -->
+<script>
         /**
         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
         *   but will likely encounter performance issues on larger tables.
@@ -275,10 +296,11 @@
             });
             $('[data-toggle="tooltip"]').tooltip();
         })
-    </script>
 
-    <!-- Substitui palavras da lista de alimentos por receita -->
-    <script>
+</script>
+
+<!-- Substitui palavras da lista de alimentos por receita -->
+<script>
         function substituir() {
             var DE = document.getElementById("DE").value;
             var PARA = document.getElementById("PARA").value;
@@ -289,10 +311,11 @@
                 $($(this).children('td')[4]).html(ingredientes);
             });
         }
-    </script>
 
-    <!-- Cria nota na Merenda -->
-    <script>
+</script>
+
+<!-- Cria nota na Merenda -->
+<script>
         function notaRodape() {
             var NOTA = document.getElementById("NOTA").value;
 
@@ -307,10 +330,11 @@
 
             });
         }
-    </script>
 
-    <!-- POST Salvar modificações-->
-    <script>
+</script>
+
+<!-- POST Salvar modificações-->
+<script>
         function salvaCardapio() {
             var cardapio = {};
 
@@ -356,9 +380,10 @@
                 }
             });
         }
-    </script>
 
-    <script>
+</script>
+
+<script>
         function marcarConferencia(){
             var refeicoes = document.getElementsByClassName("item");
             var refeicoes_lst_id = []
@@ -403,10 +428,11 @@
                 }
             });
         }
-    </script>
 
-    <!-- Sorteia cardapio-->
-    <script>
+</script>
+
+<!-- Sorteia cardapio-->
+<script>
         function get_cardapio(r) {
             var cardapios = {{ historicos_cardapios|tojson|safe }};
             /*window.alert(cardapios['Qui']['D - DESJEJUM']);*/
@@ -419,10 +445,11 @@
             var randomNumber = Math.floor(Math.random()*cardapio.length);
             document.getElementById("task-table").rows[i].cells[4].innerHTML = cardapio[randomNumber];
         }
-    </script>
 
-    <!-- Adiciona nova refeição -->
-    <script>
+</script>
+
+<!-- Adiciona nova refeição -->
+<script>
         function addRow() {
             $('#task-table').append(
                 "<tr class='item' id=''>" +
@@ -437,18 +464,20 @@
                 "</tr>"
             );
         };
-    </script>
 
-    <!-- Deleta refeição -->
-    <script>
+</script>
+
+<!-- Deleta refeição -->
+<script>
         function deleteRow(r) {
             var i = r.parentNode.parentNode.rowIndex;
             document.getElementById("task-table").deleteRow(i);
         }
-    </script>
 
-    <!-- Atualiza id do elemento quando campo é atualizado -->
-    <script>
+</script>
+
+<!-- Atualiza id do elemento quando campo é atualizado -->
+<script>
         $('body').on('focus', '[contenteditable]', function() {
             var $this = $(this);
             $this.data('before', $this.html());
@@ -471,7 +500,8 @@
                 })
             });
 
-    </script>
+
+</script>
 
 </body>
 </html>
