@@ -1,0 +1,42 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="download-mensal">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="/download-planilha" class="form-horizontal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Cardápio Mensal</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="mes">Mês:</label>
+                        <div class="col-sm-5">
+                            <input id="mes" required="required" class="form-control sm-4"  type="number" placeholder="Mês" name="month"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="ano">Ano:</label>
+                        <div class="col-sm-5">
+                            <input id="ano" required="required" class="form-control sm-4" type="number" placeholder="Ano" name="year"/>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer align-center">
+                    <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-success btn-lg">Download</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
+<script>
+    jQuery(function () {
+        {#$('#mes').datepicker({#}
+        {#    format : 'mm/yyyy',#}
+        {##}
+        {#});#}
+    })
+</script>

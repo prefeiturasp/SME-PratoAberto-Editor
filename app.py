@@ -8,7 +8,7 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response, Response)
+                   request, url_for, make_response, Response,send_file)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -17,6 +17,7 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final)
+from helpers import download_spreadsheet
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -1006,6 +1007,20 @@ def remove_menus():
         resp = remover_menus_api(req)
 
         return Response(resp, 200, mimetype='text/json')
+
+@app.route('/download-planilha', methods=['POST'])
+@flask_login.login_required
+def download_speadsheet():
+    if request.method == 'POST':
+        month = request.form['month']
+        year = request.form['year']
+        print('O mês {} de {}'.format(month,year))
+        if download_spreadsheet.gera_excel(year+month):
+            print('Its worked')
+        else:
+            print('Not worked')
+
+    return redirect(request.referrer)
 
 
 # FUNÇÕES AUXILIARES

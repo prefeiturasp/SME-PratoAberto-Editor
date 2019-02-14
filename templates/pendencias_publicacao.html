@@ -65,6 +65,9 @@
     </style>
 </head>
 <body>
+
+{% include 'modal_download.html' %}
+
     <div class="container">
         <!-- NAVBAR -->
         <div class="row">
@@ -82,6 +85,7 @@
                                     <span class="caret"></span></button>
                                 <ul class="dropdown-menu">
                                     <li><a href="/download_publicacao">CARDÁPIOS</a></li>
+                                    <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS MENSAIS</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown" style="padding-right: 7px">
@@ -169,7 +173,7 @@
             </div>
         </div>
 
-{#        {% include 'messages.html' %}#}
+        {% include 'messages.html' %}
 
 
         <!-- Inicia o corpo da pagina -->
@@ -438,7 +442,7 @@
         });
     </script>
 
-    <!-- Fitra a tabela ao mudar o selector -->
+    <!-- Filtra a tabela ao mudar o selector -->
     <script>
         $(function(){
             //change to two ? how?
