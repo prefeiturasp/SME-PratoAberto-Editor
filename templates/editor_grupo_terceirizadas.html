@@ -175,7 +175,7 @@
                         {% for cardapio in cardapios %}
                             {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
                                 <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                                    <td class="data_cardapio" data-val="{{ cardapio['data'] }}">{{ cardapio['data'] }}</td>
+                                    <td>{{ cardapio['data'] }}</td>
                                     <td>{{ cardapio['dia_semana'] }}</td>
                                     <td>{{ tipo_refeicao }}</td>
                                     <td>{{ cardapio['tipo_atendimento'] }}</td>
