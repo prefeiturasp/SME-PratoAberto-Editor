@@ -117,10 +117,15 @@ def deletados():
     if request.method == "GET":
         deletados = get_deletados()
         deletados = sort_array_date_br(deletados)
-
+        deletados_unicos = []
+        d_9s = []
+        for d in deletados:
+            if d[:9] not in d_9s:
+                d_9s.append(d[:9])
+                deletados_unicos.append(d)
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in deletados])
         return render_template("pendencias_deletadas.html",
-                               pendentes=deletados,
+                               pendentes=deletados_unicos,
                                semanas=semanas)
 
 

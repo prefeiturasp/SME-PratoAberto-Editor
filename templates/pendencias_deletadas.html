@@ -218,7 +218,7 @@
                         {% for linha in pendentes %}
                             <tr class="item" style="display: none;">
                                 <td class="id_mongo"><input type="checkbox" class="check_remove"
-                                                            value="{{ linha[9] }}"/></td>
+                                                            value="{{ linha[10] }}"/></td>
                                 <td class="ids" style="display: none;">{{ linha[10] }}</td>
                                 <td class="semana" style="display: none;">{{ linha[8] }}</td>
                                 <td class="tipo_gestao">{{ linha[0] }}</td>
@@ -416,11 +416,10 @@
 
                     json = new Object();
 
-                    json._id = $(this).val();
+                    json._ids = $(this).val();
                     ids.push(json);
                 }
             });
-
 
             if (total == 0) {
                 alert('Nenhum cardápio foi selecionado!');
