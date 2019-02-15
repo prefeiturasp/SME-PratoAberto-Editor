@@ -29,7 +29,7 @@ def gera_excel(ano_mes):
         # ..Path para o Template e arquivo gerado
         # path_template = os.path.join('../static/speadsheet','Template_w.xlsx',)
         path_template = Path(os.path.abspath('static/speadsheet')) /'Template_w.xlsx'
-        path_arquivo = Path(os.path.abspath('tmp'))
+        path_arquivo = Path(os.path.abspath('tmp/'))
 
 
         # ..Parámetros para extração
@@ -339,9 +339,10 @@ def gera_excel(ano_mes):
 
         nome_arquivo = 'Cardapios_CEI_EMEI_EMEF_EJA_' + dt + hr + '.xlsx'
 
-        wb.save(path_arquivo + nome_arquivo)
+        path_absolute = '{}/{}'.format(path_arquivo,nome_arquivo)
+        wb.save( path_absolute )
 
-        return True
+        return path_absolute
 
     except Exception as e:
         print('Não foi possível gerar o arquivo excel.')
