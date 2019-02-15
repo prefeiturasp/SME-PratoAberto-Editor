@@ -8,7 +8,7 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response, Response)
+                   request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -673,9 +673,16 @@ def atualiza_config_cardapio():
 @flask_login.login_required
 def escolas():
     if request.method == "GET":
+
+        if 'refer' in session:
+            if '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
+
         escolas, pagination = get_escolas(params=request.args)
         return render_template("configuracoes_escola_v2.html", escolas=escolas,
-                               pagination=pagination, referrer=request.referrer)
+                               pagination=pagination, referrer=session['refer'])
 
 
 @app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
@@ -1020,10 +1027,10 @@ def download_speadsheet():
         xlsx_file = download_spreadsheet.gera_excel(year + month)
 
         if xlsx_file:
-            flash('{} gerado com sucesso.'.format(xlsx_file), 'success')
-            return redirect(request.referrer)
+            # flash('{} gerado com sucesso.'.format(xlsx_file.split('/')[-1]), 'success')
+            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
-            flash('Error ao tentar gerar relaório!', 'danger')
+            # flash('Error ao tentar gerar relaório!', 'danger')
             return redirect(request.referrer)
 
 
