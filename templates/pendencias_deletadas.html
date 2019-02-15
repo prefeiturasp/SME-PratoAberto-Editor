@@ -85,7 +85,9 @@
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu">
                                 <li><a href="/download_publicacao">CARDÁPIOS</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS MENSAIS</a></li>
                             </ul>
+                            {% include 'modal_download.html' %}
                         </li>
                         <li class="dropdown" style="padding-right: 7px">
                             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
@@ -95,7 +97,9 @@
                                 <li><a href="#" data-toggle="modal" data-target="#xml_form">DIRETA/MISTA/CONVENIADA</a>
                                 </li>
                                 <li><a href="/cria_terceirizada">TERCEIRIZADAS</a></li>
-                                <li><a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a></li>
+                                <li>
+                                    <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
+                                </li>
                             </ul>
                         </li>
 
@@ -146,7 +150,8 @@
     <div class="row">
         <div class="col-12">
             <a href="/pendencias_publicacoes" class="col-md-3 btn btn-lg btn-primary">Cardápios Pendentes</a>
-            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios Publicados</a>
+            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios
+                Publicados</a>
             <a class="col-md-offset-1 col-md-3 btn btn-lg btn-default disabled">Cardápios Deletados</a>
         </div>
     </div>
@@ -226,7 +231,8 @@
                                 <td width="2%"><a class="btn btn-info"
                                                   href="/visualizador_cardapio?{{ linha[7] }}">VER</a></td>
                                 <td width="2%">
-                                    <button class="btn btn-warning pendente" value="PENDENTE">VOLTAR PARA EDIÇÃO</button>
+                                    <button class="btn btn-warning pendente" value="PENDENTE">VOLTAR PARA EDIÇÃO
+                                    </button>
                                 </td>
                                 <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
                             </tr>

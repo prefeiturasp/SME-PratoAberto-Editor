@@ -8,7 +8,7 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response, Response,send_file)
+                   request, url_for, make_response, Response)
 from werkzeug.utils import secure_filename
 
 import cardapio_xml_para_dict
@@ -511,7 +511,6 @@ def visualizador():
         cardapio['data'] = d.strftime('%d/%m/%Y')
         cardapios.append(cardapio)
 
-
     return render_template("visualizador_cardapio.html",
                            url=api + '/editor/cardapios',
                            cardapios=jdata,
@@ -684,10 +683,11 @@ def escolas():
 def excluir_escola(id_escola):
     headers = {'Content-type': 'application/json'}
     r = requests.delete(api + '/editor/escola/{}'.format(str(id_escola)),
-                      headers=headers)
+                        headers=headers)
 
     flash('Escola excluída com sucesso')
     return ('', 200)
+
 
 @app.route('/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
@@ -697,7 +697,6 @@ def atualiza_historico_escolas():
     jdata = [dict(t) for t in set([tuple(d.items()) for d in jdata])]
     flag_verificacoes = True
     mensagens = []
-
 
     # Vefificações
     if len(set([x['_id'] for x in jdata])) > 1:
@@ -744,11 +743,13 @@ def atualiza_historico_escolas():
         # Atualiza informacoes atuais da escola
         if escola_aux['tipo_atendimento'] == 'TERCEIRIZADA':
             escola_atual['agrupamento'] = escola_aux['edital']
-            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'endereco', 'bairro', 'lat', 'lon', 'edital', 'data_inicio_vigencia']
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
+                     'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
         else:
-            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon', 'edital',
+            _keys = ['nome', 'tipo_unidade', 'tipo_atendimento', 'agrupamento', 'endereco', 'bairro', 'lat', 'lon',
+                     'edital',
                      'data_inicio_vigencia']
             for _key in _keys:
                 escola_atual[_key] = escola_aux[_key]
@@ -1008,19 +1009,22 @@ def remove_menus():
 
         return Response(resp, 200, mimetype='text/json')
 
+
 @app.route('/download-planilha', methods=['POST'])
 @flask_login.login_required
 def download_speadsheet():
     if request.method == 'POST':
+
         month = request.form['month']
         year = request.form['year']
-        print('O mês {} de {}'.format(month,year))
-        if download_spreadsheet.gera_excel(year+month):
-            print('Its worked')
-        else:
-            print('Not worked')
+        xlsx_file = download_spreadsheet.gera_excel(year + month)
 
-    return redirect(request.referrer)
+        if xlsx_file:
+            flash('{} gerado com sucesso.'.format(xlsx_file), 'success')
+            return redirect(request.referrer)
+        else:
+            flash('Error ao tentar gerar relaório!', 'danger')
+            return redirect(request.referrer)
 
 
 # FUNÇÕES AUXILIARES
