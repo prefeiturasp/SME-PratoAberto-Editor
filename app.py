@@ -1032,10 +1032,8 @@ def download_speadsheet():
         xlsx_file = download_spreadsheet.gera_excel(year + month)
 
         if xlsx_file:
-            # flash('{} gerado com sucesso.'.format(xlsx_file.split('/')[-1]), 'success')
             return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
-            # flash('Error ao tentar gerar relaório!', 'danger')
             return redirect(request.referrer)
 
 
