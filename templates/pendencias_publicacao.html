@@ -15,7 +15,7 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:30px;
+            margin-top: 30px;
             padding: 0 10px;
         }
 
@@ -23,7 +23,7 @@
             width: 90%;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -32,19 +32,19 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
 
         .table-responsive {
-            height:500px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
         .table > tbody > tr > th,
@@ -59,7 +59,7 @@
 
         .navbar-nav {
             margin-top: 8px;
-            padding-left:10px;
+            padding-left: 10px;
         }
 
         thead th {
@@ -75,282 +75,349 @@
 <body>
 
 
-
-    <div class="container">
-        <!-- NAVBAR -->
-        <div class="row">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápios</a>
-                    </div>
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown" style="padding-right: 7px">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="glyphicon glyphicon-download-alt"></i> DOWNLOADS
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="/download_publicacao">CARDÁPIOS</a></li>
-                                    <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS MENSAIS</a></li>
-                                </ul>
-                                {% include 'modal_download.html' %}
-                            </li>
-                            <li class="dropdown" style="padding-right: 7px">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="fa fa-upload" aria-hidden="true"></i> UPLOAD
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#" data-toggle="modal" data-target="#xml_form">DIRETA/MISTA/CONVENIADA</a></li>
-                                    <li><a href="/cria_terceirizada">TERCEIRIZADAS</a></li>
-                                    <li><a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a></li>
-                                </ul>
-                            </li>
-                            <li class="dropdown" style="padding-right: 7px">
-                                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                                    <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
-                                    <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="/configuracoes_gerais">DE-PARA</a></li>
-                                    <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
-                                    <li><a href="/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
-                                </ul>
-                            </li>
-                            <li style="padding-right: 7px">
-                                <button class="btn btn-default" onclick="location.href='/logout';"><i class="glyphicon glyphicon-user" aria-hidden="true"></i> SAIR</button>
-                            </li>
-                        </ul>
-                    </div>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Editor de Cardápios</a>
                 </div>
-            </nav>
-        </div>
-
-        <!-- Informações do agrupamento -->
-        <div class="row">
-            <div class="col-12" style="text-align: left">
-                <a href="/pendencias_publicacoes" class="col-md-3 btn btn-lg btn-default disabled" >Cardápios Pendentes</a>
-                <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios Publicados</a>
-                <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-danger">Cardápios Deletados</a>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <form method="post" action="/calendario_editor_grupo">
-                    <button  class="col-sm-offset-8 col-sm-3 btn btn-lg btn-info"  type="submit" style="margin-top: 20px; display: none" id="botao_edicao_grupo">EDITAR GRUPO</button>
-                    <input type="hidden" name="json_dump" id="json_dump" value="json_dump">
-                </form>
-            </div>
-        </div>
-
-
-        {% include 'messages.html' %}
-
-
-
-        <div class="row">
-            <div class="col-sm-4 dropdown" style="width: 22%">
-                <label> Selecione a semana:</label>
-                <select class="form-control input"  id="filtro_semana" name="filtro_semana">
-                    {% for semana in semanas: %}
-                        <option>{{ semana }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-
-        <!-- Upload form -->
-        <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
-            <div class="modal-dialog" role="document">
-                <form method="post" action="upload" enctype="multipart/form-data">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">Upload XML</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>
-                                <input type="file" name="file" class="form-control-file"></p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                            <button type="submit" class="btn btn-primary">Enviar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        {% include 'messages.html' %}
-
-
-        <!-- Inicia o corpo da pagina -->
-        <div class="row">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    <h2 class="panel-title">Cardápios Pendentes</h2>
-                    <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
-                            <i class="glyphicon glyphicon-filter"></i>
-                        </span>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
-                </div>
-                <div class="table-responsive">
-                    <div class="panel panel-default">
-                        <table class="table table-hover table-striped" id="task-table">
-                            <thead>
-                                <tr>
-                                    <th style="display: none;"></th>
-                                    <th style="display: none;"></th>
-                                    <th style="min-width: 20px;max-width: 20px"></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')" style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')" style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')" style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">DATA INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')" style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">DATA FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(10)')" style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th ></th>
-                                    <th ></th>
-                                    <th ></th>
-                                    <th style="display: none;"></th>
-                                    <th style="display: none;"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for linha in pendentes %}
-                                <tr class="item" style="display: none;">
-                                    <td class="ids" style="display: none;">{{ linha[9] }}</td>
-                                    <td class="semana" style="display: none;">{{ linha[8] }}</td>
-                                    <td class="box"><input class="box_grupo" style="width: 20px; height: 20px;" type="checkbox" value=""></td>
-                                    <td class="tipo_gestao">{{ linha[0] }}</td>
-                                    <td class="tipo_escola">{{ linha[1] }}</td>
-                                    <td class="agrupamento">{{ linha[2] }}</td>
-                                    <td class="idade">{{ linha[3] }}</td>
-                                    <td class="data_inicial">{{ linha[4] }}</td>
-                                    <td class="data_final">{{ linha[5] }}</td>
-                                    <td class="status">{{ linha[6] }}</td>
-                                    <!--linha [7] vem de pendentes-->
-                                    <!--['TERCEIRIZADA', 'CCI', 'EDITAL 78/2016', 'D - 0 A 5 MESES', '14/01/2019', '18/01/2019', 'PENDENTE', 'tipo_atendimento=TERCEIRIZADA&tipo_unidade=CCI&agrupamento=EDITAL 78/2016&idade=D - 0 A 5 MESES&status=PENDENTE&data_inicial=20190114&data_final=20190118', '2019-3', '5c2de6c354e6257eebc8a2c3,5c2de6c354e6257eebc8a2c2,5c2de6c354e6257eebc8a2c1,5c2de6c354e6257eebc8a2c0,5c2de6c354e6257eebc8a2bf']-->
-                                    <!--o conteudo eh o mesmo do acima, indice 7 vem argumentos e o ultimo inice vem uma lista de ids do mongo...-->
-                                    <!--quando se clica aqui ta fazendo uma requisição maluca que vem la de tras metodo backlog()-->
-                                    <td ><a class="btn btn-info" href="/calendario?{{ linha[7] }}">EDITAR</a></td>
-                                    <td ><button  {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }} class="btn btn-success publicar {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }}"value="PUBLICAR">PUBLICAR</button></td>
-                                    <td ><a value="DELETAR" class="deletar"><i style="color:#D9534F;font-size:30px;text-align: center;cursor: pointer" class="fa">&#xf2d3;</i></a></td>
-                                    <td class="url" style="display: none;">/cardapios?{{ linha[7] }}</td>
-                                    <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown" style="padding-right: 7px">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-download-alt"></i> DOWNLOADS
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/download_publicacao">CARDÁPIOS</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS MENSAIS</a>
+                                </li>
+                            </ul>
+                            {% include 'modal_download.html' %}
+                        </li>
+                        <li class="dropdown" style="padding-right: 7px">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="fa fa-upload" aria-hidden="true"></i> UPLOAD
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" data-toggle="modal" data-target="#xml_form">DIRETA/MISTA/CONVENIADA</a>
+                                </li>
+                                <li><a href="/cria_terceirizada">TERCEIRIZADAS</a></li>
+                                <li>
+                                    <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown" style="padding-right: 7px">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
+                                <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li><a href="/configuracoes_gerais">DE-PARA</a></li>
+                                <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
+                                <li><a href="/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
+                            </ul>
+                        </li>
+                        <li style="padding-right: 7px">
+                            <button class="btn btn-default" onclick="location.href='/logout';"><i
+                                    class="glyphicon glyphicon-user" aria-hidden="true"></i> SAIR
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-
-        <footer class="container-fluid text-center">
-            <br>
-            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
-        </footer>
-{#        {% with messages = get_flashed_messages(with_categories=true) %}#}
-{#            {% if messages %}#}
-{#                <ul class=flashes>#}
-{#                    {% for category, message in messages %}#}
-{#                        <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>#}
-{#                    {% endfor %}#}
-{#                </ul>#}
-{#            {% endif %}#}
-{#        {% endwith %}#}
-
+        </nav>
     </div>
 
-    <!-- Script com a funcionalidade do filtro da tabela -->
-    <script>
-        /**
-        *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
-        *   but will likely encounter performance issues on larger tables.
-        *
-        *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
-        *       $(input-element).filterTable()
-        *
-        *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
-        */
-        (function(){
-            'use strict';
-            var $ = jQuery;
-            $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
-                            $('.filterTable_no_results').remove();
-                            var $this = $(this),
-                                search = $this.val().toLowerCase(),
-                                target = $this.attr('data-filters'),
-                                $target = $(target),
-                                $rows = $target.find('tbody tr');
+    <!-- Informações do agrupamento -->
+    <div class="row">
+        <div class="col-12" style="text-align: left">
+            <a href="/pendencias_publicacoes" class="col-md-3 btn btn-lg btn-default disabled">Cardápios Pendentes</a>
+            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios
+                Publicados</a>
+            <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-danger">Cardápios
+                Deletados</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <form method="post" action="/calendario_editor_grupo">
+                <button class="col-sm-offset-8 col-sm-3 btn btn-lg btn-info" type="submit"
+                        style="margin-top: 20px; display: none" id="botao_edicao_grupo">EDITAR GRUPO
+                </button>
+                <input type="hidden" name="json_dump" id="json_dump" value="json_dump">
+            </form>
+        </div>
+    </div>
 
-                            if(search == '') {
-                                $rows.show();
-                            } else {
-                                $rows.each(function(){
-                                    var $this = $(this);
-                                    $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
-                                })
-                                if($target.find('tbody tr:visible').size() === 0) {
-                                    var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
-                                    $target.find('tbody').append(no_results);
-                                }
+
+    {% include 'messages.html' %}
+
+
+    <div class="row">
+        <div class="col-sm-4 dropdown" style="width: 22%">
+            <label> Selecione a semana:</label>
+            <select class="form-control input" id="filtro_semana" name="filtro_semana">
+                {% for semana in semanas: %}
+                    <option>{{ semana }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Upload form -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
+        <div class="modal-dialog" role="document">
+            <form method="post" action="upload" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Upload XML</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <input type="file" name="file" class="form-control-file"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include 'messages.html' %}
+
+
+    <!-- Inicia o corpo da pagina -->
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h2 class="panel-title">Cardápios Pendentes</h2>
+                <div class="pull-right">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                              data-container="body">
+                            <i class="glyphicon glyphicon-filter"></i>
+                        </span>
+                </div>
+            </div>
+            <div class="panel-body">
+                <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                       data-filters="#task-table" placeholder="Filter Tasks"/>
+            </div>
+            <div class="table-responsive">
+                <div class="panel panel-default">
+                    <table class="table table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th style="display: none;"></th>
+                            <th style="display: none;"></th>
+                            <th style="min-width: 20px;max-width: 20px"></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                                GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                                ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
+                                AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
+                                <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">DATA
+                                INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">DATA
+                                FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(10)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS
+                                CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th style="display: none;"></th>
+                            <th style="display: none;"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for linha in pendentes %}
+                            <tr class="item" style="display: none;">
+                                <td class="ids" style="display: none;">{{ linha[9] }}</td>
+                                <td class="semana" style="display: none;">{{ linha[8] }}</td>
+                                <td class="box"><input class="box_grupo" style="width: 20px; height: 20px;"
+                                                       type="checkbox" value=""></td>
+                                <td class="tipo_gestao">{{ linha[0] }}</td>
+                                <td class="tipo_escola">{{ linha[1] }}</td>
+                                <td class="agrupamento">{{ linha[2] }}</td>
+                                <td class="idade">{{ linha[3] }}</td>
+                                <td class="data_inicial">{{ linha[4] }}</td>
+                                <td class="data_final">{{ linha[5] }}</td>
+                                <td class="status">{{ linha[6] }}</td>
+                                <!--linha [7] vem de pendentes-->
+                                <!--['TERCEIRIZADA', 'CCI', 'EDITAL 78/2016', 'D - 0 A 5 MESES', '14/01/2019', '18/01/2019', 'PENDENTE', 'tipo_atendimento=TERCEIRIZADA&tipo_unidade=CCI&agrupamento=EDITAL 78/2016&idade=D - 0 A 5 MESES&status=PENDENTE&data_inicial=20190114&data_final=20190118', '2019-3', '5c2de6c354e6257eebc8a2c3,5c2de6c354e6257eebc8a2c2,5c2de6c354e6257eebc8a2c1,5c2de6c354e6257eebc8a2c0,5c2de6c354e6257eebc8a2bf']-->
+                                <!--o conteudo eh o mesmo do acima, indice 7 vem argumentos e o ultimo inice vem uma lista de ids do mongo...-->
+                                <!--quando se clica aqui ta fazendo uma requisição maluca que vem la de tras metodo backlog()-->
+                                <td><a class="btn btn-info" href="/calendario?{{ linha[7] }}">EDITAR</a></td>
+                                <td>
+                                    <button  {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }}
+                                            class="btn btn-success publicar {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }}"
+                                            value="PUBLICAR">PUBLICAR
+                                    </button>
+                                </td>
+                                <td><a value="DELETAR" class="deletar"><i
+                                        style="color:#D9534F;font-size:30px;text-align: center;cursor: pointer"
+                                        class="fa">&#xf2d3;</i></a></td>
+                                <td class="url" style="display: none;">/cardapios?{{ linha[7] }}</td>
+                                <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="container-fluid text-center">
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        </p>
+    </footer>
+    {#        {% with messages = get_flashed_messages(with_categories=true) %}#}
+    {#            {% if messages %}#}
+    {#                <ul class=flashes>#}
+    {#                    {% for category, message in messages %}#}
+    {#                        <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>#}
+    {#                    {% endfor %}#}
+    {#                </ul>#}
+    {#            {% endif %}#}
+    {#        {% endwith %}#}
+
+</div>
+
+<!-- Script com a funcionalidade do filtro da tabela -->
+<script>
+    /**
+     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+     *   but will likely encounter performance issues on larger tables.
+     *
+     *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+     *       $(input-element).filterTable()
+     *
+     *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+     */
+    (function () {
+        'use strict';
+        var $ = jQuery;
+        $.fn.extend({
+            filterTable: function () {
+                return this.each(function () {
+                    $(this).on('keyup', function (e) {
+                        $('.filterTable_no_results').remove();
+                        var $this = $(this),
+                            search = $this.val().toLowerCase(),
+                            target = $this.attr('data-filters'),
+                            $target = $(target),
+                            $rows = $target.find('tbody tr');
+
+                        if (search == '') {
+                            $rows.show();
+                        } else {
+                            $rows.each(function () {
+                                var $this = $(this);
+                                $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+                            })
+                            if ($target.find('tbody tr:visible').size() === 0) {
+                                var col_count = $target.find('tr').first().find('td').size();
+                                var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
+                                $target.find('tbody').append(no_results);
                             }
-                        });
+                        }
                     });
-                }
-            });
-            $('[data-action="filter"]').filterTable();
-        })(jQuery);
-
-        $(function(){
-            // attach table filter plugin to inputs
-            $('[data-action="filter"]').filterTable();
-
-            $('.container').on('click', '.panel-heading span.filter', function(e){
-                var $this = $(this),
-                    $panel = $this.parents('.panel');
-
-                $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
-                    $panel.find('.panel-body input').focus();
-                }
-            });
-            $('[data-toggle="tooltip"]').tooltip();
-        })
-    </script>
-
-    <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
-
-    <!-- POSTAR linha da tabela -->
-    <script>
-        function yyyymmdd() {
-                var x = new Date();
-                return x.toISOString();
+                });
             }
-        $(".publicar").click(function() {
+        });
+        $('[data-action="filter"]').filterTable();
+    })(jQuery);
+
+    $(function () {
+        // attach table filter plugin to inputs
+        $('[data-action="filter"]').filterTable();
+
+        $('.container').on('click', '.panel-heading span.filter', function (e) {
+            var $this = $(this),
+                $panel = $this.parents('.panel');
+
+            $panel.find('.panel-body').slideToggle();
+            if ($this.css('display') != 'none') {
+                $panel.find('.panel-body input').focus();
+            }
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    })
+</script>
+
+<!-- Botões de ordenação da tabela -->
+<script src="static/js/w3.js"></script>
+
+<!-- POSTAR linha da tabela -->
+<script>
+    function yyyymmdd() {
+        var x = new Date();
+        return x.toISOString();
+    }
+
+    $(".publicar").click(function () {
+        var $row = $(this).closest("tr");    // Find the row
+        var $text = $row.find(".ids").text(); // Find the text
+        var lista_ids = $text.split(',');
+        var cardapios = []
+        console.log(lista_ids)
+        $.each(lista_ids, function (index, value) {
+
+            cardapios.push({
+                "_id": {"$oid": value},
+                "status": "PUBLICADO",
+                "data_publicacao": yyyymmdd()
+            });
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: '/atualiza_cardapio',
+            data: JSON.stringify(cardapios),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                console.log("Cardapio publicado com sucesso");
+                $row.hide();
+            }
+        });
+
+    });
+
+</script>
+
+<!-- DELETAR linha da tabela -->
+<script>
+    $(".deletar").click(function () {
+        if (confirm('Deseja mover este cardápio para deletados?')) {
+
             var $row = $(this).closest("tr");    // Find the row
             var $text = $row.find(".ids").text(); // Find the text
             var lista_ids = $text.split(',');
-            var cardapios = []
-            console.log(lista_ids)
+            var cardapios = [];
             $.each(lista_ids, function (index, value) {
 
                 cardapios.push({
                     "_id": {"$oid": value},
-                    "status": "PUBLICADO",
-                    "data_publicacao": yyyymmdd()
+                    "status": "DELETADO"
                 });
             });
 
@@ -360,115 +427,81 @@
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
-                success: function(data, textStatus, jqXHR){
-                    console.log("Cardapio publicado com sucesso");
+                success: function (data, textStatus, jqXHR) {
+                    alert('Cardápio removido com sucesso.');
                     $row.hide();
                 }
             });
+        }
+    });
+</script>
 
-        });
+<!-- Lista Edição Grupo -->
+<script>
+    $(".box_grupo").on("click", function () {
+        var numberNotChecked = $('input:checkbox:checked').length;
+        if (numberNotChecked > 1) {
+            document.getElementById('botao_edicao_grupo').style.display = "block";
+        } else {
+            document.getElementById('botao_edicao_grupo').style.display = "none";
+        }
 
-    </script>
-
-    <!-- DELETAR linha da tabela -->
-    <script>
-        $(".deletar").click(function() {
-
-                var $row = $(this).closest("tr");    // Find the row
-                var $text = $row.find(".ids").text(); // Find the text
-                var lista_ids = $text.split(',');
-                var cardapios = [];
-                console.log(lista_ids);
-                $.each(lista_ids, function (index, value) {
-
-                    cardapios.push({
-                        "_id": {"$oid": value},
-                        "status": "DELETADO"
-                    });
-                });
-
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/atualiza_cardapio',
-                    data: JSON.stringify(cardapios),
-                    contentType: 'application/json',
-                    //dataType: 'json',
-                    success: function(data, textStatus, jqXHR){
-                        alert('Cardápio removido com sucesso.');
-                        $row.hide();
-                    }
-                });
-
-        });
-    </script>
-
-    <!-- Lista Edição Grupo -->
-    <script>
-        $(".box_grupo").on( "click", function() {
-            var numberNotChecked = $('input:checkbox:checked').length;
-            if (numberNotChecked > 1) {
-                document.getElementById('botao_edicao_grupo').style.display = "block";
-            } else {
-                document.getElementById('botao_edicao_grupo').style.display = "none";
-            }
-
-            $(document).ready(function() {
-                var tableControl= document.getElementById('task-table');
-                var lista_ids = []
-                arrayOfValues =  $('input:checkbox:checked', tableControl).map(function() {
-                    var row = jQuery(this).closest('tr');
-                    var id = $(row.children('td')[0]).text();
-                    var url = $(row.children('td')[13]).text();
-                    lista_ids.push(url)
-                });
-                /*window.alert(lista_ids)*/
-                $('#json_dump').attr('value', JSON.stringify(lista_ids))
+        $(document).ready(function () {
+            var tableControl = document.getElementById('task-table');
+            var lista_ids = []
+            arrayOfValues = $('input:checkbox:checked', tableControl).map(function () {
+                var row = jQuery(this).closest('tr');
+                var id = $(row.children('td')[0]).text();
+                var url = $(row.children('td')[13]).text();
+                lista_ids.push(url)
             });
-
+            /*window.alert(lista_ids)*/
+            $('#json_dump').attr('value', JSON.stringify(lista_ids))
         });
-    </script>
 
-    <!-- Pop erro -->
+    });
+</script>
+
+<!-- Pop erro -->
 {#    <script>#}
 {#        if ($('#mensagem').length) {#}
 {#            window.alert($('#mensagem').text())#}
 {#        }#}
 {#    </script>#}
 
-    <!-- Filtro da semana ao carregar a pagina -->
-    <script>
-        $(document).ready(function() {
-            var semana_filtro = $('#filtro_semana').val()
-            $('#task-table tr').not(':first').each(function() {
+<!-- Filtro da semana ao carregar a pagina -->
+<script>
+    $(document).ready(function () {
+        var semana_filtro = $('#filtro_semana').val()
+        $('#task-table tr').not(':first').each(function () {
+            var semana_linha = $($(this).children('td')[14]).text()
+            if (semana_linha == semana_filtro) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+</script>
+
+<!-- Filtra a tabela ao mudar o selector -->
+<script>
+    $(function () {
+        //change to two ? how?
+        $('#filtro_semana').change(function () {
+            var semana_filtro = $(this).val();
+            $('#task-table tr').not(':first').each(function () {
                 var semana_linha = $($(this).children('td')[14]).text()
                 if (semana_linha == semana_filtro) {
                     $(this).show();
                 } else {
                     $(this).hide();
                 }
+
             });
         });
-    </script>
-
-    <!-- Filtra a tabela ao mudar o selector -->
-    <script>
-        $(function(){
-            //change to two ? how?
-            $('#filtro_semana').change(function(){
-                var semana_filtro = $(this).val();
-                $('#task-table tr').not(':first').each(function() {
-                    var semana_linha = $($(this).children('td')[14]).text()
-                    if (semana_linha == semana_filtro) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-
-                });
-            });
-        });
-    </script>
+    });
+</script>
 
 
 </body>

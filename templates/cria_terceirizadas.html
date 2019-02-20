@@ -180,7 +180,7 @@
                 </div>
                 <div class="col-sm-8">
                     <div id="lista-escolas" style="text-align: left">
-                        {% for unidade in tipo_unidade: %}
+                        {% for unidade in tipo_unidade %}
                         <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ unidade }}">{{ unidade }} &times;</span>
                         {% endfor %}
                     </div>
@@ -200,7 +200,7 @@
                 </div>
                 <div class="col-sm-8">
                     <div id="lista-idade" style="text-align: left">
-                        {% for idade in idades: %}
+                        {% for idade in idades %}
                         <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px;cursor: pointer;" id="{{ idade }}">{{ idade }} &times;</span>
                         {% endfor %}
                     </div>
@@ -220,7 +220,7 @@
                 </div>
                 <div class="col-sm-8">
                     <div id="lista-refeicao" style="text-align: left">
-                        {% for refeicao in refeicoes: %}
+                        {% for refeicao in refeicoes %}
                         <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ refeicao }}">{{ refeicao }} &times;</span>
                         {% endfor %}
                     </div>

@@ -356,7 +356,6 @@ def atualiza_cardapio2():
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
-
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -1028,10 +1027,16 @@ def download_speadsheet():
         xlsx_file = download_spreadsheet.gera_excel(year + month)
 
         if xlsx_file:
+
             return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
+
+
+
+def removing_xslx_daemon():
+    pass
 
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
