@@ -102,3 +102,27 @@ def generate_csv_str(cardapio_aux):
     cardapio_aux = header + cardapio_aux
     csvlist = '\n'.join(['"' + str('";"'.join(row)) + '"' for row in cardapio_aux])
     return csvlist
+
+
+def date_to_str(date):
+    return datetime.datetime.strftime(date, '%d/%m/%Y')
+
+
+def monday_to_friday(date):
+    return date + datetime.timedelta(days=4)
+
+
+def last_monday(date):
+    while date.weekday() != 0:
+        date -= datetime.timedelta(days=1)
+    return date
+
+
+def generate_ranges():
+    start_date = datetime.datetime.utcnow() + datetime.timedelta(days=14)
+    current_day = datetime.datetime(2018, 2, 5)
+    dates = ['18/12/2017 - 22/12/2017']
+    while current_day < start_date:
+        dates.append(date_to_str(current_day) + ' - ' + date_to_str(monday_to_friday(current_day)))
+        current_day += datetime.timedelta(days=7)
+    return dates

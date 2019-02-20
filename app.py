@@ -16,7 +16,8 @@ import cardapios_terceirizadas
 import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
-                   sort_array_by_date_and_index, fix_date_mapa_final)
+                   sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
+                   last_monday, monday_to_friday)
 from helpers import download_spreadsheet
 
 app = Flask(__name__)
@@ -129,48 +130,43 @@ def deletados():
                                semanas=semanas)
 
 
-@app.route("/pendencias_publicadas", methods=["GET", "POST"])
+@app.route("/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
-    if request.method == "GET":
-        publicados = get_publicados()
-        publicados = sort_array_date_br(publicados)
-        semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in publicados])
-        last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        last_three_months = datetime.datetime.utcnow() - datetime.timedelta(days=90)
-        last_six_months = datetime.datetime.utcnow() - datetime.timedelta(days=180)
-        last_year = datetime.datetime.utcnow() - datetime.timedelta(days=365)
-        last_month_dates = []
-        last_three_months_dates = []
-        last_six_months_dates = []
-        last_year_months_dates = []
-        all = []
-        for semana in semanas:
-            if datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_month:
-                last_month_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_three_months:
-                last_three_months_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_six_months:
-                last_six_months_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_year:
-                last_year_months_dates.append(semana)
-            else:
-                all.append(semana)
-        last_three_months_dates += last_month_dates
-        last_six_months_dates += last_three_months_dates
-        last_year_months_dates += last_six_months_dates
-        all += last_year_months_dates
-        periodos_para_buscar = {
-            'último mês': list(reversed(last_month_dates)),
-            'últimos 3 meses': list(reversed(last_three_months_dates)),
-            'últimos 6 meses': list(reversed(last_six_months_dates)),
-            'últimos 12 meses': list(reversed(last_year_months_dates)),
-            'todos': all
-        }
-        return render_template("pendencias_publicadas.html",
-                               pendentes=publicados,
-                               semanas=semanas,
-                               periodos=periodos_para_buscar)
+    week_filter = request.args.get('filtro_semana_mes', None)
+    if week_filter:
+        days = week_filter.split(' - ')
+        initial_date = datetime.datetime.strptime(days[0], '%d/%m/%Y').strftime('%Y%m%d')
+        end_date = datetime.datetime.strptime(days[1], '%d/%m/%Y').strftime('%Y%m%d')
+    else:
+        initial_date = last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14)).strftime('%Y%m%d')
+        end_date = monday_to_friday(last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14))).strftime(
+            '%Y%m%d')
+    published_menus = sort_array_date_br(get_publicados(initial_date, end_date))
+    period = request.args.get('filtro_periodo', '30')
+    if period not in [None, 'all']:
+        date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
+    else:
+        date_range = None
+    periods = []
+    weeks = reversed(generate_ranges())
+    for week in weeks:
+        if date_range:
+            if datetime.datetime.strptime(week.split(' ')[0], '%d/%m/%Y') > date_range:
+                periods.append(week)
+        else:
+            periods.append(week)
+    period_ranges = {
+        'último mês': '30',
+        'últimos 3 meses': '90',
+        'últimos 6 meses': '180',
+        'últimos 12 meses': '365',
+        'todos': 'all'
+    }
+    return render_template("pendencias_publicadas_v2.html",
+                           published_menus=published_menus,
+                           week_ranges=list(periods),
+                           period_ranges=period_ranges)
 
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
@@ -1156,8 +1152,11 @@ def get_deletados():
     return pendentes
 
 
-def get_publicados():
-    url = api + '/editor/cardapios?status=PUBLICADO'
+def get_publicados(_data_inicial=None, _data_final=None):
+    if _data_inicial and _data_final:
+        url = api + '/editor/cardapios?status=PUBLICADO&data_inicial=' + _data_inicial + '&data_final=' + _data_final
+    else:
+        url = api + '/editor/cardapios?status=PUBLICADO'
     r = requests.get(url)
     refeicoes = r.json()
 
@@ -1204,7 +1203,6 @@ def get_publicados():
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
-
     return pendentes
 
 
