@@ -928,7 +928,6 @@ def atualiza_historico_escolas():
                         escola['lon'] = float(escola['lon'])
                     except:
                         pass
-                        pass
 
                 escola_atual['historico'].append(escola)
 
