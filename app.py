@@ -758,43 +758,39 @@ class SchoolRegistrationForm(Form):
                                          ])
 
 
-@app.route('/adicionar_escola', methods=['GET', 'POST'])
+@app.route('/adicionar_escola', methods=['POST'])
 @flask_login.login_required
 def adicionar_escola():
     form = SchoolRegistrationForm(request.form)
-    if request.method == "GET":
-        """
-        if 'refer' in session:
-            if '?' not in request.referrer:
-                session['refer'] = request.referrer
-        else:
-            session['refer'] = request.referrer
-        """
-    if request.method == 'POST' and form.validate():
-        new_school = dict()
-        new_school['_id'] = form.cod_eol.data
-        new_school['nome'] = form.school_name.data.upper()
-        new_school['tipo_unidade'] = form.school_type.data
-        new_school['tipo_atendimento'] = form.management.data
-        new_school['agrupamento'] = form.grouping.data
-        new_school['endereco'] = form.address.data.upper()
-        new_school['bairro'] = form.neighbourhood.data.upper()
-        new_school['lat'] = form.latitude.data if form.latitude.data is not None else ''
-        new_school['lon'] = form.longitude.data if form.longitude.data is not None else ''
-        new_school['telefone'] = ' '
-        new_school['edital'] = form.edital.data if form.edital.data != 'Nenhum' else ''
-        new_school['idades'] = form.ages.data
-        new_school['refeicoes'] = form.meals.data
-        new_school['data_inicio_vigencia'] = ''
-        new_school['historico'] = []
-        new_school['status'] = 'ativo'
-        headers = {'Content-type': 'application/json'}
-        r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
-                          data=json.dumps(new_school),
-                          headers=headers)
-        flash('Informações salvas com sucesso')
+    if not form.validate():
+        flash('Ocorreu um erro ao salvar as informações')
         return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
-    return render_template("adicionar_escola.html", form=form)#,  referrer=session['refer'])
+    new_school = dict()
+    new_school['_id'] = form.cod_eol.data
+    new_school['nome'] = form.school_name.data.upper()
+    new_school['tipo_unidade'] = form.school_type.data
+    new_school['tipo_atendimento'] = form.management.data
+    new_school['agrupamento'] = form.grouping.data
+    new_school['endereco'] = form.address.data.upper()
+    new_school['bairro'] = form.neighbourhood.data.upper()
+    new_school['lat'] = form.latitude.data if form.latitude.data is not None else ''
+    new_school['lon'] = form.longitude.data if form.longitude.data is not None else ''
+    new_school['telefone'] = ' '
+    new_school['edital'] = form.edital.data if form.edital.data != 'Nenhum' else ''
+    new_school['idades'] = form.ages.data
+    new_school['refeicoes'] = form.meals.data
+    new_school['data_inicio_vigencia'] = ''
+    new_school['historico'] = []
+    new_school['status'] = 'ativo'
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
+                      data=json.dumps(new_school),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 @app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
