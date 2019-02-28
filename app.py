@@ -25,6 +25,10 @@ from helpers import download_spreadsheet
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
+from dotenv import load_dotenv
+
+load_dotenv('.env')
+
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
 _user = os.environ.get('PRATO_USER')
@@ -671,14 +675,18 @@ def atualiza_config_cardapio():
         return ('', 200)
 
 
-@app.route('/escolas', methods=['GET'])
+@app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
+@app.route('/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
-def escolas():
+def escolas(id_escola=None):
     form = SchoolRegistrationForm(request.form)
+    if id_escola:
+        school = get_escola(id_escola)
+        print(school)
+        form.cod_eol.data = id_escola
     if request.method == "GET":
-
         if 'refer' in session:
-            if '?' not in request.referrer:
+            if request.referrer and '?' not in request.referrer:
                 session['refer'] = request.referrer
         else:
             session['refer'] = request.referrer
