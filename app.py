@@ -171,6 +171,21 @@ def publicados():
                            period_ranges=period_ranges)
 
 
+@app.route("/edicao_de_notas", methods=["GET", "POST"])
+@flask_login.login_required
+def edicao_de_notas():
+    if request.method == 'GET':
+        headers = {'Content-type': 'application/json'}
+        response = requests.get(api + '/editor/editar_notas', headers=headers)
+        notes = response.json()['notas']
+    if request.method == "POST":
+        data = request.get_data()
+        notes = json.loads(data)
+        headers = {'Content-type': 'application/json'}
+        requests.post(api + '/editor/editar_notas', data=data, headers=headers)
+    return render_template("edicao_de_notas.html", notes=notes)
+
+
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
 @app.route('/upload', methods=['POST'])
 @flask_login.login_required
