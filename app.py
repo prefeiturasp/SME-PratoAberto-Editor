@@ -25,10 +25,6 @@ from helpers import download_spreadsheet
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
-from dotenv import load_dotenv
-
-load_dotenv('.env')
-
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
 _user = os.environ.get('PRATO_USER')
@@ -681,16 +677,25 @@ def atualiza_config_cardapio():
 def escolas(id_escola=None):
     form = SchoolRegistrationForm(request.form)
     if id_escola:
-        school = get_escola(id_escola)
-        print(school)
+        school = get_escola(id_escola, raw=True)
         form.cod_eol.data = id_escola
+        form.school_name.data = school['nome'].upper()
+        form.school_type.data = school['tipo_unidade']
+        form.management.data = school['tipo_atendimento']
+        form.grouping.data = school['agrupamento']
+        form.address.data = school['endereco'].upper()
+        form.neighbourhood.data = school['bairro'].upper()
+        form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
+        form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
+        form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
+        form.ages.data = school['idades']
+        form.meals.data = school['refeicoes']
     if request.method == "GET":
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
                 session['refer'] = request.referrer
         else:
             session['refer'] = request.referrer
-
         escolas, pagination = get_escolas(params=request.args)
     return render_template("configuracoes_escola_v2.html", escolas=escolas,
                                pagination=pagination, referrer=session['refer'], form=form)
@@ -1341,8 +1346,8 @@ def get_escolas(params=None):
         return escolas, pagination
 
 
-def get_escola(cod_eol):
-    url = api + '/escola/{}'.format(cod_eol)
+def get_escola(cod_eol, raw=False):
+    url = api + '/escola/{}?raw={}'.format(cod_eol, raw)
     r = requests.get(url)
     escola = r.json()
     if r.status_code != 200:
