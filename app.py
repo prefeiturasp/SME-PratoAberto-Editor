@@ -10,6 +10,8 @@ import requests
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
+from wtforms import (Form, StringField, validators, SelectField,
+                    SelectMultipleField, FloatField, IntegerField)
 
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
@@ -163,7 +165,7 @@ def publicados():
         'últimos 12 meses': '365',
         'todos': 'all'
     }
-    return render_template("pendencias_publicadas_v2.html",
+    return render_template("pendencias_publicadas.html",
                            published_menus=published_menus,
                            week_ranges=list(periods),
                            period_ranges=period_ranges)
@@ -669,20 +671,139 @@ def atualiza_config_cardapio():
         return ('', 200)
 
 
-@app.route('/escolas', methods=['GET'])
+@app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
+@app.route('/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
-def escolas():
+def escolas(id_escola=None):
+    form = SchoolRegistrationForm(request.form)
+    if id_escola:
+        school = get_escola(id_escola, raw=True)
+        form.cod_eol.data = id_escola
+        form.school_name.data = school['nome'].upper()
+        form.school_type.data = school['tipo_unidade']
+        form.management.data = school['tipo_atendimento']
+        form.grouping.data = school['agrupamento']
+        form.address.data = school['endereco'].upper()
+        form.neighbourhood.data = school['bairro'].upper()
+        form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
+        form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
+        form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
+        form.ages.data = school['idades']
+        form.meals.data = school['refeicoes']
     if request.method == "GET":
-
         if 'refer' in session:
-            if '?' not in request.referrer:
+            if request.referrer and '?' not in request.referrer:
                 session['refer'] = request.referrer
         else:
             session['refer'] = request.referrer
-
         escolas, pagination = get_escolas(params=request.args)
-        return render_template("configuracoes_escola_v2.html", escolas=escolas,
-                               pagination=pagination, referrer=session['refer'])
+    return render_template("configuracoes_escola_v2.html", escolas=escolas,
+                               pagination=pagination, referrer=session['refer'], form=form)
+
+
+class SchoolRegistrationForm(Form):
+    cod_eol = IntegerField('Código EOL', [validators.required()])
+    management = SelectField('Gestão', choices=[('DIRETA', 'DIRETA'),
+                                                ('MISTA', 'MISTA'),
+                                                ('TERCEIRIZADA', 'TERCEIRIZADA')
+                                                ])
+    school_type = SelectField('Tipo de Escola', choices=[('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
+                                             ('EMEI', 'EMEI'),
+                                             ('EMEF', 'EMEF'),
+                                             ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
+                                             ('CEU_GESTÃO', 'CEU_GESTÃO'),
+                                             ('CIEJA', 'CIEJA'),
+                                             ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
+                                             ('SME_CONVÊNIO', 'SME_CONVÊNIO')
+                                             ])
+    grouping = SelectField('Agrupamento', choices=[('1', '1'),
+                                                   ('2', '2'),
+                                                   ('3', '3'),
+                                                   ('EDITAL 78/2016', 'EDITAL 78/2016')
+                                                   ])
+    edital = SelectField('Edital', choices=[('Nenhum', 'Nenhum'),
+                                            ('EDITAL 78/2016', 'EDITAL 78/2016')
+                                            ])
+    school_name = StringField('Nome da Escola', [validators.required()])
+    address = StringField('Endereço', [validators.required()])
+    neighbourhood = StringField('Bairro', [validators.required()])
+    latitude = FloatField('Latitude', [validators.optional()])
+    longitude = FloatField('Longitude', [validators.optional()])
+    meals = SelectMultipleField('Refeições',
+                                choices=[('A - ALMOCO', 'A - ALMOCO'),
+                                         ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
+                                         ('C - COLACAO', 'C - COLACAO'),
+                                         ('D - DESJEJUM', 'D - DESJEJUM'),
+                                         ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
+                                         ('J - JANTAR', 'J - JANTAR'),
+                                         ('L - LANCHE', 'L - LANCHE'),
+                                         ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
+                                         ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
+                                         ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
+                                         ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
+                                         ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
+                                         ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
+                                         ])
+    ages = SelectMultipleField('Idades',
+                                choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
+                                         ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
+                                         ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
+                                         ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
+                                         ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
+                                         ('D - 6 MESES', 'D - 6 MESES'),
+                                         ('D - 7 MESES', 'D - 7 MESES'),
+                                         ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
+                                         ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
+                                         ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
+                                         ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
+                                         ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
+                                         ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
+                                         ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
+                                         ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
+                                         ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
+                                         ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
+                                         ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
+                                         ('H - ADULTO', 'H - ADULTO'),
+                                         ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
+                                         ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
+                                         ('V - PROFESSOR', 'V - PROFESSOR'),
+                                         ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
+                                         ])
+
+
+@app.route('/adicionar_escola', methods=['POST'])
+@flask_login.login_required
+def adicionar_escola():
+    form = SchoolRegistrationForm(request.form)
+    if not form.validate():
+        flash('Ocorreu um erro ao salvar as informações')
+        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+    new_school = dict()
+    new_school['_id'] = form.cod_eol.data
+    new_school['nome'] = form.school_name.data.upper()
+    new_school['tipo_unidade'] = form.school_type.data
+    new_school['tipo_atendimento'] = form.management.data
+    new_school['agrupamento'] = form.grouping.data
+    new_school['endereco'] = form.address.data.upper()
+    new_school['bairro'] = form.neighbourhood.data.upper()
+    new_school['lat'] = form.latitude.data if form.latitude.data is not None else ''
+    new_school['lon'] = form.longitude.data if form.longitude.data is not None else ''
+    new_school['telefone'] = ' '
+    new_school['edital'] = form.edital.data if form.edital.data != 'Nenhum' else ''
+    new_school['idades'] = form.ages.data
+    new_school['refeicoes'] = form.meals.data
+    new_school['data_inicio_vigencia'] = ''
+    new_school['historico'] = []
+    new_school['status'] = 'ativo'
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
+                      data=json.dumps(new_school),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 @app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
@@ -1225,8 +1346,8 @@ def get_escolas(params=None):
         return escolas, pagination
 
 
-def get_escola(cod_eol):
-    url = api + '/escola/{}'.format(cod_eol)
+def get_escola(cod_eol, raw=False):
+    url = api + '/escola/{}?raw={}'.format(cod_eol, raw)
     r = requests.get(url)
     escola = r.json()
     if r.status_code != 200:
