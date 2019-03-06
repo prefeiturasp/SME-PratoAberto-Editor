@@ -679,7 +679,7 @@
 </script>
 <script>
     $(window).on('load',function(){
-        if (location.href.includes('addSchool=true')){
+        if (location.href.includes('addSchool=true') && location.href.includes('page=1')){
             $('#modalAddSchoolForm').modal('show');
         }
     });
