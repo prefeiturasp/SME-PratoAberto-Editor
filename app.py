@@ -1157,7 +1157,13 @@ def remove_menus():
 @flask_login.login_required
 def download_speadsheet():
     if request.method == 'POST':
-
+        """
+        _from = request.form['from'].replace('-', '')
+        _to = request.form['to'].replace('-', '')
+        management = request.form['management']
+        type_school = request.form['type_school']
+        print(_from, _to, management, type_school)
+        """
         month = request.form['month']
         year = request.form['year']
         xlsx_file = download_spreadsheet.gera_excel(year + month)
