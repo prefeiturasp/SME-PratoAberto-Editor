@@ -9,58 +9,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="control-label col-sm-2" for="mes">Mês:</label>
-                        <div class="col-sm-5">
-                            <select name="month" class="form-control">
-                                <option value="1">Janeiro</option>
-                                <option value="2">Fevereiro</option>
-                                <option value="3">Março</option>
-                                <option value="4">Abril</option>
-                                <option value="5">Maio</option>
-                                <option value="6">Junho</option>
-                                <option value="7">Julho</option>
-                                <option value="8">Agosto</option>
-                                <option value="9">Setembro</option>
-                                <option value="10">Outubro</option>
-                                <option value="11">Novembro</option>
-                                <option value="12">Dezembro</option>
-                            </select>
+                        <label class="control-label col-sm-4">De:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="date" name="from" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-2" for="ano">Ano:</label>
-                        <div class="col-sm-5">
-                            <select name="year" class="form-control">
-                                <option value="2015">2015</option>
-                                <option value="2016">2016</option>
-                                <option value="2017">2017</option>
-                                <option value="2018">2018</option>
-                                <option value="2019">2019</option>
-                                <option value="2020">2020</option>
-                                <option value="2021">2021</option>
-                                <option value="2022">2022</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <!--div class="modal-body">
-                    <div class="form-group">
-                        <label class="control-label col-sm-2">De:</label>
-                        <div class="col-sm-5">
-                          <input type="date" name="from">
+                        <label class="control-label col-sm-4">Até:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="date" name="to" required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-2">Até:</label>
-                        <div class="col-sm-5">
-                          <input type="date" name="to">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2">Gestão</label>
-                        <div class="col-sm-5">
+                        <label class="control-label col-sm-4">Gestão</label>
+                        <div class="col-sm-6">
                             <select name="management" class="form-control">
                                 <option value="DIRETA">DIRETA</option>
                                 <option value="MISTA">MISTA</option>
@@ -69,21 +31,26 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-sm-2">Tipo de Escola</label>
-                        <div class="col-sm-5">
+                        <label class="control-label col-sm-4">Tipo de Escola</label>
+                        <div class="col-sm-6">
                             <select name="type_school" class="form-control">
-                                <option value="CEI_PARCEIRO_(RP)">CEI_PARCEIRO_(RP)</option>
-                                <option value="EMEI">EMEI</option>
-                                <option value="EMEF">EMEF</option>
-                                <option value="CEI_MUNICIPAL">CEI_MUNICIPAL</option>
-                                <option value="CEU_GESTÃO">CEU_GESTÃO</option>
-                                <option value="CIEJA">CIEJA</option>
-                                <option value="CEI_CONVENIADO">CEI_CONVENIADO</option>
-                                <option value="SME_CONVÊNIO">SME_CONVÊNIO</option>
+                                 <option value="CCI">CCI</option>
+                                 <option value="CEI_CONVENIADO">CEI_CONVENIADO</option>
+                                 <option value="CEI_MUNICIPAL">CEI_MUNICIPAL</option>
+                                 <option value="CEI_PARCEIRO_(RP)">CEI_PARCEIRO_(RP)</option>
+                                 <option value="CEMEI">CEMEI</option>
+                                 <option value="CEU_GESTÃO">CEU_GESTÃO</option>
+                                 <option value="CIEJA">CIEJA</option>
+                                 <option value="EMEBS">EMEBS</option>
+                                 <option value="EMEF">EMEF</option>
+                                 <option value="EMEFM">EMEFM</option>
+                                 <option value="EMEI">EMEI</option>
+                                 <option value="PROJETO_CECI">PROJETO_CECI</option>
+                                 <option value="SME_CONVÊNIO">SME_CONVÊNIO</option>
                             </select>
                         </div>
                     </div>
-                </div-->
+                </div>
                 <div class="modal-footer align-center">
                     <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Fechar</button>
                     <button type="submit" class="btn btn-success btn-lg">Download</button>
