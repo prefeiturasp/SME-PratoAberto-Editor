@@ -183,7 +183,7 @@ def edicao_de_notas():
         notes = json.loads(data)
         headers = {'Content-type': 'application/json'}
         requests.post(api + '/editor/editar_notas', data=data, headers=headers)
-    return render_template("edicao_de_notas.html", notes=notes)
+    return render_template("edicao_de_notas.html", notes=notes, referrer=request.referrer)
 
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
@@ -722,15 +722,20 @@ class SchoolRegistrationForm(Form):
                                                 ('MISTA', 'MISTA'),
                                                 ('TERCEIRIZADA', 'TERCEIRIZADA')
                                                 ])
-    school_type = SelectField('Tipo de Escola', choices=[('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
-                                             ('EMEI', 'EMEI'),
-                                             ('EMEF', 'EMEF'),
-                                             ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
-                                             ('CEU_GESTÃO', 'CEU_GESTÃO'),
-                                             ('CIEJA', 'CIEJA'),
-                                             ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
-                                             ('SME_CONVÊNIO', 'SME_CONVÊNIO')
-                                             ])
+    school_type = SelectField('Tipo de Escola', choices=[('CCI', 'CCI'),
+                                                         ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
+                                                         ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
+                                                         ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
+                                                         ('CEMEI', 'CEMEI'),
+                                                         ('CEU_GESTÃO', 'CEU_GESTÃO'),
+                                                         ('CIEJA', 'CIEJA'),
+                                                         ('EMEBS', 'EMEBS'),
+                                                         ('EMEF', 'EMEF'),
+                                                         ('EMEFM', 'EMEFM'),
+                                                         ('EMEI', 'EMEI'),
+                                                         ('PROJETO_CECI', 'PROJETO_CECI'),
+                                                         ('SME_CONVÊNIO', 'SME_CONVÊNIO')
+                                                         ])
     grouping = SelectField('Agrupamento', choices=[('1', '1'),
                                                    ('2', '2'),
                                                    ('3', '3'),
