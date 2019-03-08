@@ -1410,4 +1410,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(host='0.0.0.0', port=5002)
+    app.run(port=7000,debug=True)

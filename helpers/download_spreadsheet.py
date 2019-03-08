@@ -1,5 +1,5 @@
 #
-# extrac_cardapios_01.py
+# gera_excel.py
 #
 #   Gera arquivo excel com os cardápios publicados das terceirizadas para as escolas tipo CEI, EMEI, EMEF e EJA
 #   Ref: SME - Alimentação\Sprint 4 - Correções e Melhorias do Prato, item 663.
