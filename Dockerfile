@@ -1,14 +1,16 @@
-FROM python:3.6-slim-jessie
+FROM python:3.6-alpine3.8
 
 ADD . /code
 WORKDIR /code
 
-RUN apt-get update -y && \
-    apt-get install \
-     build-essential \
-     python3-dev \
-     python3-pip \
-     python3-setuptools \
-     python3-wheel -y && \
-    apt-get clean && \
-    python -m pip --no-cache install -r requirements.txt
+
+RUN apk update && apk add --no-cache \
+      --virtual=.build-dependencies \
+      gcc \
+      musl-dev \
+      postgresql-dev \
+      git \
+      python3-dev && \
+    python -m pip --no-cache install -U pip && \
+    python -m pip --no-cache install -r requirements.txt && \
+    apk del --purge .build-dependencies
