@@ -5,6 +5,7 @@ Click==7.0
 et-xmlfile==1.0.1
 Flask==1.0.2
 Flask-Login==0.4.1
+Flask-WTF==0.14.2
 gunicorn==19.9.0
 idna==2.8
 itsdangerous==1.1.0
@@ -14,7 +15,6 @@ MarkupSafe==1.1.0
 numpy==1.16.1
 openpyxl==2.6.0
 pandas==0.24.1
-pkg-resources==0.0.0
 pymongo==3.7.2
 python-dateutil==2.8.0
 python-dotenv==0.10.1

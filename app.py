@@ -8,15 +8,18 @@ import flask_login
 import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
-                   request, url_for, make_response, Response)
+                   request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
+from wtforms import (Form, StringField, validators, SelectField,
+                    SelectMultipleField, FloatField, IntegerField)
 
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
-                   sort_array_by_date_and_index, fix_date_mapa_final)
+                   sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
+                   last_monday, monday_to_friday)
 from helpers import download_spreadsheet
 
 app = Flask(__name__)
@@ -117,55 +120,70 @@ def deletados():
     if request.method == "GET":
         deletados = get_deletados()
         deletados = sort_array_date_br(deletados)
-
+        deletados_unicos = []
+        d_9s = []
+        for d in deletados:
+            if d[:9] not in d_9s:
+                d_9s.append(d[:9])
+                deletados_unicos.append(d)
         semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in deletados])
         return render_template("pendencias_deletadas.html",
-                               pendentes=deletados,
+                               pendentes=deletados_unicos,
                                semanas=semanas)
 
 
-@app.route("/pendencias_publicadas", methods=["GET", "POST"])
+@app.route("/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
-    if request.method == "GET":
-        publicados = get_publicados()
-        publicados = sort_array_date_br(publicados)
-        semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in publicados])
-        last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-        last_three_months = datetime.datetime.utcnow() - datetime.timedelta(days=90)
-        last_six_months = datetime.datetime.utcnow() - datetime.timedelta(days=180)
-        last_year = datetime.datetime.utcnow() - datetime.timedelta(days=365)
-        last_month_dates = []
-        last_three_months_dates = []
-        last_six_months_dates = []
-        last_year_months_dates = []
-        all = []
-        for semana in semanas:
-            if datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_month:
-                last_month_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_three_months:
-                last_three_months_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_six_months:
-                last_six_months_dates.append(semana)
-            elif datetime.datetime.strptime(semana.split(' ')[0], '%d/%m/%Y') > last_year:
-                last_year_months_dates.append(semana)
-            else:
-                all.append(semana)
-        last_three_months_dates += last_month_dates
-        last_six_months_dates += last_three_months_dates
-        last_year_months_dates += last_six_months_dates
-        all += last_year_months_dates
-        periodos_para_buscar = {
-            'último mês': list(reversed(last_month_dates)),
-            'últimos 3 meses': list(reversed(last_three_months_dates)),
-            'últimos 6 meses': list(reversed(last_six_months_dates)),
-            'últimos 12 meses': list(reversed(last_year_months_dates)),
-            'todos': all
-        }
-        return render_template("pendencias_publicadas.html",
-                               pendentes=publicados,
-                               semanas=semanas,
-                               periodos=periodos_para_buscar)
+    week_filter = request.args.get('filtro_semana_mes', None)
+    if week_filter:
+        days = week_filter.split(' - ')
+        initial_date = datetime.datetime.strptime(days[0], '%d/%m/%Y').strftime('%Y%m%d')
+        end_date = datetime.datetime.strptime(days[1], '%d/%m/%Y').strftime('%Y%m%d')
+    else:
+        initial_date = last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14)).strftime('%Y%m%d')
+        end_date = monday_to_friday(last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14))).strftime(
+            '%Y%m%d')
+    published_menus = sort_array_date_br(get_publicados(initial_date, end_date))
+    period = request.args.get('filtro_periodo', '30')
+    if period not in [None, 'all']:
+        date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
+    else:
+        date_range = None
+    periods = []
+    weeks = reversed(generate_ranges())
+    for week in weeks:
+        if date_range:
+            if datetime.datetime.strptime(week.split(' ')[0], '%d/%m/%Y') > date_range:
+                periods.append(week)
+        else:
+            periods.append(week)
+    period_ranges = {
+        'último mês': '30',
+        'últimos 3 meses': '90',
+        'últimos 6 meses': '180',
+        'últimos 12 meses': '365',
+        'todos': 'all'
+    }
+    return render_template("pendencias_publicadas.html",
+                           published_menus=published_menus,
+                           week_ranges=list(periods),
+                           period_ranges=period_ranges)
+
+
+@app.route("/edicao_de_notas", methods=["GET", "POST"])
+@flask_login.login_required
+def edicao_de_notas():
+    if request.method == 'GET':
+        headers = {'Content-type': 'application/json'}
+        response = requests.get(api + '/editor/editar_notas', headers=headers)
+        notes = response.json()['notas']
+    if request.method == "POST":
+        data = request.get_data()
+        notes = json.loads(data)
+        headers = {'Content-type': 'application/json'}
+        requests.post(api + '/editor/editar_notas', data=data, headers=headers)
+    return render_template("edicao_de_notas.html", notes=notes, referrer=request.referrer)
 
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
@@ -355,7 +373,6 @@ def atualiza_cardapio2():
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
-
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -669,13 +686,144 @@ def atualiza_config_cardapio():
         return ('', 200)
 
 
-@app.route('/escolas', methods=['GET'])
+@app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
+@app.route('/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
-def escolas():
+def escolas(id_escola=None):
+    form = SchoolRegistrationForm(request.form)
+    if id_escola:
+        school = get_escola(id_escola, raw=True)
+        form.cod_eol.data = id_escola
+        form.school_name.data = school['nome'].upper()
+        form.school_type.data = school['tipo_unidade']
+        form.management.data = school['tipo_atendimento']
+        form.grouping.data = school['agrupamento']
+        form.address.data = school['endereco'].upper()
+        form.neighbourhood.data = school['bairro'].upper()
+        form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
+        form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
+        form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
+        form.ages.data = school['idades']
+        form.meals.data = school['refeicoes']
     if request.method == "GET":
+        if 'refer' in session:
+            if request.referrer and '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
         escolas, pagination = get_escolas(params=request.args)
-        return render_template("configuracoes_escola_v2.html", escolas=escolas,
-                               pagination=pagination, referrer=request.referrer)
+    return render_template("configuracoes_escola_v2.html", escolas=escolas,
+                               pagination=pagination, referrer=session['refer'], form=form)
+
+
+class SchoolRegistrationForm(Form):
+    cod_eol = IntegerField('Código EOL', [validators.required()])
+    management = SelectField('Gestão', choices=[('DIRETA', 'DIRETA'),
+                                                ('MISTA', 'MISTA'),
+                                                ('TERCEIRIZADA', 'TERCEIRIZADA')
+                                                ])
+    school_type = SelectField('Tipo de Escola', choices=[('CCI', 'CCI'),
+                                                         ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
+                                                         ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
+                                                         ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
+                                                         ('CEMEI', 'CEMEI'),
+                                                         ('CEU_GESTÃO', 'CEU_GESTÃO'),
+                                                         ('CIEJA', 'CIEJA'),
+                                                         ('EMEBS', 'EMEBS'),
+                                                         ('EMEF', 'EMEF'),
+                                                         ('EMEFM', 'EMEFM'),
+                                                         ('EMEI', 'EMEI'),
+                                                         ('PROJETO_CECI', 'PROJETO_CECI'),
+                                                         ('SME_CONVÊNIO', 'SME_CONVÊNIO')
+                                                         ])
+    grouping = SelectField('Agrupamento', choices=[('1', '1'),
+                                                   ('2', '2'),
+                                                   ('3', '3'),
+                                                   ('EDITAL 78/2016', 'EDITAL 78/2016')
+                                                   ])
+    edital = SelectField('Edital', choices=[('Nenhum', 'Nenhum'),
+                                            ('EDITAL 78/2016', 'EDITAL 78/2016')
+                                            ])
+    school_name = StringField('Nome da Escola', [validators.required()])
+    address = StringField('Endereço', [validators.required()])
+    neighbourhood = StringField('Bairro', [validators.required()])
+    latitude = FloatField('Latitude', [validators.optional()])
+    longitude = FloatField('Longitude', [validators.optional()])
+    meals = SelectMultipleField('Refeições',
+                                choices=[('A - ALMOCO', 'A - ALMOCO'),
+                                         ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
+                                         ('C - COLACAO', 'C - COLACAO'),
+                                         ('D - DESJEJUM', 'D - DESJEJUM'),
+                                         ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
+                                         ('J - JANTAR', 'J - JANTAR'),
+                                         ('L - LANCHE', 'L - LANCHE'),
+                                         ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
+                                         ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
+                                         ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
+                                         ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
+                                         ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
+                                         ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
+                                         ])
+    ages = SelectMultipleField('Idades',
+                                choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
+                                         ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
+                                         ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
+                                         ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
+                                         ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
+                                         ('D - 6 MESES', 'D - 6 MESES'),
+                                         ('D - 7 MESES', 'D - 7 MESES'),
+                                         ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
+                                         ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
+                                         ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
+                                         ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
+                                         ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
+                                         ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
+                                         ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
+                                         ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
+                                         ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
+                                         ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
+                                         ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
+                                         ('H - ADULTO', 'H - ADULTO'),
+                                         ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
+                                         ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
+                                         ('V - PROFESSOR', 'V - PROFESSOR'),
+                                         ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
+                                         ])
+
+
+@app.route('/adicionar_escola', methods=['POST'])
+@flask_login.login_required
+def adicionar_escola():
+    form = SchoolRegistrationForm(request.form)
+    if not form.validate():
+        flash('Ocorreu um erro ao salvar as informações')
+        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+    new_school = dict()
+    new_school['_id'] = form.cod_eol.data
+    new_school['nome'] = form.school_name.data.upper()
+    new_school['tipo_unidade'] = form.school_type.data
+    new_school['tipo_atendimento'] = form.management.data
+    new_school['agrupamento'] = form.grouping.data
+    new_school['endereco'] = form.address.data.upper()
+    new_school['bairro'] = form.neighbourhood.data.upper()
+    new_school['lat'] = form.latitude.data if form.latitude.data is not None else ''
+    new_school['lon'] = form.longitude.data if form.longitude.data is not None else ''
+    new_school['telefone'] = ' '
+    new_school['edital'] = form.edital.data if form.edital.data != 'Nenhum' else ''
+    new_school['idades'] = form.ages.data
+    new_school['refeicoes'] = form.meals.data
+    new_school['data_inicio_vigencia'] = ''
+    new_school['historico'] = []
+    new_school['status'] = 'ativo'
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
+                      data=json.dumps(new_school),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 @app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
@@ -1014,18 +1162,20 @@ def remove_menus():
 @flask_login.login_required
 def download_speadsheet():
     if request.method == 'POST':
-
-        month = request.form['month']
-        year = request.form['year']
-        xlsx_file = download_spreadsheet.gera_excel(year + month)
+        _from = request.form['from'].replace('-', '')
+        _to = request.form['to'].replace('-', '')
+        management = request.form['management']
+        type_school = request.form['type_school']
+        xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
         if xlsx_file:
-            flash('{} gerado com sucesso.'.format(xlsx_file), 'success')
-            return redirect(request.referrer)
+             return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
-            flash('Error ao tentar gerar relaório!', 'danger')
             return redirect(request.referrer)
 
+
+def removing_xslx_daemon():
+    pass
 
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
@@ -1146,8 +1296,11 @@ def get_deletados():
     return pendentes
 
 
-def get_publicados():
-    url = api + '/editor/cardapios?status=PUBLICADO'
+def get_publicados(_data_inicial=None, _data_final=None):
+    if _data_inicial and _data_final:
+        url = api + '/editor/cardapios?status=PUBLICADO&data_inicial=' + _data_inicial + '&data_final=' + _data_final
+    else:
+        url = api + '/editor/cardapios?status=PUBLICADO'
     r = requests.get(url)
     refeicoes = r.json()
 
@@ -1194,7 +1347,6 @@ def get_publicados():
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
-
     return pendentes
 
 
@@ -1212,8 +1364,8 @@ def get_escolas(params=None):
         return escolas, pagination
 
 
-def get_escola(cod_eol):
-    url = api + '/escola/{}'.format(cod_eol)
+def get_escola(cod_eol, raw=False):
+    url = api + '/escola/{}?raw={}'.format(cod_eol, raw)
     r = requests.get(url)
     escola = r.json()
     if r.status_code != 200:

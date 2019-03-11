@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
@@ -19,7 +19,7 @@
         }
 
         .container {
-            width: 80%;
+            width: 90%;
         }
 
         .clickable {
@@ -58,6 +58,14 @@
         .navbar-nav {
             margin-top: 8px;
             padding-left: 10px;
+        }
+
+        thead th {
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
         }
 
     </style>
@@ -105,6 +113,7 @@
                                 <li><a href="/configuracoes_gerais">DE-PARA</a></li>
                                 <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
                                 <li><a href="/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
+                                <li><a href="/edicao_de_notas">NOTAS - EDITAR</a></li>
                             </ul>
                         </li>
                         <li style="padding-right: 7px">
@@ -142,7 +151,7 @@
 
     <!-- Informações do agrupamento -->
     <div class="row">
-        <div class="col-12" style="text-align: left">
+        <div class="col-12">
             <a href="/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios Pendentes</a>
             <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios
                 Publicados</a>
@@ -150,44 +159,30 @@
                 Deletados</a>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
-            <label> Selecione a extensão das datas:</label>
-            <select class="form-control input" id="filtro_periodo" name="filtro_periodo">
-                {% for periodo in periodos.keys(): %}
-                    <option value="{{ periodo }}">{{ periodo }}</option>
-                {% endfor %}
-            </select>
+    <form method="get" action="/pendencias_publicadas">
+        <div class="row">
+            <div style="padding-left: 0px" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
+                <label> Selecione a extensão das datas:</label>
+                <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
+                    {% for period_range in period_ranges.keys(): %}
+                        <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if request.args.get('filtro_periodo') == period_ranges[period_range] %} selected {% endif %}></option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 dropdown">
+                <label> Selecione a data:</label>
+                <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana_mes') }}" class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
+                    {% for week_range in week_ranges: %}
+                        <option {% if request.args.get('filtro_semana_mes') == week_range %} selected {% endif %}>{{ week_range }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 dropdown">
+                <label> Total de publicados no período</label>
+                <p>{{ published_menus | length }} cardápios</p>
+            </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
-            <label> Selecione a data:</label>
-            <select class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
-                {% for semana in periodos['último mês']: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-            <select class="form-control input" id="filtro_semana_3_meses" name="filtro_semana_3_meses">
-                {% for semana in periodos['últimos 3 meses']: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-            <select class="form-control input" id="filtro_semana_6_meses" name="filtro_semana_6_meses">
-                {% for semana in periodos['últimos 6 meses']: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-            <select class="form-control input" id="filtro_semana_12_meses" name="filtro_semana_12_meses">
-                {% for semana in periodos['últimos 12 meses']: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-            <select class="form-control input" id="filtro_semana_todos" name="filtro_semana_todos">
-                {% for semana in periodos['todos']: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+    </form>
     <div class="row">
         <div class="panel panel-success">
             <div class="panel-heading">
@@ -203,62 +198,67 @@
                 <input type="text" class="form-control" id="task-table-filter" data-action="filter"
                        data-filters="#task-table" placeholder="Filter Tasks"/>
             </div>
-            <div class="table-responsive">
-                <div class="panel panel-default">
-                    <table class="table table-hover table-striped" id="task-table">
-                        <thead>
-                        <tr>
-                            <th style="display: none;"></th>
-                            <th style="display: none;"></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                                GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                                ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                                AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
-                                <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">
-                                INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA
-                                PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
-                                style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS
-                                CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th style="display: none;"></th>
+            <div class="panel panel-default">
+                <table class="table table-hover table-striped" id="task-table">
+                    <thead>
+                    <tr>
+
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                            GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                            ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
+                            AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
+                            <i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">
+                            INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA
+                            PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
+                            style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS <i class="fa fa-sort" aria-hidden="true"></i>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for published_menu in published_menus: %}
+                        <tr class="item" style="display: none;">
+                            <td class="ids" style="display: none;">{{ published_menu[10] }}</td>
+                            <td class="semana" style="display: none;">{{ published_menu[8] }}</td>
+                            <td class="tipo_gestao">{{ published_menu[0] }}</td>
+                            <td class="tipo_escola">{{ published_menu[1] }}</td>
+                            <td class="agrupamento">{{ published_menu[2] }}</td>
+                            <td class="idade">{{ published_menu[3] }}</td>
+                            <td class="data_inicial">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
+                            <td class="data_final">{{ published_menu[9] }}</td>
+                            <td class="status" style="display: flex">
+                                <span style="padding-top: 10px">{{ published_menu[6] }}</span>
+                                <a title="Ver Cardápio" style="margin-left: 10px" class="btn btn-default"
+                                    href="/visualizador_cardapio?{{ published_menu[7] }}">
+                                    <i class="fas fa-clipboard-list fa-lg" aria-hidden="true"></i>
+                                </a>
+                                <button title="Mover para Pendentes" style="margin-left: 10px" class="btn btn-default pendente" value="PENDENTE">
+                                    <i class="fas fa-paste fa-lg" aria-hidden="true"></i></a>
+                                </button>
+                            </td>
+                            <td class="semana_inter" style="display: none;">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {% for linha in pendentes: %}
-                            <tr class="item" style="display: none;">
-                                <td class="ids" style="display: none;">{{ linha[10] }}</td>
-                                <td class="semana" style="display: none;">{{ linha[8] }}</td>
-                                <td class="tipo_gestao">{{ linha[0] }}</td>
-                                <td class="tipo_escola">{{ linha[1] }}</td>
-                                <td class="agrupamento">{{ linha[2] }}</td>
-                                <td class="idade">{{ linha[3] }}</td>
-                                <td class="data_inicial">{{ linha[4] }} - {{ linha[5] }}</td>
-                                <td class="data_final">{{ linha[9] }}</td>
-                                <td class="status">{{ linha[6] }}</td>
-                                <td><a class="btn btn-info" href="/visualizador_cardapio?{{ linha[7] }}">VER</a></td>
-                                <td>
-                                    <button class="btn btn-warning pendente" value="PENDENTE">VOLTAR P/ EDIÇÃO</button>
-                                </td>
-                                <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                    {% endfor %}
+                    {% if published_menus | length == 0 %}
+                        <tr>
+                            <td colspan="10">
+                                Nenhum cardápio publicado no período.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -272,7 +272,7 @@
 <!-- Script com a funcionalidade do filtro da tabela -->
 <script>
     /**
-     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo usable. It will work fine for smaller tables
      *   but will likely encounter performance issues on larger tables.
      *
      *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
@@ -398,127 +398,13 @@
 
 </script>
 
-<script>
-    $(function () {
-        $('#filtro_periodo').change(function () {
-            var periodo_filtro = $(this).val();
-            if (periodo_filtro == 'último mês') {
-                $('#filtro_semana_mes').show()
-                $('#filtro_semana_3_meses').hide()
-                $('#filtro_semana_6_meses').hide()
-                $('#filtro_semana_12_meses').hide()
-                $('#filtro_semana_todos').hide()
-            } else if (periodo_filtro == 'últimos 3 meses') {
-                $('#filtro_semana_mes').hide()
-                $('#filtro_semana_3_meses').show()
-                $('#filtro_semana_6_meses').hide()
-                $('#filtro_semana_12_meses').hide()
-                $('#filtro_semana_todos').hide()
-            } else if (periodo_filtro == 'últimos 6 meses') {
-                $('#filtro_semana_mes').hide()
-                $('#filtro_semana_3_meses').hide()
-                $('#filtro_semana_6_meses').show()
-                $('#filtro_semana_12_meses').hide()
-                $('#filtro_semana_todos').hide()
-            } else if (periodo_filtro == 'últimos 12 meses') {
-                $('#filtro_semana_mes').hide()
-                $('#filtro_semana_3_meses').hide()
-                $('#filtro_semana_6_meses').hide()
-                $('#filtro_semana_12_meses').show()
-                $('#filtro_semana_todos').hide()
-            } else if (periodo_filtro == 'todos') {
-                $('#filtro_semana_mes').hide()
-                $('#filtro_semana_3_meses').hide()
-                $('#filtro_semana_6_meses').hide()
-                $('#filtro_semana_12_meses').hide()
-                $('#filtro_semana_todos').show()
-            }
-        });
-    });
-</script>
-
 <!-- Filtro da semana ao carregar a pagina -->
 <script>
     $(document).ready(function () {
-        $('#filtro_semana_3_meses').hide()
-        $('#filtro_semana_6_meses').hide()
-        $('#filtro_semana_12_meses').hide()
-        $('#filtro_semana_todos').hide()
         var semana_filtro = $('#filtro_semana_mes').val()
         $('#task-table tr').not(':first').each(function () {
             var semana_linha = $($(this).children('td')[11]).text()
-            if (semana_linha == semana_filtro) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
-        });
-    });
-</script>
-
-<!-- Fitra a tabela ao mudar o selector -->
-<script>
-    $(function () {
-        //change to two ? how?
-        $('#filtro_semana_mes').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[11]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
-        });
-        $('#filtro_semana_3_meses').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[11]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
-        });
-        $('#filtro_semana_6_meses').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[11]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
-        });
-        $('#filtro_semana_12_meses').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[11]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
-        });
-        $('#filtro_semana_todos').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[11]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
+            $(this).show();
         });
     });
 </script>

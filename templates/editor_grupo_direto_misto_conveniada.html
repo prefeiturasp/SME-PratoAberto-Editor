@@ -89,8 +89,8 @@
                                 <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu">
-                                <li><a href="/configuracoes_gerais">DE-PARA</a></li>
-                                <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
+                                <li><a href="/configuracoes_gerais" target="_blank">DE-PARA</a></li>
+                                <li><a href="/configuracoes_cardapio" target="_blank">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
                             </ul>
                         </li>
                         <a type="button" class="btn btn-default " href="/pendencias_publicacoes">
@@ -104,18 +104,6 @@
             </div>
         </nav>
     </div>
-
-    <!-- Informações do agrupamento -->
-    {#        {% for arg in args %}#}
-    {#            <div style="text-align: left">#}
-    {#                <tr>#}
-    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ arg['tipo_atendimento'] }}</span>#}
-    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ arg['tipo_unidade'] }}</span>#}
-    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ arg['idade'] }}</span>#}
-    {#                    <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ arg['agrupamento'] }}</span>#}
-    {#                </tr>#}
-    {#            </div>#}
-    {#        {% endfor %}#}
 
     <div class="row">
         <span type="button" onclick='substituir()' class="btn btn-primary pull-right"
@@ -155,10 +143,10 @@
                             <th style="cursor:pointer; word-wrap: break-word;min-width: 130px;max-width: 130px;">IDADE
                             </th>
                             <th>AGRUP.</th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
                                 style="cursor:pointer; word-wrap: break-word;min-width: 100px;max-width: 100px;">TIPO
                                 REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
                                 style="cursor:pointer; word-wrap: break-word;min-width: 200px;max-width: 200px;">LISTA
                                 DE ALIMENTOS (PAPA)<i class="fa fa-sort" aria-hidden="true"></i></th>
                             <th>DE</th>

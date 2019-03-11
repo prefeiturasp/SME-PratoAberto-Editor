@@ -1,15 +1,14 @@
-FROM python:3.6-alpine3.8
+FROM python:3.6-slim-jessie
+
 ADD . /code
 WORKDIR /code
 
-RUN set -ex && \
-    apk add --no-cache --virtual=.goss-dependencies curl ca-certificates && \
-    apk update && apk add --no-cache tzdata libpq && \
-
-    apk update && apk add --no-cache \
-      --virtual=.build-dependencies \
-      gcc \
-      python3-dev && \
-    python -m pip --no-cache install -U pip && \
-    python -m pip --no-cache install -r requirements.txt && \
-    apk del --purge .build-dependencies .goss-dependencies
+RUN apt-get update -y && \
+    apt-get install \
+     build-essential \
+     python3-dev \
+     python3-pip \
+     python3-setuptools \
+     python3-wheel -y && \
+    apt-get clean && \
+    python -m pip --no-cache install -r requirements.txt

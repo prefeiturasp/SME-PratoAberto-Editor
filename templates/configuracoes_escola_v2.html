@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">,
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
@@ -18,8 +18,17 @@
             padding: 0 10px;
         }
 
+        .forms {
+            margin-top: 0px;
+            padding-top: 10px;
+        }
+
+        .input-form {
+            display: inline-flex;
+        }
+
         .container {
-            width: 80%;
+            width: 90%;
         }
 
         .clickable{
@@ -61,6 +70,36 @@
             padding-right: 15px;
         }
 
+        thead th {
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        input#cod_eol, select#school_type, input#latitude, input#longitude {
+            width: 125px;
+
+        }
+
+        input#school_name, input#address, input#neighbourhood, select#meals, select#ages {
+            margin-left: -8px;
+            width: 452px;
+        }
+
+        select#meals, select#ages {
+            height: 120px;
+        }
+
+        label {
+            text-align: right;
+            padding: 0;
+        }
+
+        .col-sm-6 {
+            padding-right: 11px;
+        }
 
     </style>
 </head>
@@ -71,7 +110,7 @@
         <a type="button" class="btn btn-default " href="{{ referrer }}">
             <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
         </a>
-        <button onclick="addRow()" class="pull-right btn btn-primary" style="float: right">
+        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="pull-right btn btn-primary" style="float: right">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             <span style="font-family: inherit">ADICIONAR ESCOLA</span>
         </button>
@@ -172,13 +211,11 @@
             </div>
             <div class="row" style="padding-bottom: 15px; margin-top: 15px">
                 <div class="col-12">
-                    <div class="pull-left col-sm-2">
+                    <div class="col-sm-2 col-sm-offset-10">
                         <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS">
-                            <button type="button" class="btn btn-success">LIMPAR FILTROS</button>
+                            <button type="button" class="btn btn-default">LIMPAR</button>
+                            <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
                         </a>
-                    </div>
-                    <div class="pull-right col-sm-2">
-                        <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
                     </div>
                 </div>
             </div>
@@ -226,8 +263,8 @@
                         <tbody>
                         {% for linha in escolas %}
                         <tr class="item">
-                            <td><a class="btn btn-info" onclick='editRow(this)' href="#" data-toggle="modal"
-                                   data-target="#xml_form">EDITAR</a></td>
+                            <td><a class="btn btn-info" onclick='editRow({{linha["_id"]}})' href="#" data-toggle="modal"
+                                   data-target="#modalAddSchoolForm{{ linha['_id'] }}"><i class="fas fa-edit"></i></a></td>
                             <td class="cod_eol">{{ linha['_id'] }}</td>
                             <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
                             <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
@@ -250,8 +287,8 @@
                             <td style="display: none" class="lat">{{ linha['lat'] }}</td>
                             <td style="display: none" class="lon">{{ linha['lon'] }}</td>
                             <td style="display: none;" class="status">{{ linha['status']}}</td>
-                            <td><a class="btn btn-info" data-toggle="modal" data-target="#exampleModal{{linha['_id']}}" href="#"
-                                   data-target="#xml_form">EXCLUIR</a></td>
+                            <td><a class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{linha['_id']}}" href="#"
+                                   data-target="#xml_form"><i class="fas fa-trash-alt"></i></a></td>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleModal{{linha['_id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                               <div class="modal-dialog" role="document">
@@ -267,7 +304,7 @@
                                   </div>
                                   <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" id="{{linha['_id']}}" data-dismiss="modal">Fechar</button>
-                                    <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-primary">Excluir</a>
+                                    <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-danger">Excluir</a>
                                   </div>
                                 </div>
                               </div>
@@ -366,6 +403,110 @@
     {% endif %}
     {% endwith %}
 </div>
+<div class="modal fade" id="modalAddSchoolForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="width: 130%">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 pull-left font-weight-bold">Adicionar escola</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method=post action="/adicionar_escola">
+          <dl>
+              <div>
+                  <div class="row forms" style="padding-top: 40px">
+                      <div class="col-sm-6 col-xs-12">
+                          <label class="col-sm-6 col-xs-12">{{ form.cod_eol.label }}</label>
+                          <span class=" col-sm-4 col-xs-12">{{ form.cod_eol }}</span>
+                      </div>
+                      <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                          <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
+                          <span class="col-sm-4 col-xs-12">{{ form.management }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-sm-6 col-xs-12">
+                          <label class="col-sm-6 col-xs-12">{{ form.school_type.label }}</label>
+                          <span class="col-sm-4 col-xs-12">{{ form.school_type }}</span>
+                      </div>
+                      <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                          <label class="col-sm-6 col-xs-12">{{ form.grouping.label }}</label>
+                          <span class="col-sm-4 col-xs-12">{{ form.grouping }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-sm-6 col-sm-offset-5 col-xs-12">
+                          <label class="col-sm-6 col-xs-12">{{ form.edital.label }}</label>
+                          <span class=" col-sm-4 col-xs-12">{{ form.edital }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12"{{ form.school_name.label }}</label>
+                        <span class="col-sm-2 col-xs-12">{{ form.school_name }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12"{{ form.address.label }}</label>
+                        <span class="col-sm-2 col-xs-12">{{ form.address }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12"{{ form.neighbourhood.label }}</label>
+                        <span class="col-sm-2 col-xs-12">{{ form.neighbourhood }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-sm-6 col-xs-12" style="margin-left: -2px">
+                          <label class="col-sm-6 col-xs-12">{{ form.latitude.label }}</label>
+                          <span class=" col-sm-4 col-xs-12">{{ form.latitude }}</span>
+                      </div>
+                      <div class="col-sm-6 col-xs-12" style="margin-left: -6px">
+                          <label class="col-sm-4 col-xs-12">{{ form.longitude.label }}</label>
+                          <span class=" col-sm-4 col-xs-12">{{ form.longitude }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12" style="margin-left: 199px">
+                            <p style="display: block">Dica: utilize <a target="_blank" href="https://www.latlong.net/convert-address-to-lat-long.html">este site</a> para encontrar a lat long da escola</p>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12"{{ form.meals.label }}</label>
+                        <span class="col-sm-2 col-xs-12">{{ form.meals }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12" style="margin-left: 199px">
+                            <p style="display: block">Dica: utilize <strong>CTRL</strong> para selecionar múltiplos</p>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12"{{ form.ages.label }}</label>
+                        <span class="col-sm-2 col-xs-12">{{ form.ages }}</span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12" style="margin-left: 199px">
+                            <p style="display: block">Dica: utilize <strong>CTRL</strong> para selecionar múltiplos</p>
+                      </div>
+                  </div>
+              </div>
+          </dl>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+            <button type="submit" class="btn btn-primary">SALVAR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- Adiciona linhas na tabela -->
 <script>
         function addRow() {
@@ -440,50 +581,20 @@
 
 
 </script>
+<script>
+    function addSchool() {
+        if (window.location.href.includes('escolas/')) {
+            window.location.href = '/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
+        } else {
+            $('#modalAddSchoolForm').modal('show');
+        }
+    }
+</script>
 
 <!-- Edita escola -->
 <script>
-        function editRow(r) {
-            $('#edicao-escola tbody').empty();
-            $('#task-table tr.item').each(function() {
-                var semana_linha = $($(this).children('td')[1]).text()
-                if (semana_linha == $($($(r).closest('tr')).children('td')[1]).text()) {
-                    var cod_eol = $($(this).children('td')[1]).text();
-                    var tipo_atendimento = $($(this).children('td')[2]).text();
-                    var tipo_unidade = $($(this).children('td')[3]).text();
-                    var agrupamento = $($(this).children('td')[4]).text();
-                    var edital = $($(this).children('td')[5]).attr('data-edital');
-                    var data = $($(this).children('td')[6]).text();
-                    var nome = $($(this).children('td')[7]).text();
-                    var refeicoes = $($(this).children('td')[8]).text();
-                    var idades = $($(this).children('td')[9]).text();
-                    var endereco = $($(this).children('td')[10]).text();
-                    var bairro = $($(this).children('td')[11]).text();
-                    var lat = $($(this).children('td')[12]).text();
-                    var lon = $($(this).children('td')[13]).text();
-                    var status = $($(this).children('td')[14]).text();
-
-                    $('#edicao-escola').append(
-                        "<tr class='item'>" +
-                        "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>" +
-                        "<td class='cod_eol' contenteditable='true'>"+cod_eol+"</td>" +
-                        "<td class='tipo_atendimento' contenteditable='true'>"+tipo_atendimento+"</td>" +
-                        "<td class='tipo_unidade' contenteditable='true'>"+tipo_unidade+"</td>" +
-                        "<td class='agrupamento' contenteditable='true'>"+agrupamento+"</td>" +
-                        "<td class='edital' contenteditable='true'>"+edital+"</td>" +
-                        "<td class='data' contenteditable='true'>"+data+"</td>" +
-                        "<td class='nome' contenteditable='true'>"+nome+"</td>" +
-                        "<td class='endereco' contenteditable='true'>"+endereco+"</td>" +
-                        "<td class='bairro' contenteditable='true'>"+bairro+"</td>" +
-                        "<td class='lat' contenteditable='true'>"+lat+"</td>" +
-                        "<td class='lon' contenteditable='true'>"+lon+"</td>" +
-                        "<td class='status' contenteditable='true'>"+status+"</td>" +
-                        "<td class='refeicoes' contenteditable='true'>"+refeicoes+"</td>" +
-                        "<td class='idades' contenteditable='true'>"+idades+"</td>" +
-                        "</tr>"
-                    );
-                }
-            });
+        function editRow(id) {
+            window.location.href = '/escolas/' + id + '?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
         }
 
 
@@ -525,7 +636,7 @@
         function addRowModal() {
             $('#edicao-escola').append(
                 "<tr class='item' id=''>" +
-                "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>" +
+                "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fas fa-trash-alt'></i></a></td>" +
                 "<td class='cod_eol' contenteditable='true'>Código EOL</td>" +
                 "<td class='tipo_atendimento' contenteditable='true'>Tipo Atendimento</td>" +
                 "<td class='tipo_unidade' contenteditable='true'>Tipo Unidade</td>" +
@@ -564,6 +675,13 @@
                 jQuery(this).addClass('danger');
             });
         });
+    });
+</script>
+<script>
+    $(window).on('load',function(){
+        if (location.href.includes('addSchool=true') && location.href.includes('page=1')){
+            $('#modalAddSchoolForm').modal('show');
+        }
     });
 </script>
 

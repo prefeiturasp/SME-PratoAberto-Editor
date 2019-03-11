@@ -5,23 +5,51 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Cardápio Mensal</h4>
+                    <h4 class="modal-title">Planilha de Cardápio Mensal</h4>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="control-label col-sm-2" for="mes">Mês:</label>
-                        <div class="col-sm-5">
-                            <input id="mes" required="required" class="form-control sm-4"  type="number" placeholder="Mês" name="month"/>
+                        <label class="control-label col-sm-4">De:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="date" name="from" required>
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="control-label col-sm-2" for="ano">Ano:</label>
-                        <div class="col-sm-5">
-                            <input id="ano" required="required" class="form-control sm-4" type="number" placeholder="Ano" name="year"/>
+                        <label class="control-label col-sm-4">Até:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="date" name="to" required>
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Gestão</label>
+                        <div class="col-sm-6">
+                            <select name="management" class="form-control">
+                                <option value="DIRETA">DIRETA</option>
+                                <option value="MISTA">MISTA</option>
+                                <option value="TERCEIRIZADA">TERCEIRIZADA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Tipo de Escola</label>
+                        <div class="col-sm-6">
+                            <select name="type_school" class="form-control">
+                                 <option value="CCI">CCI</option>
+                                 <option value="CEI_CONVENIADO">CEI_CONVENIADO</option>
+                                 <option value="CEI_MUNICIPAL">CEI_MUNICIPAL</option>
+                                 <option value="CEI_PARCEIRO_(RP)">CEI_PARCEIRO_(RP)</option>
+                                 <option value="CEMEI">CEMEI</option>
+                                 <option value="CEU_GESTÃO">CEU_GESTÃO</option>
+                                 <option value="CIEJA">CIEJA</option>
+                                 <option value="EMEBS">EMEBS</option>
+                                 <option value="EMEF">EMEF</option>
+                                 <option value="EMEFM">EMEFM</option>
+                                 <option value="EMEI">EMEI</option>
+                                 <option value="PROJETO_CECI">PROJETO_CECI</option>
+                                 <option value="SME_CONVÊNIO">SME_CONVÊNIO</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer align-center">
                     <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Fechar</button>

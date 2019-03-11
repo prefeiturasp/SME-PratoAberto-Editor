@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prato Aberto - Editor Cardapio</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">
+    <link rel="stylesheet" href="../static/css/jquery-te-1.4.0.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="../static/js/jquery-te-1.4.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+
+        /* Objetos da tabela */
+        .row {
+            margin-top: 30px;
+            padding: 0 10px;
+        }
+
+        .container {
+            width: 90%;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .panel-heading div {
+            margin-top: -18px;
+            font-size: 15px;
+        }
+
+        .panel-heading div span {
+            margin-left: 5px;
+        }
+
+        .table-responsive {
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .panel-body {
+            display: none;
+        }
+
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th {
+            font-size: 10px;
+        }
+
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td {
+            vertical-align: inherit;
+        }
+
+        .navbar-nav {
+            margin-top: 8px;
+            padding-left: 10px;
+        }
+
+        thead th {
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .jqte_tool_label {
+            height: 28px !important;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row">
+        <a type="button" class="btn btn-default " href="{{ referrer }}">
+            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
+        </a>
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Edição de Notas </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- Upload form -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
+        <div class="modal-dialog" role="document">
+            <form method="post" action="upload" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Upload XML</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <input type="file" name="file" class="form-control-file"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <textarea id="noteMenu">{{notes}}</textarea>
+        <form id="edicao_de_notas" action="/edicao_de_notas">
+            <button type="button" class="btn btn-lg btn-primary pull-right">SALVAR</button>
+        </form>
+    </div>
+    <footer class="container-fluid text-center">
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        </p>
+    </footer>
+</div>
+
+<script>
+    $("#noteMenu").jqte();
+</script>
+
+<script>
+    $("#edicao_de_notas").click(function( event ) {
+        $.ajax({
+                type: 'POST',
+                url: '/edicao_de_notas',
+                data: JSON.stringify({'notas': $("textarea#noteMenu")[0].value}),
+                contentType: 'application/json',
+                success: function (data, textStatus, jqXHR) {
+                    alert("Edição de notas salvo com sucesso!");
+                },
+                error: function (request, error) {
+                    alert("Ocorreu um erro ao salvar as notas");
+                },
+            });
+    });
+</script>
+
+</body>
+</html>
