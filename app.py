@@ -1,5 +1,6 @@
 import collections
 import datetime
+import dateutil.parser
 import json
 import os
 from operator import itemgetter
@@ -11,7 +12,7 @@ from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
 from wtforms import (Form, StringField, validators, SelectField,
-                    SelectMultipleField, FloatField, IntegerField)
+                     SelectMultipleField, FloatField, IntegerField)
 
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
@@ -165,6 +166,7 @@ def publicados():
         'últimos 12 meses': '365',
         'todos': 'all'
     }
+
     return render_template("pendencias_publicadas.html",
                            published_menus=published_menus,
                            week_ranges=list(periods),
@@ -713,7 +715,7 @@ def escolas(id_escola=None):
             session['refer'] = request.referrer
         escolas, pagination = get_escolas(params=request.args)
     return render_template("configuracoes_escola_v2.html", escolas=escolas,
-                               pagination=pagination, referrer=session['refer'], form=form)
+                           pagination=pagination, referrer=session['refer'], form=form)
 
 
 class SchoolRegistrationForm(Form):
@@ -765,30 +767,30 @@ class SchoolRegistrationForm(Form):
                                          ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
                                          ])
     ages = SelectMultipleField('Idades',
-                                choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
-                                         ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
-                                         ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
-                                         ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
-                                         ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
-                                         ('D - 6 MESES', 'D - 6 MESES'),
-                                         ('D - 7 MESES', 'D - 7 MESES'),
-                                         ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
-                                         ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
-                                         ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
-                                         ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
-                                         ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
-                                         ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
-                                         ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
-                                         ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
-                                         ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
-                                         ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
-                                         ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
-                                         ('H - ADULTO', 'H - ADULTO'),
-                                         ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
-                                         ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
-                                         ('V - PROFESSOR', 'V - PROFESSOR'),
-                                         ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
-                                         ])
+                               choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
+                                        ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
+                                        ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
+                                        ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
+                                        ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
+                                        ('D - 6 MESES', 'D - 6 MESES'),
+                                        ('D - 7 MESES', 'D - 7 MESES'),
+                                        ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
+                                        ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
+                                        ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
+                                        ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
+                                        ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
+                                        ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
+                                        ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
+                                        ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
+                                        ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
+                                        ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
+                                        ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
+                                        ('H - ADULTO', 'H - ADULTO'),
+                                        ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
+                                        ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
+                                        ('V - PROFESSOR', 'V - PROFESSOR'),
+                                        ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
+                                        ])
 
 
 @app.route('/adicionar_escola', methods=['POST'])
@@ -1175,10 +1177,9 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-
-
 def removing_xslx_daemon():
     pass
+
 
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
@@ -1317,6 +1318,7 @@ def get_publicados(_data_inicial=None, _data_final=None):
             semanas[_key_semana] = [refeicao['data']]
 
     pendentes = []
+
     _ids = collections.defaultdict(list)
     for refeicao in refeicoes:
         agrupamento = str(refeicao['agrupamento'])
@@ -1329,15 +1331,16 @@ def get_publicados(_data_inicial=None, _data_final=None):
         _ids[_key].append(refeicao['_id']['$oid'])
         data_inicial = min(semanas[_key_semana])
         data_final = max(semanas[_key_semana])
-        data_publicacao = refeicao.get('data_publicacao', '')
+        data_publicacao = _set_datetime(refeicao.get('data_publicacao', ''))
 
         _args = (tipo_atendimento, tipo_unidade, agrupamento, idade, status, data_inicial, data_final)
         query_str = 'tipo_atendimento={}&tipo_unidade={}&agrupamento={}&idade={}&status={}&data_inicial={}&data_final={}'
         href = query_str.format(*_args)
 
-        pendentes.append(
-            [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial,
-             data_final, status, href, _key_semana, data_publicacao])
+        values_list = [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial,
+                       data_final, status, href, _key_semana, data_publicacao]
+
+        pendentes.append(values_list)
 
     for pendente in pendentes:
         _key = frozenset([pendente[2],
@@ -1346,11 +1349,21 @@ def get_publicados(_data_inicial=None, _data_final=None):
                           pendente[6],
                           pendente[3],
                           pendente[8]])
-        pendente.append(','.join(_ids[_key]))
+        ids = ','.join(_ids[_key])
+
+        pendente.append(ids)
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
     return pendentes
+
+
+def _set_datetime(str_date):
+    try:
+        ndate = dateutil.parser.parse(str_date)
+        return ndate.strftime('%d/%m/%Y - %H:%M:%S')
+    except Exception as e:
+        print(str(e))
 
 
 def get_escolas(params=None):
