@@ -164,7 +164,7 @@
             <div style="padding-left: 0px" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
                 <label> Selecione a extensão das datas:</label>
                 <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
-                    {% for period_range in period_ranges.keys(): %}
+                    {% for period_range in period_ranges.keys() %}
                         <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if request.args.get('filtro_periodo') == period_ranges[period_range] %} selected {% endif %}></option>
                     {% endfor %}
                 </select>
@@ -226,6 +226,7 @@
                         </th>
                     </tr>
                     </thead>
+
                     <tbody>
                     {% for published_menu in published_menus: %}
                         <tr class="item" style="display: none;">
