@@ -1,4 +1,5 @@
 import datetime
+from dateutil import tz
 
 
 def datetime_to_brstring(dt):
@@ -21,6 +22,17 @@ def sort_array_by_datetime(unsorted_array, reverse=False):
         key=lambda x: x[4], reverse=reverse
     )
     return sorted_array
+
+
+def isoformat_to_datetime(isostring):
+    return datetime.datetime.strptime(
+                isostring, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def utc_to_america_sp(date):
+    return date.replace(
+        tzinfo=tz.gettz('UTC')).astimezone(
+        tz.gettz('America/Sao_Paulo'))
 
 
 def sort_array_date_br(data_array, opt=1):

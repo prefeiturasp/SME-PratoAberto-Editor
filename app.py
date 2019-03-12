@@ -19,7 +19,7 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   last_monday, monday_to_friday)
+                   last_monday, monday_to_friday, isoformat_to_datetime, utc_to_america_sp)
 from helpers import download_spreadsheet
 
 app = Flask(__name__)
@@ -1330,11 +1330,12 @@ def get_publicados(_data_inicial=None, _data_final=None):
         data_inicial = min(semanas[_key_semana])
         data_final = max(semanas[_key_semana])
         data_publicacao = refeicao.get('data_publicacao', '')
-
+        if data_publicacao != '':
+            data_publicacao = utc_to_america_sp(isoformat_to_datetime(data_publicacao)).strftime(
+                "%d/%m/%Y - %H:%M:%S (Horário de Brasília)")
         _args = (tipo_atendimento, tipo_unidade, agrupamento, idade, status, data_inicial, data_final)
         query_str = 'tipo_atendimento={}&tipo_unidade={}&agrupamento={}&idade={}&status={}&data_inicial={}&data_final={}'
         href = query_str.format(*_args)
-
         pendentes.append(
             [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial,
              data_final, status, href, _key_semana, data_publicacao])
