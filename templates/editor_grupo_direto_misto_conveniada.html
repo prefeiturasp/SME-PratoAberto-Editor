@@ -103,11 +103,13 @@
                 </div>
             </div>
         </nav>
-    </div>
 
+    </div>
     <div class="row">
         <span type="button" onclick='substituir()' class="btn btn-primary pull-right"
               id="de-para">APLICAR DE-PARA</span>
+        <span type="button" class="btn btn-info" onclick="update_status('CONFERIDO')">MARCAR COMO CONFERIDO</span>
+        <span type="button" class="btn btn-warning" onclick="update_status('A_CONFERIR')">MARCAR COMO A CONFERIR</span>
     </div>
     <!-- Acrescentar a tabela para o calendario -->
     <div class="row tbl">
@@ -364,6 +366,54 @@
     }
 </script>
 
+<script>
+    function update_status(str_status) {
+        var cardapio = {};
+
+        /* itera em cada linha para construir o post */
+        $('#task-table tr').each(function () {
+            var id = $(this).attr('id');
+            //var data = $($(this).children('td')[0]).text();
+            if (id === undefined) return; /* pula header */
+            var tipo_refeicao = $($(this).children('td')[6]).text();
+            var refeicao = $.map($($(this).children('td')[10]).text().split(','),
+                function (v) {
+                    return $.trim(v) === "" ? null : $.trim(v);
+                });
+
+            if (cardapio[id] === undefined) {
+                item_cardapio = {};
+                item_cardapio[tipo_refeicao] = refeicao;
+                cardapio[id] = item_cardapio;
+            } else {
+                cardapio[id][tipo_refeicao] = refeicao;
+            }
+        });
+
+        var cardapios = []
+
+            $.each(cardapio, function( key, value ) {
+                cardapios.push({
+                    "_id": {"$oid": key},
+                    "cardapio": value,
+                    "status" : str_status
+                });
+            });
+
+        $.ajax({
+            type: 'POST',
+            url: '/atualiza_cardapio',
+            data: JSON.stringify(cardapios),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                window.alert("Cardápio salvo com sucesso");
+                document.location.href="/pendencias_publicacoes";
+            }
+        });
+    }
+</script>
+
 <!-- FORMATANDO DATA -->
 <script>
     jQuery(function () {
@@ -434,6 +484,9 @@
                 }
             });
         });
+
+
+
     });
 </script>
 </body>
