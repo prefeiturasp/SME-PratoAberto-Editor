@@ -164,7 +164,7 @@
             <div style="padding-left: 0px" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
                 <label> Selecione a extensão das datas:</label>
                 <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
-                    {% for period_range in period_ranges.keys(): %}
+                    {% for period_range in period_ranges.keys() %}
                         <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if request.args.get('filtro_periodo') == period_ranges[period_range] %} selected {% endif %}></option>
                     {% endfor %}
                 </select>
@@ -172,7 +172,7 @@
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 dropdown">
                 <label> Selecione a data:</label>
                 <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana_mes') }}" class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
-                    {% for week_range in week_ranges: %}
+                    {% for week_range in week_ranges %}
                         <option {% if request.args.get('filtro_semana_mes') == week_range %} selected {% endif %}>{{ week_range }}</option>
                     {% endfor %}
                 </select>
@@ -226,8 +226,9 @@
                         </th>
                     </tr>
                     </thead>
+
                     <tbody>
-                    {% for published_menu in published_menus: %}
+                    {% for published_menu in published_menus %}
                         <tr class="item" style="display: none;">
                             <td class="ids" style="display: none;">{{ published_menu[10] }}</td>
                             <td class="semana" style="display: none;">{{ published_menu[8] }}</td>
