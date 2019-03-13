@@ -981,8 +981,15 @@ def atualiza_historico_escolas():
 def publicacao():
     opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
 
+    if 'refer' in session:
+        if '/download_publicacao' not in request.referrer:
+            session['refer'] = request.referrer
+    else:
+        session['refer'] = request.referrer
+
+
     if request.method == "GET":
-        return render_template("download_publicações.html", referrer=request.referrer, data_inicio_fim='disabled',
+        return render_template("download_publicações.html", referrer=session['refer'], data_inicio_fim='disabled',
                                status=opt_status)
 
     else:
@@ -1003,7 +1010,7 @@ def publicacao():
 
         if filtro == 'STATUS' and tipo_unidade == 'TODOS' and tipo_atendimento == 'TODOS':
             return render_template("download_publicações.html",
-                                   referrer=request.referrer,
+                                   referrer=session['refer'],
                                    data_inicio_fim=str(data_inicial + '-' + data_final),
                                    filtro_selected=filtro, status=opt_status)
 
@@ -1028,7 +1035,7 @@ def publicacao():
                         refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
             data_inicial = datetime.datetime.strptime(data_inicial, '%Y%m%d').strftime('%d/%m/%Y')
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
-            return render_template("download_publicações.html", referrer=request.referrer,
+            return render_template("download_publicações.html", referrer=session['refer'],
                                    publicados=sort_array_by_date_and_index(cardapio_aux),
                                    data_inicio_fim=str(data_inicial + '-' + data_final), tipo_unidade=tipo_unidade,
                                    tipo_atendimento=tipo_atendimento, filtro_selected=filtro,
