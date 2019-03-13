@@ -19,7 +19,7 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   last_monday, monday_to_friday)
+                   last_monday, monday_to_friday, format_datetime_array)
 from helpers import download_spreadsheet
 
 app = Flask(__name__)
@@ -103,15 +103,14 @@ def unauthorized_handler():
 @app.route("/pendencias_publicacoes", methods=["GET", "POST"])
 @flask_login.login_required
 def backlog():
-    if request.method in ["GET", "POST"]:
-        pendentes = get_pendencias()
-        pendentes = sort_array_date_br(pendentes)
-        # aqui tem um array com varios dados e em cada linha tem uma string com varios
-        # ids mongo separados por ,
-        semanas = remove_duplicates_array([(x[4] + ' - ' + x[5]) for x in pendentes])
-        return render_template("pendencias_publicacao.html",
-                               pendentes=pendentes,
-                               semanas=semanas)
+    semanas_pendentes = sorted(get_semanas_pendentes(), reverse=True)
+    semanas = format_datetime_array(semanas_pendentes)
+    pendentes = get_pendencias(request_obj=request,
+                               semana_default=semanas_pendentes[0] if len(semanas_pendentes) else None)
+    pendentes = sort_array_date_br(pendentes)
+    return render_template("pendencias_publicacao.html",
+                           pendentes=pendentes,
+                           semanas=semanas)
 
 
 @app.route("/pendencias_deletadas", methods=["GET", "POST"])
@@ -1175,10 +1174,9 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-
-
 def removing_xslx_daemon():
     pass
+
 
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
@@ -1194,9 +1192,21 @@ def get_cardapio(args):
     return refeicoes
 
 
-def get_pendencias():
-    url = api + '/editor/cardapios?status={}&status={}&status={}&status={}'.format(
-        'PENDENTE', 'SALVO', 'A_CONFERIR', 'CONFERIDO')
+def get_pendencias(request_obj, semana_default=None):
+    params = request_obj.query_string.decode('utf-8')
+    if 'filtro_semana' in params:
+        week_filter = request_obj.args.get('filtro_semana')
+        initial_date = datetime.datetime.strptime(week_filter.split(' - ')[0], '%d/%m/%Y').strftime('%Y%m%d')
+        end_date = datetime.datetime.strptime(week_filter.split(' - ')[1], '%d/%m/%Y').strftime('%Y%m%d')
+        dates_str = '&data_inicial=' + initial_date + '&data_final=' + end_date
+        params += dates_str
+    else:
+        params += '&data_inicial=' + semana_default.split(' - ')[0] + '&data_final=' + semana_default.split(' - ')[1]
+    if 'status' not in params:
+        params += '&status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO'
+    elif 'status=TODOS' in params:
+        params = params.replace('status=TODOS', 'status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO')
+    url = api + '/editor/cardapios?' + params
     r = requests.get(url)
     refeicoes = r.json()
 
@@ -1243,6 +1253,23 @@ def get_pendencias():
         pendente.append(','.join(_ids[_key]))
 
     return pendentes
+
+
+def get_semanas_pendentes():
+    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO'
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    # Formatar as chaves
+    semanas = {}
+    for refeicao in refeicoes:
+        _key_semana = data_semana_format(refeicao['data'])
+        if _key_semana in semanas.keys():
+            semanas[_key_semana].append(refeicao['data'])
+        else:
+            semanas[_key_semana] = [refeicao['data']]
+
+    return [min(s) + ' - ' + max(s) for s in semanas.values()]
 
 
 def get_deletados():
