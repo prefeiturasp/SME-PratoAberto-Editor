@@ -103,23 +103,15 @@
                 </div>
             </div>
         </nav>
+
     </div>
 
-    <!-- Informações do agrupamento
-{#    {% for arg in args %}#}
-        <div style="text-align: left">
-            <tr>
-                <span type="button" class="btn btn-lg btn-default disabled"
-{#                      id="tipo_atendimento">{{ arg['tipo_atendimento'] }}</span>#}
-                <span type="button" class="btn btn-lg btn-default disabled"
-{#                      id="tipo_unidade">{{ arg['tipo_unidade'] }}</span>#}
-{#                <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ arg['idade'] }}</span>#}
-                <span type="button" class="btn btn-lg btn-default disabled"
-{#                      id="agrupamento">{{ arg['agrupamento'] }}</span>#}
-            </tr>
-        </div>
-{#    {% endfor %}#}
-    -->
+<div class="row">
+    <div class="col-sm-12">
+        <span type="button" onclick="updateStatus('CONFERIDO')" class="btn btn-info">MARCAR COMO CONFERIDO</span>
+        <span type="button" onclick="updateStatus('A_CONFERIR')" class="btn btn-warning">MARCAR COMO A CONFERIR</span>
+    </div>
+</div>
     <!-- Acrescentar a tabela para o calendario -->
     <div class="row tbl">
         <div class="panel panel-success">
@@ -471,6 +463,54 @@
             });
         });
     });
+</script>
+
+<script>
+    function updateStatus(status) {
+        var cardapio = {};
+
+        /* itera em cada linha para construir o post */
+        $('#task-table tr').each(function () {
+            var id = $(this).attr('id');
+            //var data = $($(this).children('td')[0]).text();
+            if (id === undefined) return; /* pula header */
+            var tipo_refeicao = $($(this).children('td')[2]).text();
+            var refeicao = $.map($($(this).children('td')[10]).text().split(','),
+                function (v) {
+                    return $.trim(v) === "" ? null : $.trim(v);
+                });
+
+            if (cardapio[id] === undefined) {
+                item_cardapio = {};
+                item_cardapio[tipo_refeicao] = refeicao;
+                cardapio[id] = item_cardapio;
+            } else {
+                cardapio[id][tipo_refeicao] = refeicao;
+            }
+        });
+
+        var cardapios = []
+
+            $.each(cardapio, function( key, value ) {
+                cardapios.push({
+                    "_id": {"$oid": key},
+                    "cardapio": value,
+                    "status" : status
+                });
+            });
+
+        $.ajax({
+            type: 'POST',
+            url: '/atualiza_cardapio',
+            data: JSON.stringify(cardapios),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function (data, textStatus, jqXHR) {
+                window.alert("Cardápio salvo com sucesso");
+                document.location.href="/pendencias_publicacoes";
+            }
+        });
+    }
 </script>
 </body>
 </html>
