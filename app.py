@@ -13,7 +13,7 @@ from flask import (Flask, flash, redirect, render_template,
 from werkzeug.utils import secure_filename
 from wtforms import (Form, StringField, validators, SelectField,
                      SelectMultipleField, FloatField, IntegerField)
-
+from wtforms.widgets import ListWidget, CheckboxInput
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
@@ -718,6 +718,11 @@ def escolas(id_escola=None):
                            pagination=pagination, referrer=session['refer'], form=form)
 
 
+class MultiCheckboxField(SelectMultipleField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
+
+
 class SchoolRegistrationForm(Form):
     cod_eol = IntegerField('Código EOL', [validators.required()])
     management = SelectField('Gestão', choices=[('DIRETA', 'DIRETA'),
@@ -752,7 +757,7 @@ class SchoolRegistrationForm(Form):
     neighbourhood = StringField('Bairro', [validators.required()])
     latitude = FloatField('Latitude', [validators.optional()])
     longitude = FloatField('Longitude', [validators.optional()])
-    meals = SelectMultipleField('Refeições',
+    meals = MultiCheckboxField('Refeições',
                                 choices=[('A - ALMOCO', 'A - ALMOCO'),
                                          ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
                                          ('C - COLACAO', 'C - COLACAO'),
@@ -767,7 +772,7 @@ class SchoolRegistrationForm(Form):
                                          ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
                                          ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
                                          ])
-    ages = SelectMultipleField('Idades',
+    ages = MultiCheckboxField('Idades',
                                choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
                                         ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
                                         ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
@@ -792,7 +797,6 @@ class SchoolRegistrationForm(Form):
                                         ('V - PROFESSOR', 'V - PROFESSOR'),
                                         ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
                                         ])
-
 
 @app.route('/adicionar_escola', methods=['POST'])
 @flask_login.login_required
@@ -987,7 +991,6 @@ def publicacao():
             session['refer'] = request.referrer
     else:
         session['refer'] = request.referrer
-
 
     if request.method == "GET":
         return render_template("download_publicações.html", referrer=session['refer'], data_inicio_fim='disabled',

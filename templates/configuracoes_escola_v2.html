@@ -101,6 +101,15 @@
             padding-right: 11px;
         }
 
+        .checkbox-form {
+            height: 155px;
+            overflow: auto;
+            margin-left: -47px;
+        }
+        ul {
+            list-style-type: none;
+        }
+
     </style>
 </head>
 <body>
@@ -408,7 +417,12 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width: 130%">
       <div class="modal-header text-center">
-        <h4 class="modal-title w-100 pull-left font-weight-bold">Adicionar escola</h4>
+        {% if form.cod_eol.data %}
+            <h4 class="modal-title w-100 pull-left font-weight-bold">Editar escola</h4>
+        {% endif %}
+        {% if not form.cod_eol.data %}
+            <h4 class="modal-title w-100 pull-left font-weight-bold">Adicionar escola</h4>
+        {% endif %}
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -419,7 +433,7 @@
                   <div class="row forms" style="padding-top: 40px">
                       <div class="col-sm-6 col-xs-12">
                           <label class="col-sm-6 col-xs-12">{{ form.cod_eol.label }}</label>
-                          <span class=" col-sm-4 col-xs-12">{{ form.cod_eol }}</span>
+                          <span class="col-sm-4 col-xs-12">{{ form.cod_eol }}</span>
                       </div>
                       <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
                           <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
@@ -463,11 +477,11 @@
                   <div class="row forms">
                       <div class="col-sm-6 col-xs-12" style="margin-left: -2px">
                           <label class="col-sm-6 col-xs-12">{{ form.latitude.label }}</label>
-                          <span class=" col-sm-4 col-xs-12">{{ form.latitude }}</span>
+                          <span class="col-sm-4 col-xs-12">{{ form.latitude }}</span>
                       </div>
                       <div class="col-sm-6 col-xs-12" style="margin-left: -6px">
                           <label class="col-sm-4 col-xs-12">{{ form.longitude.label }}</label>
-                          <span class=" col-sm-4 col-xs-12">{{ form.longitude }}</span>
+                          <span class="col-sm-4 col-xs-12">{{ form.longitude }}</span>
                       </div>
                   </div>
                   <div class="row forms">
@@ -478,23 +492,14 @@
                   <div class="row forms">
                       <div class="col-xs-12">
                         <label class="col-sm-3 col-xs-12"{{ form.meals.label }}</label>
-                        <span class="col-sm-2 col-xs-12">{{ form.meals }}</span>
+                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.meals }}</span>
                       </div>
                   </div>
-                  <div class="row forms">
-                      <div class="col-xs-12" style="margin-left: 199px">
-                            <p style="display: block">Dica: utilize <strong>CTRL</strong> para selecionar múltiplos</p>
-                      </div>
-                  </div>
+                  <hr/>
                   <div class="row forms">
                       <div class="col-xs-12">
                         <label class="col-sm-3 col-xs-12"{{ form.ages.label }}</label>
-                        <span class="col-sm-2 col-xs-12">{{ form.ages }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-xs-12" style="margin-left: 199px">
-                            <p style="display: block">Dica: utilize <strong>CTRL</strong> para selecionar múltiplos</p>
+                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.ages }}</span>
                       </div>
                   </div>
               </div>
