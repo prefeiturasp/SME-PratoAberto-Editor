@@ -741,6 +741,7 @@ class SchoolRegistrationForm(Form):
     grouping = SelectField('Agrupamento', choices=[('1', '1'),
                                                    ('2', '2'),
                                                    ('3', '3'),
+                                                   ('4', '4'),
                                                    ('EDITAL 78/2016', 'EDITAL 78/2016')
                                                    ])
     edital = SelectField('Edital', choices=[('Nenhum', 'Nenhum'),

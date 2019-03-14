@@ -1,5 +1,7 @@
 import datetime
 
+import unidecode
+
 
 def datetime_to_brstring(dt):
     try:
@@ -101,7 +103,7 @@ def generate_csv_str(cardapio_aux):
     header = [['ATENDIMENTO', 'UNIDADE', 'AGRUPAMENTO', 'IDADE', 'DATA', 'STATUS', 'REFEICÃO', 'CARDÁPIO']]
     cardapio_aux = header + cardapio_aux
     csvlist = '\n'.join(['"' + str('";"'.join(row)) + '"' for row in cardapio_aux])
-    return csvlist
+    return unidecode.unidecode(csvlist)
 
 
 def date_to_str(date):
