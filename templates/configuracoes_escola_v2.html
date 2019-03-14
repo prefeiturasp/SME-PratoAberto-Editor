@@ -105,7 +105,15 @@
 </head>
 <body>
 <div class="container">
-    <!-- NAVBAR -->
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/pendencias_publicacoes">HOME</a>
+                </div>
+            </div>
+        </nav>
+    </div>
     <div class="row">
         <a type="button" class="btn btn-default " href="{{ referrer }}">
             <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
@@ -114,16 +122,10 @@
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
             <span style="font-family: inherit">ADICIONAR ESCOLA</span>
         </button>
-    <div class="row">
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">Prato Aberto - Lista Escolas</a>
-                </div>
-            </div>
-        </nav>
     </div>
-
+    <div style="padding: 15px 0">
+        <h3>Prato Aberto - Listagem de Escolas</h3>
+    </div>
     <!-- Edição da escola -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
         <div class="modal-dialog" role="document" style="width: 70%">
