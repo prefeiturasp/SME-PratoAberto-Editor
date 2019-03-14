@@ -1184,9 +1184,6 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-def removing_xslx_daemon():
-    pass
-
 
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
