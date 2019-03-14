@@ -78,6 +78,17 @@ def sort_array_by_date_and_index(data_array, index=4):
     return data_array
 
 
+def format_datetime_array(array):
+    array_aux = []
+    for i in array:
+        date_initial = i.split(' - ')[0]
+        date_end = i.split(' - ')[1]
+        date_initial = date_initial[6:8] + '/' + date_initial[4:6] + '/' + date_initial[0:4]
+        date_end = date_end[6:8] + '/' + date_end[4:6] + '/' + date_end[0:4]
+        array_aux.append(date_initial + ' - ' + date_end)
+    return array_aux
+
+
 def remove_duplicates_array(array):
     """Este método está seendo usado no lugar de set porque o set tira a ordem"""
     retval = []
