@@ -143,17 +143,17 @@
                             <option>CMCT</option>
                         </select>
                     </div>
-                    <div class="col-sm-3">
-                        <form method="post" action="/download_csv">
-                            <button style="margin-top: 25px;" type="submit" id="btn_download" class="btn col-sm-12"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
-                            <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
-                            <input type="hidden" id="download_input_tipo_unidade" name="tipo_unidade_download" value="{{tipo_unidade}}">
-                            <input type="hidden" id="download_input_tipo_atendimento" name="tipo_atendimento_download" value="{{tipo_atendimento}}">
-                            <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
-                        </form>
-                    </div>
                 </div>
             </form>
+            <div class="col-sm-3 pull-right" style="margin-top: -80px">
+                <form method="post" action="/download_csv">
+                    <button style="margin-top: 25px;" type="submit" id="btn_download" class="btn col-sm-12"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
+                    <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                    <input type="hidden" id="download_input_tipo_unidade" name="tipo_unidade_download" value="{{tipo_unidade}}">
+                    <input type="hidden" id="download_input_tipo_atendimento" name="tipo_atendimento_download" value="{{tipo_atendimento}}">
+                    <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
+                </form>
+            </div>
         </div>
     </div>
     <br>
