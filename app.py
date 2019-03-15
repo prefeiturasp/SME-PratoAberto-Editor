@@ -988,7 +988,6 @@ def publicacao():
     else:
         session['refer'] = request.referrer
 
-
     if request.method == "GET":
         return render_template("download_publicações.html", referrer=session['refer'], data_inicio_fim='disabled',
                                status=opt_status)
@@ -1183,7 +1182,6 @@ def download_speadsheet():
             return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
-
 
 
 # FUNÇÕES AUXILIARES
