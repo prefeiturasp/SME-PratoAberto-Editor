@@ -1,12 +1,12 @@
 import collections
 import datetime
-import itertools
+import dateutil.parser
 import json
 import os
 from operator import itemgetter
 
-import dateutil.parser
 import flask_login
+import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
@@ -14,15 +14,14 @@ from werkzeug.utils import secure_filename
 from wtforms import (Form, StringField, validators, SelectField,
                      SelectMultipleField, FloatField, IntegerField)
 from wtforms.widgets import ListWidget, CheckboxInput
-
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
-from helpers import download_spreadsheet
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    last_monday, monday_to_friday, format_datetime_array)
+from helpers import download_spreadsheet
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -758,46 +757,45 @@ class SchoolRegistrationForm(Form):
     latitude = FloatField('Latitude', [validators.optional()])
     longitude = FloatField('Longitude', [validators.optional()])
     meals = MultiCheckboxField('Refeições',
-                               choices=[('A - ALMOCO', 'A - ALMOCO'),
-                                        ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
-                                        ('C - COLACAO', 'C - COLACAO'),
-                                        ('D - DESJEJUM', 'D - DESJEJUM'),
-                                        ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
-                                        ('J - JANTAR', 'J - JANTAR'),
-                                        ('L - LANCHE', 'L - LANCHE'),
-                                        ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
-                                        ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
-                                        ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
-                                        ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
-                                        ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
-                                        ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
-                                        ])
+                                choices=[('A - ALMOCO', 'A - ALMOCO'),
+                                         ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
+                                         ('C - COLACAO', 'C - COLACAO'),
+                                         ('D - DESJEJUM', 'D - DESJEJUM'),
+                                         ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
+                                         ('J - JANTAR', 'J - JANTAR'),
+                                         ('L - LANCHE', 'L - LANCHE'),
+                                         ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
+                                         ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
+                                         ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
+                                         ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
+                                         ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
+                                         ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
+                                         ])
     ages = MultiCheckboxField('Idades',
-                              choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
-                                       ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
-                                       ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
-                                       ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
-                                       ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
-                                       ('D - 6 MESES', 'D - 6 MESES'),
-                                       ('D - 7 MESES', 'D - 7 MESES'),
-                                       ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
-                                       ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
-                                       ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
-                                       ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
-                                       ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
-                                       ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
-                                       ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
-                                       ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
-                                       ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
-                                       ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
-                                       ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
-                                       ('H - ADULTO', 'H - ADULTO'),
-                                       ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
-                                       ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
-                                       ('V - PROFESSOR', 'V - PROFESSOR'),
-                                       ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
-                                       ])
-
+                               choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
+                                        ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
+                                        ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
+                                        ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
+                                        ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
+                                        ('D - 6 MESES', 'D - 6 MESES'),
+                                        ('D - 7 MESES', 'D - 7 MESES'),
+                                        ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
+                                        ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
+                                        ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
+                                        ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
+                                        ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
+                                        ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
+                                        ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
+                                        ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
+                                        ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
+                                        ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
+                                        ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
+                                        ('H - ADULTO', 'H - ADULTO'),
+                                        ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
+                                        ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
+                                        ('V - PROFESSOR', 'V - PROFESSOR'),
+                                        ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
+                                        ])
 
 @app.route('/adicionar_escola', methods=['POST'])
 @flask_login.login_required
@@ -1185,7 +1183,7 @@ def download_speadsheet():
         xlsx_filename = str(xlsx_file).split('/')[-1]
 
         if xlsx_file:
-            return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
+             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
         else:
             return redirect(request.referrer)
 
@@ -1603,8 +1601,7 @@ def get_quebras_escolas():
 def current_week():
     d = datetime.datetime.utcnow()
     days_gap = 4 - d.weekday()
-    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (
-                d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
+    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
 
 
 def normaliza_str(lista_str):

@@ -2,12 +2,12 @@
 
 # download_spreadsheet.py
 #
-#   Gera arquivo excel com os cardápios publicados
+#   Gera arquivo excel com os cardápios publicados 
 #   Ref: SME - Alimentação\Sprint 4 - Correções e Melhorias do Prato, item 663.
 #
 #   Uso: extrac_02 <periodo> <gestão> <tipo_escola> onde:
 #
-#                  <periodo>         "AAAAMMDD, AAAAMMDD"  - string com a data_de e data_até
+#                  <periodo>         "AAAAMMDD, AAAAMMDD"  - string com a data_de e data_até 
 #                  <gestão>          - string com o tipo de gestão
 #                  <tipo_escola>     - string com o tipo da escola
 #
