@@ -142,6 +142,107 @@
                 Deletados</a>
         </div>
     </div>
+    <!-- Campos GERAÇAO TABELA -->
+    <div class="panel panel-default" style="margin-top: 30px;">
+        <form method="get" action="/pendencias_publicacoes">
+            <div class="row" style="margin-top: 15px">
+                 <div class="col-sm-3 col-xs-12">
+                    <label for="tipo_atendimento">Tipo de gestão</label>
+                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12">
+                    <label class="control-label">Tipo de Escola</label>
+                    <select value="{{request.args.get('tipo_unidade')}}" name="tipo_unidade" class="form-control">
+                         <option value="TODOS">TODOS</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CCI' %} selected {% endif %}>CCI</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEI_CONVENIADO' %} selected {% endif %}>CEI_CONVENIADO</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEI_MUNICIPAL' %} selected {% endif %}>CEI_MUNICIPAL</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO_(RP)' %} selected {% endif %}>CEI_PARCEIRO_(RP)</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEMEI' %} selected {% endif %}>CEMEI</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEU_GESTÃO' %} selected {% endif %}>CEU_GESTÃO</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CIEJA' %} selected {% endif %}>CIEJA</option>
+                         <option {% if request.args.get('tipo_unidade') == 'EMEBS' %} selected {% endif %}>EMEBS</option>
+                         <option {% if request.args.get('tipo_unidade') == 'EMEF' %} selected {% endif %}>EMEF</option>
+                         <option {% if request.args.get('tipo_unidade') == 'EMEFM' %} selected {% endif %}>EMEFM</option>
+                         <option {% if request.args.get('tipo_unidade') == 'EMEI' %} selected {% endif %}>EMEI</option>
+                         <option {% if request.args.get('tipo_unidade') == 'PROJETO_CECI' %} selected {% endif %}>PROJETO_CECI</option>
+                         <option {% if request.args.get('tipo_unidade') == 'SME_CONVÊNIO' %} selected {% endif %}>SME_CONVÊNIO</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12">
+                    <label class="control-label">Idades</label>
+                    <select value="{{request.args.get('idade')}}" name="idade" class="form-control">
+                         <option value="TODOS">TODOS</option>
+                         <option {% if request.args.get('idade') == 'A - 0 A 1 MES' %} selected {% endif %}>A - 0 A 1 MES</option>
+                         <option {% if request.args.get('idade') == 'B - 1 A 3 MESES' %} selected {% endif %}>B - 1 A 3 MESES</option>
+                         <option {% if request.args.get('idade') == 'C - 4 A 5 MESES' %} selected {% endif %}>C - 4 A 5 MESES</option>
+                         <option {% if request.args.get('idade') == 'D - 0 A 5 MESES' %} selected {% endif %}>D - 0 A 5 MESES</option>
+                         <option {% if request.args.get('idade') == 'D - 6 A 7 MESES' %} selected {% endif %}>D - 6 A 7 MESES</option>
+                         <option {% if request.args.get('idade') == 'D - 6 MESES' %} selected {% endif %}>D - 6 MESES</option>
+                         <option {% if request.args.get('idade') == 'D - 7 MESES' %} selected {% endif %}>D - 7 MESES</option>
+                         <option {% if request.args.get('idade') == 'E - 8 MESES' %} selected {% endif %}>E - 8 A 11 MESES</option>
+                         <option {% if request.args.get('idade') == 'X - 1A -1A E 11MES MESES' %} selected {% endif %}>X - 1A -1A E 11MES</option>
+                         <option {% if request.args.get('idade') == 'F - 2 A 3 ANOS' %} selected {% endif %}>F - 2 A 3 ANOS</option>
+                         <option {% if request.args.get('idade') == 'G - 4 A 6 ANOS' %} selected {% endif %}>G - 4 A 6 ANOS</option>
+                         <option {% if request.args.get('idade') == 'I - 2 A 6 ANOS' %} selected {% endif %}>I - 2 A 6 ANOS</option>
+                         <option {% if request.args.get('idade') == 'W - EMEI DA CEMEI' %} selected {% endif %}>W - EMEI DA CEMEI</option>
+                         <option {% if request.args.get('idade') == 'N - 6 A 7 MESES PARCIAL' %} selected {% endif %}>N - 6 A 7 MESES PARCIAL</option>
+                         <option {% if request.args.get('idade') == 'O - 8 A 11 MESES PARCIAL' %} selected {% endif %}>O - 8 A 11 MESES PARCIAL</option>
+                         <option {% if request.args.get('idade') == 'Y - 1A -1A E 11MES PARCIAL' %} selected {% endif %}>Y - 1A -1A E 11MES PARCIAL</option>
+                         <option {% if request.args.get('idade') == 'P - 2 A 3 ANOS PARCIAL' %} selected {% endif %}>P - 2 A 3 ANOS PARCIAL</option>
+                         <option {% if request.args.get('idade') == 'Q - 4 A 6 ANOS PARCIAL' %} selected {% endif %}>Q - 4 A 6 ANOS PARCIAL</option>
+                         <option {% if request.args.get('idade') == 'H - ADULTO' %} selected {% endif %}>H - ADULTO</option>
+                         <option {% if request.args.get('idade') == 'Z - UNIDADES SEM FAIXA' %} selected {% endif %}>Z - UNIDADES SEM FAIXA</option>
+                         <option {% if request.args.get('idade') == 'S - FILHOS PRO JOVEM' %} selected {% endif %}>S - FILHOS PRO JOVEM</option>
+                         <option {% if request.args.get('idade') == 'V - PROFESSOR' %} selected {% endif %}>V - PROFESSOR</option>
+                         <option {% if request.args.get('idade') == 'U - PROFESSOR JANTAR CEI' %} selected {% endif %}>U - PROFESSOR JANTAR CEI</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12">
+                    <label for="agrupamento">Agrupamento</label>
+                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
+                        <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
+                        <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
+                        <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
+                        <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom: 15px; margin-top: 15px">
+                <div class="col-sm-3 col-xs-12">
+                    <label class="control-label">Status</label>
+                    <select value="{{ request.args.get('status') }}" name="status" class="form-control">
+                         <option>TODOS</option>
+                         <option {% if request.args.get('status') == 'PENDENTE' %} selected {% endif %}>PENDENTE</option>
+                         <option {% if request.args.get('status') == 'SALVO' %} selected {% endif %}>SALVO</option>
+                         <option {% if request.args.get('status') == 'A_CONFERIR' %} selected {% endif %}>A_CONFERIR</option>
+                         <option {% if request.args.get('status') == 'CONFERIDO' %} selected {% endif %}>CONFERIDO</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12 dropdown">
+                    <label> Selecione a semana:</label>
+                    <select value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
+                        {% for semana in semanas: %}
+                            <option {% if request.args.get('filtro_semana') == semana %} selected {% endif %}>{{ semana }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12 pull-right" style="padding-top: 25px">
+                    <a href="/pendencias_publicacoes">
+                        <button type="button" class="col-sm-5 btn btn-default">LIMPAR</button>
+                        <button type="submit" class="col-sm-5 pull-right btn btn-success">FILTRAR</button>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="row">
         <div class="col-12">
             <form method="post" action="/calendario_editor_grupo">
@@ -156,17 +257,6 @@
 
     {% include 'messages.html' %}
 
-
-    <div class="row">
-        <div class="col-sm-4 dropdown" style="width: 22%">
-            <label> Selecione a semana:</label>
-            <select class="form-control input" id="filtro_semana" name="filtro_semana">
-                {% for semana in semanas: %}
-                    <option>{{ semana }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
 
     <!-- Upload form -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
@@ -475,35 +565,10 @@
     $(document).ready(function () {
         var semana_filtro = $('#filtro_semana').val()
         $('#task-table tr').not(':first').each(function () {
-            var semana_linha = $($(this).children('td')[14]).text()
-            if (semana_linha == semana_filtro) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+            $(this).show();
         });
     });
 </script>
-
-<!-- Filtra a tabela ao mudar o selector -->
-<script>
-    $(function () {
-        //change to two ? how?
-        $('#filtro_semana').change(function () {
-            var semana_filtro = $(this).val();
-            $('#task-table tr').not(':first').each(function () {
-                var semana_linha = $($(this).children('td')[14]).text()
-                if (semana_linha == semana_filtro) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-
-            });
-        });
-    });
-</script>
-
 
 </body>
 </html>
