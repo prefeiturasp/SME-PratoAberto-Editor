@@ -160,7 +160,7 @@ def titulos(n_faixas, n_refeicoes, escola, gestao, dt_publicacao, pl):
 def gera_excel(parametros):
     try:
         #..Acesso ao banco de dados
-        client = pymongo.MongoClient('localhost', 27017)
+        client = pymongo.MongoClient(os.environ.get('MONGO_HOST'))
         db = client.pratoaberto
         collection = db.cardapios
 
