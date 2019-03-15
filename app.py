@@ -1180,10 +1180,10 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        filename = str(xlsx_file).split('/')[-1]
+        xlsx_filename = str(xlsx_file).split('/')[-1]
 
         if xlsx_file:
-             return send_file(xlsx_file, attachment_filename=filename, as_attachment=True)
+             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
         else:
             return redirect(request.referrer)
 
