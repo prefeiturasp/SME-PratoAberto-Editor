@@ -107,7 +107,7 @@ def backlog():
     semanas_pendentes = sorted(get_semanas_pendentes(), reverse=True)
     semanas = format_datetime_array(semanas_pendentes)
     pendentes = get_pendencias(request_obj=request,
-                               semana_default=semanas_pendentes[0] if len(semanas_pendentes) else None)
+                               semana_default=semanas_pendentes[0] if len(semanas_pendentes) else current_week())
     pendentes = sort_array_date_br(pendentes)
     return render_template("pendencias_publicacao.html",
                            pendentes=pendentes,
@@ -1595,6 +1595,12 @@ def get_quebras_escolas():
         mapa.append(row.split(', ') + [len(mapa_base[row])] + [mapa_base[row][0]])
 
     return mapa
+
+
+def current_week():
+    d = datetime.datetime.utcnow()
+    days_gap = 4 - d.weekday()
+    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
 
 
 def normaliza_str(lista_str):
