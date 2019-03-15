@@ -16,18 +16,18 @@
 #
 
 import os
-import sys
-import pymongo
-from datetime import datetime
-from openpyxl import load_workbook
-from openpyxl.styles import NamedStyle, Font, Border, Side, Alignment
 from copy import copy
+from datetime import datetime
 from pathlib import Path
+
+import pymongo
+from openpyxl import load_workbook
+from openpyxl.styles import Border, Side
 
 # ----------------------------------------------------------------------------------------------------------------------
 #
 #  Mapeamento das refeições por faixa etária vs unidade e gestão
-#-
+# -
 
 idades = {1: ['A - 0 A 1 MÊS', 'B - 1 A 3 MESES', 'C - 4 A 5 MESES', 'D - 6 A 7 MESES', 'E - 8 A 11 MESES',
               'X - 1A -1A E 11MES', 'F - 2 A 3 ANOS', 'G - 4 A 6 ANOS'],
@@ -46,8 +46,7 @@ idades = {1: ['A - 0 A 1 MÊS', 'B - 1 A 3 MESES', 'C - 4 A 5 MESES', 'D - 6 A 7
           6: ['D - 0 A 5 MESES', 'D - 6 MESES', 'D - 7 MESES', 'E - 8 A 11 MESES', 'X - 1A -1A E 11MESES',
               'I - 2 A 6 ANOS', 'W - EMEI DA CEMEI'],
 
-          7: ['Z - UNIDADES SEM FAIXA'] }
-
+          7: ['Z - UNIDADES SEM FAIXA']}
 
 refeicoes = {1: 'D - DESJEJUM',
              2: 'C - COLACAO',
@@ -60,107 +59,115 @@ refeicoes = {1: 'D - DESJEJUM',
              9: 'R1 - REFEICAO 1',
              10: 'MS - MERENDA SECA',
              11: 'MI - MERENDA INICIAL',
-            'WD':['D - DESJEJUM',
-                  'A - ALMOCO'],
-            'WT':['L5 - LANCHE 5 HORAS',
-                  'R1 - REFEICAO 1'] }
+             'WD': ['D - DESJEJUM',
+                    'A - ALMOCO'],
+             'WT': ['L5 - LANCHE 5 HORAS',
+                    'R1 - REFEICAO 1']}
 
-unidades = {'CEI_MUNICIPAL':{
-            'DIRETA'      : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
-            'MISTA'       : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 5, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_5.xlsx'}},
+unidades = {'CEI_MUNICIPAL': {
+    'DIRETA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
+    'MISTA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
+    'TERCEIRIZADA': {'fx_etaria': 5, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_5.xlsx'}},
 
-            'CCI'         : {
-            'DIRETA'      : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
-            'MISTA'       : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 5, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_5.xlsx'}},
+    'CCI': {
+        'DIRETA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
+        'MISTA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_1.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 5, 'refeicao': [1, 2, 3, 4, 5], 'template': 'Template_5.xlsx'}},
 
-            'CEI_PARCEIRO_(RP)': {
-            'DIRETA'      : {'fx_etaria': 2, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'},
-            'MISTA'       : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'}},
+    'CEI_PARCEIRO_(RP)': {
+        'DIRETA': {'fx_etaria': 2, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'},
+        'MISTA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'}},
 
-            'PROJETO_CECI': {
-            'DIRETA'      : {'fx_etaria': 2, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'},
-            'MISTA'       : {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'}},
+    'PROJETO_CECI': {
+        'DIRETA': {'fx_etaria': 2, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'},
+        'MISTA': {'fx_etaria': 1, 'refeicao': [1, 2, 3, 4, 6], 'template': 'Template_2.xlsx'}},
 
-            'CEMEI' 	  : {
-            'DIRETA'      : {'fx_etaria': 3, 'refeicao': [1, 2, 3, 4, 5, 'WD'], 'template': 'Template_3.xlsx'},
-            'MISTA'       : {'fx_etaria': 3, 'refeicao': [1, 2, 3, 4, 5, 'WD'], 'template': 'Template_3.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 6, 'refeicao': [1, 2, 3, 4, 5, 'WT'], 'template': 'Template_6.xlsx'}},
+    'CEMEI': {
+        'DIRETA': {'fx_etaria': 3, 'refeicao': [1, 2, 3, 4, 5, 'WD'], 'template': 'Template_3.xlsx'},
+        'MISTA': {'fx_etaria': 3, 'refeicao': [1, 2, 3, 4, 5, 'WD'], 'template': 'Template_3.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 6, 'refeicao': [1, 2, 3, 4, 5, 'WT'], 'template': 'Template_6.xlsx'}},
 
-            'EMEI'	  : {
-            'DIREITA'     : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'MISTA'       : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
+    'EMEI': {
+        'DIREITA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'MISTA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
 
-            'EMEF'	  : {
-            'DIRETA'      : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'MISTA'       : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
+    'EMEF': {
+        'DIRETA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'MISTA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
 
-            'CIEJA'	  : {
-            'DIRETA'      : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'MISTA'       : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
+    'CIEJA': {
+        'DIRETA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'MISTA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
 
-            'EMEBS'	  : {
-            'DIRETA'      : {'fx_etaria' :4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'MISTA'       : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
+    'EMEBS': {
+        'DIRETA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'MISTA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}},
 
-            'SME_CONVÊNIO': {
-            'DIRETA'      : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'MISTA'       : {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
-            'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}}
-          }
+    'SME_CONVÊNIO': {
+        'DIRETA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'MISTA': {'fx_etaria': 4, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_4.xlsx'},
+        'TERCEIRIZADA': {'fx_etaria': 7, 'refeicao': [11, 6, 7, 8, 9, 10], 'template': 'Template_7.xlsx'}}
+}
 
 # ----------------------------------------------------------------------------------------------------------------------
-#..Meses e dias da semana
-meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junio', 'Julio', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezemnbro']
-dias_semana = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo']
-    
+# ..Meses e dias da semana
+meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junio', 'Julio', 'Agosto', 'Setembro', 'Outubro',
+         'Novembro', 'Dezemnbro']
+dias_semana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 def get_num_semana(s_data):
-    dta = s_data[:4]+'-'+s_data[4:][:2]+'-'+s_data[6:]
-    tz_dta = datetime.strptime(dta,'%Y-%m-%d')
+    dta = s_data[:4] + '-' + s_data[4:][:2] + '-' + s_data[6:]
+    tz_dta = datetime.strptime(dta, '%Y-%m-%d')
     return (tz_dta.isocalendar()[1])
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 def estilo(n_cels, pl):
-   bd = Side(style='thick', color="000000")
-   c=2
-   while c < n_cels:
-      pl.cell(row=1, column=c).border = Border(left=bd, top=bd, right=bd, bottom=bd)
-      pl.cell(row=3, column=c).border = Border(left=bd, top=bd, right=bd, bottom=bd)
-      c +=1
-      
+    bd = Side(style='thick', color="000000")
+    c = 2
+    while c < n_cels:
+        pl.cell(row=1, column=c).border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        pl.cell(row=3, column=c).border = Border(left=bd, top=bd, right=bd, bottom=bd)
+        c += 1
+
+
 # ----------------------------------------------------------------------------------------------------------------------
-def merge_cels(n_faixas,n_refeicoes,pl):
-    #..Dia
+def merge_cels(n_faixas, n_refeicoes, pl):
+    # ..Dia
     pl.merge_cells(start_row=1, start_column=1, end_row=3, end_column=1)
 
-    #..Titulo
+    # ..Titulo
     n_col = (n_faixas * n_refeicoes) + 1
     pl.merge_cells(start_row=1, start_column=2, end_row=1, end_column=n_col)
 
-    #..Faixas etárias
-    fx=0
+    # ..Faixas etárias
+    fx = 0
     while fx < n_faixas:
-        pl.merge_cells(start_row=2, start_column=2+(n_refeicoes * fx), end_row=2, end_column=1+n_refeicoes+(fx*n_refeicoes))
+        pl.merge_cells(start_row=2, start_column=2 + (n_refeicoes * fx), end_row=2,
+                       end_column=1 + n_refeicoes + (fx * n_refeicoes))
         fx += 1
-    
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 def titulos(n_faixas, n_refeicoes, escola, gestao, dt_publicacao, pl):
-    f=0
-    fx=0
+    f = 0
+    fx = 0
     while f < (n_faixas * n_refeicoes):
-       pl.cell(row=2, column=2+f).value = idades[unidades[escola][gestao]['fx_etaria']][fx] + ' Publicação: ' + dt_publicacao
-       c=0
-       while c < n_refeicoes:
-          pl.cell(row=3, column=c+2+f).value = refeicoes[unidades[escola][gestao]['refeicao'][c]]
-          c +=1
-       f += n_refeicoes
-       fx +=1
+        pl.cell(row=2, column=2 + f).value = idades[unidades[escola][gestao]['fx_etaria']][
+                                                 fx] + ' Publicação: ' + dt_publicacao
+        c = 0
+        while c < n_refeicoes:
+            pl.cell(row=3, column=c + 2 + f).value = refeicoes[unidades[escola][gestao]['refeicao'][c]]
+            c += 1
+        f += n_refeicoes
+        fx += 1
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 def save_dia(sv_cardapios_dia, sv_lin, sv_data_ant, sv_num_faixas, sv_num_refeicoes, sv_tipo_escola, sv_tipo_gestao,
@@ -187,7 +194,7 @@ def save_dia(sv_cardapios_dia, sv_lin, sv_data_ant, sv_num_faixas, sv_num_refeic
             if len(sv_cardapios_dia[idades[unidades[sv_tipo_escola][sv_tipo_gestao][r'fx_etaria']][n_faixa]][
                        ref_n]) > 0:
                 sv_ws.cell(row=sv_lin, column=col).value = \
-                sv_cardapios_dia[idades[unidades[sv_tipo_escola][sv_tipo_gestao][r'fx_etaria']][n_faixa]][ref_n][0]
+                    sv_cardapios_dia[idades[unidades[sv_tipo_escola][sv_tipo_gestao][r'fx_etaria']][n_faixa]][ref_n][0]
             else:
                 sv_ws.cell(row=sv_lin, column=col).value = 'N/D'
             col += 1
@@ -195,47 +202,51 @@ def save_dia(sv_cardapios_dia, sv_lin, sv_data_ant, sv_num_faixas, sv_num_refeic
         n_faixa += 1
         n_refeicao = 0
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 def gera_excel(parametros):
     try:
-        #..Acesso ao banco de dados
-        client = pymongo.MongoClient('localhost', 27017)
+        # ..Acesso ao banco de dados
+        client = pymongo.MongoClient(os.environ.get('MONGO_HOST'))
         db = client.pratoaberto
         collection = db.cardapios
 
-        #..Data e hora da emissão
+        # ..Data e hora da emissão
         data = (datetime.now().isoformat(timespec='minutes')).split('T')
         hoje, hora = data[0], data[1]
         dt = ''.join(x for x in hoje.split('-'))
         hr = ''.join(x for x in hora.split(':'))
 
-        #..Parámetros para a extração e gravação
+        # ..Parámetros para a extração e gravação
         data_de = parametros.split(',')[0].strip()
-        data_ate= parametros.split(',')[1].strip()
+        data_ate = parametros.split(',')[1].strip()
         tipo_gestao = parametros.split(',')[2].strip()
         tipo_escola = parametros.split(',')[3].strip()
         t_status = 'PUBLICADO'
 
-        #..Arquivo Template
+        # ..Arquivo Template
         arq_nome = unidades[tipo_escola][tipo_gestao]['template']
-        template = Path(os.path.abspath('static/spreadsheet'))/arq_nome
+        template = Path(os.path.abspath('static/spreadsheet')) / arq_nome
 
-        #..Arquivo xlsx de saída
-        arq_nome = 'Cardapios_'+tipo_escola + '_'+ dt + hr + '.xlsx'
-        xls = Path(os.path.abspath('tmp/'))/arq_nome
+        # ..Arquivo xlsx de saída
+        arq_nome = 'Cardapios_' + tipo_escola + '_' + dt + hr + '.xlsx'
+        xls = Path(os.path.abspath('tmp/')) / arq_nome
 
-        #..Datas do período e número de semanas
+        # ..Datas do período e número de semanas
         dta_de = data_de[6:] + '-' + data_de[4:][:2] + '-' + data_de[:4]
         dta_ate = data_ate[6:] + '-' + data_ate[4:][:2] + '-' + data_ate[:4]
         w_de, w_ate = str(get_num_semana(data_de)), str(get_num_semana(data_ate))
 
-        #..Elementos da planilha
-        num_faixas=len(idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']])
-        num_refeicoes=len(unidades[tipo_escola][tipo_gestao]['refeicao'])
-        cabecalho = 'CARDÁPIOS ' +tipo_escola+ ' - ' +tipo_gestao+ ' - Período: ' +dta_de+ ' até ' +dta_ate+ ' - Semanas: ' +w_de+ ' a ' +w_ate
+        # ..Elementos da planilha
+        num_faixas = len(idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']])
+        num_refeicoes = len(unidades[tipo_escola][tipo_gestao]['refeicao'])
+        cabecalho = 'CARDÁPIOS ' + tipo_escola + ' - ' + tipo_gestao + ' - Período: ' + dta_de + ' até ' + dta_ate + ' - Semanas: ' + w_de + ' a ' + w_ate
 
-        #..Verifica a existência de cardápios com os parámetros fornecidos
-        consulta = [{"$match":{"tipo_unidade":tipo_escola,"data":{"$gte":data_de,"$lte":data_ate},"status":t_status,"tipo_atendimento":tipo_gestao,"data_publicacao":{"$exists":"true"}}},{"$sort":{"data":1}},{"$count":"num_regs"}]
+        # ..Verifica a existência de cardápios com os parámetros fornecidos
+        consulta = [{"$match": {"tipo_unidade": tipo_escola, "data": {"$gte": data_de, "$lte": data_ate},
+                                "status": t_status, "tipo_atendimento": tipo_gestao,
+                                "data_publicacao": {"$exists": "true"}}}, {"$sort": {"data": 1}},
+                    {"$count": "num_regs"}]
 
         num_regs = 0
         for i in collection.aggregate(consulta):
@@ -246,7 +257,7 @@ def gera_excel(parametros):
         aba = 0
         new_wb = None
 
-        #..Cria as abas das semanas
+        # ..Cria as abas das semanas
         if num_regs > 0:
             while semana < num_semanas:
                 try:
@@ -278,43 +289,45 @@ def gera_excel(parametros):
                     print('Erro no bloco de criação do arquivo template'.format(template))
                     return -1
 
-                #..Formata celulas dos titulos
+                # ..Formata celulas dos titulos
                 if num_semanas > 1:
-                    merge_cels(num_faixas,num_refeicoes,new_wb)
+                    merge_cels(num_faixas, num_refeicoes, new_wb)
 
-                #..Grava aba da semana no teplate
+                # ..Grava aba da semana no teplate
                 arq_nome = 'x' + unidades[tipo_escola][tipo_gestao]['template']
-                template = Path(os.path.abspath('static/spreadsheet'))/arq_nome
+                template = Path(os.path.abspath('static/spreadsheet')) / arq_nome
 
                 wb.save(template)
-                semana +=1
+                semana += 1
 
-            #..Abre o template com todas as semanas
+            # ..Abre o template com todas as semanas
             wb = load_workbook(filename=template)
 
-            #..Formata aba 'Semana 1'
+            # ..Formata aba 'Semana 1'
             ws = wb['Semana 1']
             merge_cels(num_faixas, num_refeicoes, ws)
             wb.save(template)
             wb = load_workbook(filename=template)
 
-            #..Inicia a estrutura auxiliar para receber os cardápios do dia
+            # ..Inicia a estrutura auxiliar para receber os cardápios do dia
             cardapios_dia = {}
             n_faixa = 0
             n_refeicao = 0
             while n_faixa < num_faixas:
-               cardapios_dia[idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']][n_faixa]] = {}
-               while n_refeicao < num_refeicoes:
-                   ref_n = refeicoes[unidades[tipo_escola][tipo_gestao]['refeicao'][n_refeicao]]
-                   cardapios_dia[idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']][n_faixa]][ref_n]=[]
-                   n_refeicao += 1
-               n_faixa += 1
-               n_refeicao = 0
+                cardapios_dia[idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']][n_faixa]] = {}
+                while n_refeicao < num_refeicoes:
+                    ref_n = refeicoes[unidades[tipo_escola][tipo_gestao]['refeicao'][n_refeicao]]
+                    cardapios_dia[idades[unidades[tipo_escola][tipo_gestao]['fx_etaria']][n_faixa]][ref_n] = []
+                    n_refeicao += 1
+                n_faixa += 1
+                n_refeicao = 0
 
-            #..Extrai os cardápios do banco de dados
-            cursor = collection.find({"tipo_atendimento":tipo_gestao,"tipo_unidade":tipo_escola,"status":t_status,"data_publicacao":{"$exists":"true"},"data":{"$gte": data_de, "$lte": data_ate}}).sort([("data", 1)])
+            # ..Extrai os cardápios do banco de dados
+            cursor = collection.find({"tipo_atendimento": tipo_gestao, "tipo_unidade": tipo_escola, "status": t_status,
+                                      "data_publicacao": {"$exists": "true"},
+                                      "data": {"$gte": data_de, "$lte": data_ate}}).sort([("data", 1)])
 
-            #..Processa os cardápios extraidos
+            # ..Processa os cardápios extraidos
             num_recs = 0
             doc = cursor.next()
             data_ant = doc['data']
@@ -342,17 +355,17 @@ def gera_excel(parametros):
                             cursor.close()
 
                     else:
-                        #..Popula planilha com o cardápio do dia
+                        # ..Popula planilha com o cardápio do dia
                         ws = wb['Semana ' + str(num_planilha)]
                         dta_pub = doc['data_publicacao'][:10]
 
-                        #..Grava o dia na planilha
+                        # ..Grava o dia na planilha
                         save_dia(cardapios_dia, lin, data_ant, num_faixas, num_refeicoes, tipo_escola, tipo_gestao,
                                  dta_pub, wb, ws, template, cabecalho)
                         lin += 1
                         wb.save(template)
 
-                        #..Limpa o conteúdo da estrutura auxiliar
+                        # ..Limpa o conteúdo da estrutura auxiliar
                         l_idades = list(cardapios_dia.keys())
                         for idade in l_idades:
                             l_refeicoes = list(cardapios_dia[idade].keys())
@@ -362,43 +375,45 @@ def gera_excel(parametros):
                         data_ant = doc['data']
 
                 else:
-                    #..Grava o último dia da semana
+                    # ..Grava o último dia da semana
                     ws = wb['Semana ' + str(num_planilha)]
                     dta_pub = doc['data_publicacao'][:10]
 
-                    save_dia(cardapios_dia, lin, data_ant, num_faixas, num_refeicoes, tipo_escola, tipo_gestao, dta_pub, wb, ws, template, cabecalho)
+                    save_dia(cardapios_dia, lin, data_ant, num_faixas, num_refeicoes, tipo_escola, tipo_gestao, dta_pub,
+                             wb, ws, template, cabecalho)
 
                     wb.save(template)
 
-                    #..Continua o processo com a seguinte semana
+                    # ..Continua o processo com a seguinte semana
                     semana_ant = get_num_semana(doc['data'])
                     data_ant = doc['data']
                     num_planilha += 1
                     lin = 4
-            #..end while
+            # ..end while
 
-            #..Salva o último dia da semana
+            # ..Salva o último dia da semana
             ws = wb['Semana ' + str(num_planilha)]
             dta_pub = doc['data_publicacao'][:10]
-            save_dia(cardapios_dia, lin, data_ant, num_faixas, num_refeicoes, tipo_escola, tipo_gestao, dta_pub, wb, ws, template, cabecalho)
+            save_dia(cardapios_dia, lin, data_ant, num_faixas, num_refeicoes, tipo_escola, tipo_gestao, dta_pub, wb, ws,
+                     template, cabecalho)
             wb.save(template)
 
-            #..Apaga planilhas sem cardápios
+            # ..Apaga planilhas sem cardápios
             num_semanas = int(w_ate) - int(w_de) + 1
             semana = 1
 
             while semana <= num_semanas:
-                ws=wb['Semana '+str(semana)]
+                ws = wb['Semana ' + str(semana)]
                 v = ws['B3'].value
                 if v == None:
-                    wb.remove(wb['Semana '+str(semana)])
+                    wb.remove(wb['Semana ' + str(semana)])
                 semana += 1
 
             wb.save(xls)
             return xls
         else:
-           print('Não há cardápios cadastrados nesse período.')
-           
+            print('Não há cardápios cadastrados nesse período.')
+
     except Exception as e:
         print(e)
         print('Não foi possível gerar o arquivo excel.')
@@ -417,9 +432,3 @@ def gera_excel(parametros):
 #         params.__delitem__(0)
 #
 #     gera_excel(params)
-
-
-
-
-
-
