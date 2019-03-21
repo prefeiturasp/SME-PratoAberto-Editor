@@ -821,6 +821,7 @@ def adicionar_escola():
     new_school['data_inicio_vigencia'] = ''
     new_school['historico'] = []
     new_school['status'] = 'ativo'
+
     headers = {'Content-type': 'application/json'}
     r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
                       data=json.dumps(new_school),
@@ -1180,10 +1181,9 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        xlsx_filename = str(xlsx_file).split('/')[-1]
-
         if xlsx_file:
-             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
+
+            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
@@ -1620,4 +1620,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(port=7000,debug=True)
+    app.run(host='0.0.0.0', port=5002)
