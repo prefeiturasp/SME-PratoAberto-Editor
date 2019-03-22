@@ -228,7 +228,7 @@
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a semana:</label>
-                    <select value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
+                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
                         {% for semana in semanas: %}
                             <option {% if request.args.get('filtro_semana') == semana %} selected {% endif %}>{{ semana }}</option>
                         {% endfor %}
