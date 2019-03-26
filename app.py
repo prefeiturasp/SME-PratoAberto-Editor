@@ -20,7 +20,7 @@ import db_functions
 import db_setup
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   last_monday, monday_to_friday, format_datetime_array)
+                   format_datetime_array)
 from helpers import download_spreadsheet
 
 app = Flask(__name__)
@@ -135,16 +135,9 @@ def deletados():
 @app.route("/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
-    week_filter = request.args.get('filtro_semana_mes', None)
-    if week_filter:
-        days = week_filter.split(' - ')
-        initial_date = datetime.datetime.strptime(days[0], '%d/%m/%Y').strftime('%Y%m%d')
-        end_date = datetime.datetime.strptime(days[1], '%d/%m/%Y').strftime('%Y%m%d')
-    else:
-        initial_date = last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14)).strftime('%Y%m%d')
-        end_date = monday_to_friday(last_monday(datetime.datetime.utcnow() + datetime.timedelta(days=14))).strftime(
-            '%Y%m%d')
-    published_menus = sort_array_date_br(get_publicados(initial_date, end_date))
+    weeks = reversed(generate_ranges())
+    default_week = list(weeks)[2]
+    published_menus = sort_array_date_br(get_publicados(request_obj=request, default_week=default_week))
     period = request.args.get('filtro_periodo', '30')
     if period not in [None, 'all']:
         date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
@@ -169,7 +162,8 @@ def publicados():
     return render_template("pendencias_publicadas.html",
                            published_menus=published_menus,
                            week_ranges=list(periods),
-                           period_ranges=period_ranges)
+                           period_ranges=period_ranges,
+                           default_week=default_week)
 
 
 @app.route("/edicao_de_notas", methods=["GET", "POST"])
@@ -1180,9 +1174,10 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        if xlsx_file:
+        xlsx_filename = str(xlsx_file).split('/')[-1]
 
-            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+        if xlsx_file:
+             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
         else:
             return redirect(request.referrer)
 
@@ -1335,11 +1330,17 @@ def get_deletados():
     return pendentes
 
 
-def get_publicados(_data_inicial=None, _data_final=None):
-    if _data_inicial and _data_final:
-        url = api + '/editor/cardapios?status=PUBLICADO&data_inicial=' + _data_inicial + '&data_final=' + _data_final
+def get_publicados(request_obj, default_week):
+    params = request_obj.query_string.decode('utf-8')
+    
+    if 'filtro_semana_mes' in params:
+        week_filter = request_obj.args.get('filtro_semana_mes')
     else:
-        url = api + '/editor/cardapios?status=PUBLICADO'
+        week_filter = default_week
+    initial_date = datetime.datetime.strptime(week_filter.split(' - ')[0], '%d/%m/%Y').strftime('%Y%m%d')
+    end_date = datetime.datetime.strptime(week_filter.split(' - ')[1], '%d/%m/%Y').strftime('%Y%m%d')
+    params += '&data_inicial=' + initial_date + '&data_final=' + end_date
+    url = api + '/editor/cardapios?status=PUBLICADO&' + params
     r = requests.get(url)
     refeicoes = r.json()
 
@@ -1398,7 +1399,7 @@ def _set_datetime(str_date):
         ndate = dateutil.parser.parse(str_date)
         return ndate.strftime('%d/%m/%Y - %H:%M:%S')
     except Exception as e:
-        print(str(e))
+        pass
 
 
 def get_escolas(params=None):
@@ -1619,4 +1620,4 @@ def normaliza_str(lista_str):
 
 if __name__ == "__main__":
     db_setup.set()
-    app.run(host='0.0.0.0', port=5002)
+    app.run()

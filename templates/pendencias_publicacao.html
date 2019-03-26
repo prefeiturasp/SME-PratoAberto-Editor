@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Prato Aberto - Editor Cardapio</title>
@@ -92,7 +92,7 @@
                                 <span class="caret"></span></button>
                             <ul class="dropdown-menu">
                                 <li><a href="/download_publicacao">CARDÁPIOS</a></li>
-                                <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS MENSAIS</a>
+                                <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS POR SEMANA</a>
                                 </li>
                             </ul>
                             {% include 'modal_download.html' %}
@@ -228,7 +228,7 @@
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a semana:</label>
-                    <select value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
+                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
                         {% for semana in semanas: %}
                             <option {% if request.args.get('filtro_semana') == semana %} selected {% endif %}>{{ semana }}</option>
                         {% endfor %}
