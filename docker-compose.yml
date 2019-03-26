@@ -6,7 +6,7 @@ services:
     build: .
     env_file:
       - .env
-    command: gunicorn app:app --timeout 120 --log-level DEBUG -w 1 -b 0.0.0.0:8001
+    command: gunicorn app:app --timeout 300 --log-level DEBUG -w 1 -b 0.0.0.0:8001
     volumes:
       - .:/code
     ports:

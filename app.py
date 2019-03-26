@@ -667,9 +667,16 @@ def atualiza_configuracoes():
 @app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
+    referrer = '/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
     if request.method == "GET":
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor, referrer=request.referrer)
+        return render_template("configurações_receitas.html", config=config_editor, referrer=referrer)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
