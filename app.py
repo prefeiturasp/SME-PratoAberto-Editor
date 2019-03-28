@@ -678,10 +678,17 @@ class OutSourcedMenuForm(Form):
 @app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
+    referrer = '/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
     if request.method == "GET":
         form = OutSourcedMenuForm(request.form)
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor, referrer=request.referrer, form=form)
+        return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
@@ -777,6 +784,7 @@ def adicionar_escola():
     new_school['data_inicio_vigencia'] = ''
     new_school['historico'] = []
     new_school['status'] = 'ativo'
+
     headers = {'Content-type': 'application/json'}
     r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
                       data=json.dumps(new_school),
@@ -1136,10 +1144,9 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        xlsx_filename = str(xlsx_file).split('/')[-1]
-
         if xlsx_file:
-             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
+
+            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
