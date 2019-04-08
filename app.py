@@ -8,11 +8,12 @@ from operator import itemgetter
 import flask_login
 import itertools
 import requests
+import constants
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
-from wtforms import (Form, StringField, validators, SelectField,
-                     SelectMultipleField, FloatField, IntegerField)
+from wtforms import (Form, StringField, validators, SelectField, DateField,
+                     SelectMultipleField, FloatField, IntegerField, TextAreaField)
 from wtforms.widgets import ListWidget, CheckboxInput
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
@@ -658,21 +659,54 @@ def atualiza_configuracoes():
         return ('', 200)
 
 
+class MultiCheckboxField(SelectMultipleField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
+
+
+class OutSourcedMenuForm(Form):
+    menu_id = IntegerField('ID')
+    management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016')])
+    weekday = DateField('Dia Semana', format='%Y%m%d')
+    ages = SelectField('Idades', choices=constants.AGES_DICT)
+    meals = SelectField('Refeições', choices=constants.MEALS_DICT)
+    menu = TextAreaField('Cardápio')
+
+
 @app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
+    referrer = '/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
     if request.method == "GET":
+        form = OutSourcedMenuForm(request.form)
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor, referrer=request.referrer)
+        return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
 @flask_login.login_required
 def atualiza_config_cardapio():
-    data = request.form.get('json_dump', request.data)
-
-    db_functions.truncate_receitas_terceirizadas()
-    db_functions.add_bulk_cardapio(json.loads(data))
+    form = OutSourcedMenuForm(request.form)
+    new_menu = list()
+    new_menu.append(form.management.data)
+    new_menu.append(form.school_type.data)
+    new_menu.append(form.edital.data)
+    if form.weekday.data:
+        new_menu.append(form.weekday.data.strftime('%Y%m%d'))
+    else:
+        new_menu.append('')
+    new_menu.append(form.ages.data)
+    new_menu.append(form.meals.data)
+    new_menu.append(form.menu.data)
+    db_functions.add_bulk_cardapio([new_menu])
 
     if request.form:
         flash('Cardápio terceirizado adicionado com sucesso.', 'success')
@@ -711,85 +745,20 @@ def escolas(id_escola=None):
                            pagination=pagination, referrer=session['refer'], form=form)
 
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = ListWidget(prefix_label=False)
-    option_widget = CheckboxInput()
-
-
 class SchoolRegistrationForm(Form):
     cod_eol = IntegerField('Código EOL', [validators.required()])
-    management = SelectField('Gestão', choices=[('DIRETA', 'DIRETA'),
-                                                ('MISTA', 'MISTA'),
-                                                ('TERCEIRIZADA', 'TERCEIRIZADA')
-                                                ])
-    school_type = SelectField('Tipo de Escola', choices=[('CCI', 'CCI'),
-                                                         ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
-                                                         ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
-                                                         ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
-                                                         ('CEMEI', 'CEMEI'),
-                                                         ('CEU_GESTÃO', 'CEU_GESTÃO'),
-                                                         ('CIEJA', 'CIEJA'),
-                                                         ('EMEBS', 'EMEBS'),
-                                                         ('EMEF', 'EMEF'),
-                                                         ('EMEFM', 'EMEFM'),
-                                                         ('EMEI', 'EMEI'),
-                                                         ('PROJETO_CECI', 'PROJETO_CECI'),
-                                                         ('SME_CONVÊNIO', 'SME_CONVÊNIO')
-                                                         ])
-    grouping = SelectField('Agrupamento', choices=[('1', '1'),
-                                                   ('2', '2'),
-                                                   ('3', '3'),
-                                                   ('4', '4'),
-                                                   ('EDITAL 78/2016', 'EDITAL 78/2016')
-                                                   ])
-    edital = SelectField('Edital', choices=[('Nenhum', 'Nenhum'),
-                                            ('EDITAL 78/2016', 'EDITAL 78/2016')
-                                            ])
+    management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
+    edital = SelectField('Edital', choices=constants.EDITOR_DICT)
     school_name = StringField('Nome da Escola', [validators.required()])
     address = StringField('Endereço', [validators.required()])
     neighbourhood = StringField('Bairro', [validators.required()])
     latitude = FloatField('Latitude', [validators.optional()])
     longitude = FloatField('Longitude', [validators.optional()])
-    meals = MultiCheckboxField('Refeições',
-                                choices=[('A - ALMOCO', 'A - ALMOCO'),
-                                         ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
-                                         ('C - COLACAO', 'C - COLACAO'),
-                                         ('D - DESJEJUM', 'D - DESJEJUM'),
-                                         ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
-                                         ('J - JANTAR', 'J - JANTAR'),
-                                         ('L - LANCHE', 'L - LANCHE'),
-                                         ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
-                                         ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
-                                         ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
-                                         ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
-                                         ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
-                                         ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
-                                         ])
-    ages = MultiCheckboxField('Idades',
-                               choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
-                                        ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
-                                        ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
-                                        ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
-                                        ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
-                                        ('D - 6 MESES', 'D - 6 MESES'),
-                                        ('D - 7 MESES', 'D - 7 MESES'),
-                                        ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
-                                        ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
-                                        ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
-                                        ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
-                                        ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
-                                        ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
-                                        ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
-                                        ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
-                                        ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
-                                        ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
-                                        ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
-                                        ('H - ADULTO', 'H - ADULTO'),
-                                        ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
-                                        ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
-                                        ('V - PROFESSOR', 'V - PROFESSOR'),
-                                        ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
-                                        ])
+    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
+    ages = MultiCheckboxField('Idades', choices=constants.AGES_DICT)
+
 
 @app.route('/adicionar_escola', methods=['POST'])
 @flask_login.login_required
@@ -815,6 +784,7 @@ def adicionar_escola():
     new_school['data_inicio_vigencia'] = ''
     new_school['historico'] = []
     new_school['status'] = 'ativo'
+
     headers = {'Content-type': 'application/json'}
     r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
                       data=json.dumps(new_school),
@@ -1174,10 +1144,9 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        xlsx_filename = str(xlsx_file).split('/')[-1]
-
         if xlsx_file:
-             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
+
+            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
