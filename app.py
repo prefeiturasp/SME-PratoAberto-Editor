@@ -19,6 +19,7 @@ import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
+from helpers.special_units import SpecialUnits
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array)
@@ -1151,6 +1152,12 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
+@app.route('/unidades-especiais', method=['POST'])
+def unidade_especial():
+    special_units = SpecialUnits()
+    pass
+
+
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
@@ -1301,7 +1308,7 @@ def get_deletados():
 
 def get_publicados(request_obj, default_week):
     params = request_obj.query_string.decode('utf-8')
-    
+
     if 'filtro_semana_mes' in params:
         week_filter = request_obj.args.get('filtro_semana_mes')
     else:
@@ -1570,7 +1577,8 @@ def get_quebras_escolas():
 def current_week():
     d = datetime.datetime.utcnow()
     days_gap = 4 - d.weekday()
-    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
+    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (
+                d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
 
 
 def normaliza_str(lista_str):
