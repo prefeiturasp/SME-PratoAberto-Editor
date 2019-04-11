@@ -113,7 +113,7 @@ def ue_get_periodo(unidade):
     periodo = ""
     if db is not None:
         try:
-            dict_unidade = db.find_one({"nome": nome_unidade})
+            dict_unidade = db.find_one({"nome": unidade})
             periodo = dict_unidade["data_inicio"] + "," + dict_unidade["data_fim"]
         except OperationFailure as e:
             print("Problema ao extrair as datas do período de funcionamento do POLO ou RECREIO_FERIAS.")

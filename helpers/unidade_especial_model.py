@@ -50,8 +50,13 @@ class UnidadeEspecialModel(object):
 
     # ..GRAVA/ATUALIZA OS DADOS DE UMA UNIDADE ESPECIAL
     def save_unidade(self):
-        return uedb.ue_save_unidade(self.unidade, self.data_ini, self.data_fim)
+        return uedb.ue_save_unidade(self.unidade, self.data_ini, self.data_fim, self.id_escolas)
 
     # ..EXTRAI AS ESCOLAS DO BANCO DE DADOS
-    def get_db_escolas():
+    def get_db_escolas(self):
         return uedb.ue_get_db_escolas()
+
+    # ..DESATIVA UNIDADE ESPECIAL
+    def ue_deactivate(self):
+        return uedb.ue_deactivate(self.unidade)
+
