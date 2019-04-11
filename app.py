@@ -425,7 +425,10 @@ def calendario():
         cardapio_atual['dia_semana'] = dia_semana(dia)  # troca um int por uma str de dia de semana
         # cardapio atual>
         # {'_id': {'$oid': '5c2de6c354e6257eebc8a2c3'}, 'tipo_unidade': 'CCI', 'tipo_atendimento': 'TERCEIRIZADA', 'data_publicacao': '2019-02-08T17:13:51.100Z', 'data': '20190118', 'idade': 'D - 0 A 5 MESES', 'cardapio': {'J - JANTAR': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'D - DESJEJUM': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'A - ALMOCO': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'L - LANCHE': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)']}, 'status': 'PENDENTE', 'agrupamento': 'EDITAL 78/2016', 'cardapio_original': {'J - JANTAR': [], 'D - DESJEJUM': [], 'A - ALMOCO': [], 'L - LANCHE': []}, 'dia_semana': 'Sex'}
-        jdata_aux.append(cardapio_atual)
+        if not next((True for item in jdata_aux if item['dia_semana'] == cardapio_atual['dia_semana']), False):
+            jdata_aux.append(cardapio_atual)
+
+    jdata = jdata_aux
     # jdata_aux é um array maluco cheio de dicionarios
     # mesma coisa da maluquice acima, so que para semana anterior...
     jdata_anterior_aux = []
