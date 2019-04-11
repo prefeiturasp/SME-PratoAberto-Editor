@@ -170,7 +170,7 @@
                                 <td class="idade" contenteditable="true">{{ linha[5] }}</td>
                                 <td class="refeicao" contenteditable="true">{{ linha[6] }}</td>
                                 <td class="cardapio" contenteditable="true">{{ linha[7] }}</td>
-                                <td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor: pointer' class='fa'></i></a></td>
+                                <td><a value='Delete' data-id="{{ linha[0] }}" class="remove-card"><i style='color:#D9534F;font-size:30px;text-align: center; cursor: pointer' class='fa'></i></a></td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -331,29 +331,21 @@
             if(confirm('Deseja remover este cardápio?')){
                 var i = r.parentNode.parentNode.rowIndex;
                 document.getElementById("task-table").deleteRow(i);
+
             }
         }
+
+        jQuery('.remove-card').click(function(){
+            var id = jQuery(this).attr('data-id');
+            $.get('/remove-lista-terceirizada/'+id,{},function(data){
+                    alert(data.message);
+                    location.reload();
+
+            });
+        });
     </script>
 
-    <!-- Adiciona linhas na tabela -->
-    <script>
-        function addRow() {
-            $('#task-table').prepend(
-                "<tr class='item warning'>" +
-                "<td class='ids'>NOVO</td>" +
-                "<td class='tipo_gestao' contenteditable='true'>TERCEIRIZADA</td>" +
-                "<td class='tipo_escola' contenteditable='true'>A DEFINIR</td>" +
-                "<td class='edital' contenteditable='true'>EDITAL1</td>" +
-                "<td class='dia_semana' contenteditable='true'></td>" +
-                "<td class='idade' contenteditable='true'></td>" +
-                "<td class='refeicao' contenteditable='true'></td>" +
-                "<td class='cardapio' contenteditable='true'></td>" +
-                "<td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center;cursor: pointer;' class='fa'></i></a></td>" +
-                "</tr>"
-            );
-        };
 
-    </script>
 
     <!-- Monta tabela -->
     <script>

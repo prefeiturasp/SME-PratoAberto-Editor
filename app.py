@@ -30,6 +30,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
+# api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -353,7 +354,7 @@ def atualiza_cardapio():
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
-
+    print(data)
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -690,6 +691,16 @@ def config_cardapio():
         form = OutSourcedMenuForm(request.form)
         config_editor = db_functions.select_all_receitas_terceirizadas()
         return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
+
+
+@app.route('/remove-lista-terceirizada/<id>')
+def remove_menu_list(id):
+    removed = db_functions.del_receitas_terceirizadas(id)
+    return app.response_class(
+        response=json.dumps({'message': 'Cardápio removido com sucesso.', 'id': id}),
+        status=200,
+        mimetype='application/json'
+    )
 
 
 @app.route('/atualiza_receitas', methods=['POST'])
@@ -1152,7 +1163,7 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-@app.route('/unidades-especiais', method=['POST'])
+@app.route('/unidades-especiais', methods=['POST'])
 def unidade_especial():
     special_units = SpecialUnits()
     pass
@@ -1319,7 +1330,6 @@ def get_publicados(request_obj, default_week):
     url = api + '/editor/cardapios?status=PUBLICADO&' + params
     r = requests.get(url)
     refeicoes = r.json()
-
     # Formatar as chaves
     semanas = {}
     for refeicao in refeicoes:
@@ -1578,7 +1588,7 @@ def current_week():
     d = datetime.datetime.utcnow()
     days_gap = 4 - d.weekday()
     return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (
-                d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
+            d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
 
 
 def normaliza_str(lista_str):
