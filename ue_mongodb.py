@@ -108,7 +108,7 @@ def ue_set_periodo(nome_unidade, data_ini="", data_fim=""):
 
 
 # ..EXTRAI AS DATAS DO PERÍODO DE FUNCIONAMENTO DE UMA INIDADE ESPECIAL
-def ue_get_periodo(nome_unidade):
+def ue_get_periodo(unidade):
     db, client = connect()
     periodo = ""
     if db is not None:
