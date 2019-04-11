@@ -209,7 +209,7 @@ def ue_deactivate(unidade):
 #
 # # CREATE THE COLLECTIONS
 # colecao = 'unidades_especiais'
-# unidade1 = 'POLO'
+unidade1 = 'POLO'
 # unidade2 = 'RECREIO_FERIAS'
 #
 # unidades = [{"nome": "POLO", "data_inicio": "", "data_fim": "", "escolas": []},
@@ -240,16 +240,16 @@ def ue_deactivate(unidade):
 # 95265 EMEF ARMANDO ARRUDA PEREIRA - (MIST)
 # 93891 EMEF ARMANDO CRIDEY RIGHETTI (TERC.)
 
-id_escolas=[92622, 95265, 93891]
+# id_escolas=[92622, 95265, 93891]
 
 # ..EXTRAI AS ESCOLAS DA UNIDADE ESPECIAL
 # ue_set_escolas(unidade1, id_escolas )
 #
-# a = ue_get_escolas(unidade1)
-# print(a)
-# for i in a:
-#     a, b=i.split(':')
-#     print(b)
+a = ue_get_escolas('RECREIO_FERIAS')
+print(a)
+for i in a:
+    a, b=i.split(':')
+    print(b)
 
 # ue_set_escolas(unidade2, id_escolas )
 #

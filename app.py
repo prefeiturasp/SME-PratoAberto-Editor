@@ -20,6 +20,8 @@ import cardapios_terceirizadas
 import db_functions
 import db_setup
 from helpers.special_units import SpecialUnits
+
+from helpers.unidade_especial_model import UnidadeEspecialModel
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array)
@@ -1163,9 +1165,22 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-@app.route('/unidades-especiais', methods=['POST'])
+@app.route('/unidades-especiais')
 def unidade_especial():
-    special_units = SpecialUnits()
+    model = UnidadeEspecialModel()
+
+    if request.methods == 'POST':
+        pass
+
+    if request.methos == 'GET':
+        pass
+
+    if request.methods == 'DELETE':
+        pass
+
+    if request.methods == 'UPDATE':
+        pass
+
     pass
 
 
