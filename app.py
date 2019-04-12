@@ -19,7 +19,6 @@ import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
-from helpers.special_units import SpecialUnits
 
 from helpers.unidade_especial_model import UnidadeEspecialModel
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
@@ -32,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-api = 'http://127.0.0.1:8000'
+# api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
