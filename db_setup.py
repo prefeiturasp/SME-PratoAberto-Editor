@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-
 Base = declarative_base()
 
 
@@ -38,6 +37,7 @@ def set():
     # Create all tables in the engine. This is equivalent to "Create Table"
     # statements in raw SQL.
     Base.metadata.create_all(engine)
+
 
 if __name__ == '__main__':
     set()

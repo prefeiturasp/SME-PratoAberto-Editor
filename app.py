@@ -30,7 +30,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-# api = 'http://127.0.0.1:8000'
+api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -254,24 +254,6 @@ def upload_file():
                                json_dump=json_dump)
 
 
-@app.route('/cria_terceirizada', methods=['GET'])
-@flask_login.login_required
-def cria_terceirizada():
-    if request.method == "GET":
-        quebras = db_functions.select_quebras_terceirizadas()
-        editais = set([x[1] for x in quebras])
-        tipo_unidade = set([x[0] for x in quebras])
-        idade = set([x[2] for x in quebras])
-        refeicao = set([x[3] for x in quebras])
-
-        return render_template("cria_terceirizadas.html",
-                               editais=editais,
-                               tipo_unidade=tipo_unidade,
-                               idades=idade,
-                               refeicoes=refeicao,
-                               referrer=request.referrer)
-
-
 @app.route('/upload_terceirizada', methods=['POST'])
 @flask_login.login_required
 def upload_terceirizadas():
@@ -346,7 +328,6 @@ def upload_terceirizadas():
         return ('', 200)
 
 
-# BLOCO DE EDIÇÃO DOS CARDÁPIOS
 @app.route('/atualiza_cardapio', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio():
@@ -364,6 +345,7 @@ def atualiza_cardapio():
         return ('', 200)
 
 
+# BLOCO DE EDIÇÃO DOS CARDÁPIOS
 @app.route('/atualiza_cardapio2', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio2():
@@ -380,7 +362,6 @@ def atualiza_cardapio2():
         return ('', 200)
 
 
-# comments = []
 @app.route("/calendario", methods=["GET"])
 @flask_login.login_required
 def calendario():
@@ -494,6 +475,46 @@ def calendario():
                                idade=args['idade'],
                                agrupamento=args['agrupamento'],
                                depara=depara,
+                               referrer=request.referrer)
+
+
+# comments = []
+@app.route('/cria_terceirizada', methods=['GET'])
+@flask_login.login_required
+def cria_terceirizada():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_terceirizadas()
+        editais = set([x[1] for x in quebras])
+        tipo_unidade = set([x[0] for x in quebras])
+        idade = set([x[2] for x in quebras])
+        refeicao = set([x[3] for x in quebras])
+
+        return render_template("cria_terceirizadas.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               referrer=request.referrer)
+
+
+@app.route('/criar-direta-mista-sem-refeicao')
+@flask_login.login_required
+def cria_direta_mista_sem_refeicao():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_terceirizadas()
+
+        editais = set([x[1] for x in quebras])
+        tipo_unidade = set([x[0] for x in quebras])
+        idade = set([x[2] for x in quebras])
+        refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        gestoes = set([x[-1] for x in quebras if x[-1] != 'TERCEIRIZADA'])
+
+        return render_template("cria_direta_mista_sem_refeicao.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               gestoes=gestoes,
                                referrer=request.referrer)
 
 
@@ -675,6 +696,7 @@ class OutSourcedMenuForm(Form):
     ages = SelectField('Idades', choices=constants.AGES_DICT)
     meals = SelectField('Refeições', choices=constants.MEALS_DICT)
     menu = TextAreaField('Cardápio')
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
 
 
 @app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
@@ -710,14 +732,26 @@ def atualiza_config_cardapio():
     new_menu = list()
     new_menu.append(form.management.data)
     new_menu.append(form.school_type.data)
-    new_menu.append(form.edital.data)
+
+    if 'is_direta_mista' in request.form:
+        new_menu.append(request.form['grouping'])
+    else:
+        new_menu.append(form.edital.data)
+
     if form.weekday.data:
         new_menu.append(form.weekday.data.strftime('%Y%m%d'))
     else:
         new_menu.append('')
+
     new_menu.append(form.ages.data)
-    new_menu.append(form.meals.data)
+
+    if 'is_direta_mista' in request.form:
+        new_menu.append('SR - SEM REFEICAO')
+    else:
+        new_menu.append(form.meals.data)
+
     new_menu.append(form.menu.data)
+
     db_functions.add_bulk_cardapio([new_menu])
 
     if request.form:

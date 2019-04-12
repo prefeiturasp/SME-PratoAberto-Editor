@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prato aberto</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+    <style>
+
+        .row.tbl {
+            padding-top: 40px;
+        }
+
+        .container {
+            width: 80%;
+        }
+
+        /* Objetos da tabela */
+        .row {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .panel-heading div {
+            margin-top: -18px;
+            font-size: 15px;
+        }
+
+        .panel-heading div span {
+            margin-left: 5px;
+        }
+
+        .panel-body {
+            display: none;
+        }
+
+        .table-responsive {
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td {
+            vertical-align: inherit;
+        }
+
+        .navbar-nav {
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            width: 150px !important;
+        }
+
+        .col-sm-1 {
+            width: 5%;
+            padding-left: 0px;
+        }
+
+        .col-sm-3 {
+            padding-top: 6px;
+            padding-left: 0px;
+        }
+
+        .col-sm-4 {
+            width: 30%;
+            padding-right: 0px;
+        }
+
+        .col-sm-8 {
+            width: 70%;
+            padding-left: 0px;
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- NAVBAR -->
+    <div class="row" style="padding-top: 20px;">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Prato Aberto - Cardápios Diretas e Mista Sem refeição</a>
+                </div>
+                <form method="post" id="post_json" action="/upload_terceirizada">
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Todas as informações estão corretas, deseja salvar?')">
+                                <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML
+                            </button>
+                            <input type="hidden" name="json_dump" id="json_dump">
+                            <a type="button" class="btn btn-default " href="{{ referrer }}">
+                                <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
+                            </a>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Campos GERAÇAO TABELA -->
+    <div class="row">
+        <div class="col-sm-1">
+            <button class="btn btn-primary" data-toggle="collapse" data-target="#demo" style="width: 38px !important">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+        </div>
+        <div class="col-sm-3">
+
+            <h3 style="margin: 0px; vertical-align: middle">Funções de edição</h3>
+        </div>
+    </div>
+
+
+    {% include 'messages.html' %}
+
+
+    <div id="demo" class="panel panel-default collapse">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline" style="width: 100%">
+                    <div class="form-group">
+                        <label class="sr-only" for="data">Data:</label>
+                        <input type="text" id="data" name="data-inicial" value="Data" class="form-control">
+                        <button onclick="adicionaData()" class="btn btn-primary">+ DATA</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-datas" style="text-align: left">
+                </div>
+            </div>
+        </div>
+
+        <!-- Adiciona editais -->
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="EDITAL">EDITAL</label>
+                        <input type="text" class="form-control" id="EDITAL" placeholder="EDITAL">
+                        <button onclick="adicionaEdital()" class="btn btn-primary">+ EDITAL</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-editais" style="text-align: left">
+                    {% for edital in editais: %}
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
+                              id="{{ edital }}">{{ edital }} &times;</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Adiciona Tipo Escola -->
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="TIPO_ESCOLA">TIPO_ESCOLA</label>
+                        <input type="text" class="form-control" id="TIPO_ESCOLA"
+                               placeholder="Ex: CEI, CIEJA, EMEI, EMEF e etc...">
+                        <button onclick="adicionaEscola()" class="btn btn-primary">+ TIPO ESCOLA</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-escolas" style="text-align: left">
+                    {% for unidade in tipo_unidade %}
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
+                              id="{{ unidade }}">{{ unidade }} &times;</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Adiciona Idade -->
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="IDADE">IDADE</label>
+                        <input type="text" class="form-control" id="IDADE"
+                               placeholder="Ex: C - 4 A 5 MESES, D - 6 A 7 MESES e etc...">
+                        <button onclick="adicionaIdade()" class="btn btn-primary">+ IDADE</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-idade" style="text-align: left">
+                    {% for idade in idades %}
+                        <span type="button" class="btn btn-default" onclick="deletar(this)"
+                              style="margin-right: 8px;cursor: pointer;" id="{{ idade }}">{{ idade }} &times;</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Adiciona Tipo Refeição -->
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="REFEICAO">IDADE</label>
+                        <input disabled type="text" class="form-control" id="REFEICAO"
+                               placeholder="Ex: A - ALMOCO, L - LANCHE e etc...">
+                        <button disabled class="btn btn-primary">+ REFEIÇÃO</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-refeicao" style="text-align: left">
+                    {% for refeicao in refeicoes %}
+                        <span type="button" class="btn btn-default" style="margin-right: 8px"
+                              id="{{ refeicao }}">{{ refeicao }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Adiciona TIPO DE GESTÃO -->
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label class="sr-only" for="GESTAO">GESTÃO</label>
+                        <input disabled type="text" class="form-control" id="GESTAO" placeholder="Ex: DIRETA OU MISTA">
+                        <button disabled class="btn btn-primary">+ GESTÃO</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="lista-gestao" style="text-align: left">
+                    {% for gestao in gestoes %}
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" id="{{ gestao }}">{{ gestao }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Gera Tabela -->
+        <div class="row">
+            <div class="col-sm-4">
+                <button onclick="geraTabela()" class="btn btn-success">GERAR TABELA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row tbl">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cardápios Pendentes</h3>
+                <div class="pull-right">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                              data-container="body">
+                            <i class="glyphicon glyphicon-filter"></i>
+                        </span>
+                </div>
+            </div>
+            <div class="panel-body">
+                <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                       data-filters="#task-table" placeholder="Filter Tasks"/>
+            </div>
+            <div class="table-responsive">
+                <div class="panel panel-default">
+                    <table class="table table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th style="cursor:pointer">tipo_atendimento</th>
+                            <th style="cursor:pointer">tipo_unidade</th>
+                            <th style="cursor:pointer">agrupamento</th>
+                            <th style="cursor:pointer">idade</th>
+                            <th style="cursor:pointer">data</th>
+                            <th style="cursor:pointer">tipo_refeicao</th>
+                            <th style="cursor:pointer">cardapio</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="container-fluid text-center">
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        </p>
+    </footer>
+</div>
+
+<!-- Script com a funcionalidade do filtro da tabela -->
+<script>
+    /**
+     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+     *   but will likely encounter performance issues on larger tables.
+     *
+     *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+     *       $(input-element).filterTable()
+     *
+     *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+     */
+    (function () {
+        'use strict';
+        var $ = jQuery;
+        $.fn.extend({
+            filterTable: function () {
+                return this.each(function () {
+                    $(this).on('keyup', function (e) {
+                        $('.filterTable_no_results').remove();
+                        var $this = $(this),
+                            search = $this.val().toLowerCase(),
+                            target = $this.attr('data-filters'),
+                            $target = $(target),
+                            $rows = $target.find('tbody tr');
+
+                        if (search == '') {
+                            $rows.show();
+                        } else {
+                            $rows.each(function () {
+                                var $this = $(this);
+                                $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+                            })
+                            if ($target.find('tbody tr:visible').size() === 0) {
+                                var col_count = $target.find('tr').first().find('td').size();
+                                var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
+                                $target.find('tbody').append(no_results);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+        $('[data-action="filter"]').filterTable();
+    })(jQuery);
+
+    $(function () {
+        // attach table filter plugin to inputs
+        $('[data-action="filter"]').filterTable();
+
+        $('.container').on('click', '.panel-heading span.filter', function (e) {
+            var $this = $(this),
+                $panel = $this.parents('.panel');
+
+            $panel.find('.panel-body').slideToggle();
+            if ($this.css('display') != 'none') {
+                $panel.find('.panel-body input').focus();
+            }
+        });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<!-- Botões de ordenação da tabela -->
+<script src="static/js/w3.js"></script>
+
+<!-- Deleta linha da tabela -->
+<script>
+    function deleteRow(r) {
+        if (confirm('Deseja realmente remover esta edição?')) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById("task-table").deleteRow(i);
+        }
+    }
+</script>
+
+<!-- Seta Editais -->
+<script>
+    function adicionaEdital() {
+        var EDITAL = document.getElementById("EDITAL").value;
+        $('#lista-editais').append(
+            "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + EDITAL + "'>" + EDITAL + " &times;</span>"
+        );
+    };
+</script>
+
+<!-- Seta Escolas -->
+<script>
+    function adicionaEscola() {
+        var TIPO_ESCOLA = document.getElementById("TIPO_ESCOLA").value;
+        $('#lista-escolas').append(
+            "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + TIPO_ESCOLA + "'>" + TIPO_ESCOLA + " &times;</span>"
+        );
+    };
+</script>
+
+<!-- Seta Idades -->
+<script>
+    function adicionaIdade() {
+        var IDADE = document.getElementById("IDADE").value;
+        $('#lista-idade').append(
+            "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + IDADE + "'>" + IDADE + " &times;</span>"
+        );
+    };
+</script>
+
+<!-- Seta Datas -->
+<script>
+    function adicionaData() {
+        var DATA = document.getElementById("data").value;
+        $('#lista-datas').append(
+            "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
+        );
+    };
+</script>
+
+<!-- Seta Refeições -->
+<script>
+    function adicionaRefeicao() {
+        var REFEICAO = document.getElementById("REFEICAO").value;
+        var ROW = "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + REFEICAO + "'>" + REFEICAO + " &times;</span>"
+        $('#lista-refeicao').append(
+            ROW
+        );
+    };
+</script>
+
+<!-- Deleta botões -->
+<script>
+    function deletar(r) {
+        $(r).remove()
+    };
+</script>
+
+<!-- Cria linhas na tabela -->
+<script>
+    function geraTabela() {
+        $('#lista-editais > span').each(function () {
+            var Edital = $(this).attr('id')
+            $('#lista-escolas > span').each(function () {
+                var Escola = $(this).attr('id')
+                $('#lista-idade > span').each(function () {
+                    var Idade = $(this).attr('id')
+                    $('#lista-datas > span').each(function () {
+                        var Data = $(this).attr('id')
+                        $('#lista-refeicao > span').each(function () {
+                            var Refeicao = $(this).attr('id')
+                            $('#lista-gestao > span').each(function () {
+                                var gestao = $(this).attr('id')
+                                $('#task-table').append(
+                                    "<tr class='item'><td>"+gestao+"</td><td>" + Escola + "</td><td>" + Edital + "</td><td>" + Idade + "</td><td>" + Data + "</td><td>" + Refeicao + "</td><td></td><td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor : pointer;' class='fa'></i></a></td></tr>"
+                                );
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
+</script>
+
+<!-- Cria json da tabela -->
+<script>
+    $('#post_json').submit(function () {
+        var json_dump = [];
+        var cardapio = {};
+
+        $('#task-table tr.item').each(function () {
+            cardapio = {
+                'status': 'PENDENTE',
+                'tipo_atendimento': $($(this).children('td')[0]).text(),
+                'tipo_unidade': $($(this).children('td')[1]).text(),
+                'agrupamento': $($(this).children('td')[2]).text(),
+                'data': $($(this).children('td')[4]).text(),
+                'idade': $($(this).children('td')[3]).text(),
+                'tipo_refeicao': $($(this).children('td')[5]).text()
+            };
+            json_dump.push(cardapio);
+        });
+        $('#json_dump').attr('value', JSON.stringify(json_dump));
+        return true; // return false to cancel form action
+    });
+</script>
+
+<!-- Datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<!--Data Picker-->
+<script>
+    $(document).ready(function () {
+        $('#data').datepicker({
+            format: "yyyymmdd",
+            language: "pt-BR"
+        });
+    });
+</script>
+
+
+</body>
+</html>

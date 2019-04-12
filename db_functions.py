@@ -170,20 +170,20 @@ def select_quebras_terceirizadas():
     dbsession = sessionmaker(bind=engine)
     session = dbsession()
     res = session.query(ReceitasTerceirizadas).all()
-    list = set([(x.tipo_escola, x.edital, x.idade, x.refeicao) for x in res])
+    list = set([(x.tipo_escola, x.edital, x.idade, x.refeicao, x.tipo_gestao) for x in res])
     return list
 
 
 if __name__ == '__main__':
-    #add_replacements('TEMPEROS', 'Ingredientes', 'ALHO', '')
-    #a = select_receitas_terceirizadas('TERCEIRIZADA', 'CEI', 'EDITAL 1', 'D - 6 MESES')
+    # add_replacements('TEMPEROS', 'Ingredientes', 'ALHO', '')
+    # a = select_receitas_terceirizadas('TERCEIRIZADA', 'CEI', 'EDITAL 1', 'D - 6 MESES')
     a = select_quebras_terceirizadas()
     print(a)
 
     b = select_all()
     print(b)
     # print(filtra_grupos_replacements('TEMPEROS'))
-    #print(select_distinct_substitution_groups())
-    #for row in select_all():
+    # print(select_distinct_substitution_groups())
+    # for row in select_all():
     #    print(row.id, row.substitution_group)
     # del_replacements(1)
