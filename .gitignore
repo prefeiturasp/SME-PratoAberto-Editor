@@ -160,3 +160,7 @@ xTemplate_*.xlsx
 # mypy
 .mypy_cache/
 *.db
+
+# excel files
+xTemplate*
+Cardapios_*.xlsx

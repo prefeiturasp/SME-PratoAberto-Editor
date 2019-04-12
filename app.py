@@ -20,6 +20,8 @@ import cardapios_terceirizadas
 import db_functions
 import db_setup
 from helpers.special_units import SpecialUnits
+
+from helpers.unidade_especial_model import UnidadeEspecialModel
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array)
@@ -404,7 +406,10 @@ def calendario():
         cardapio_atual['dia_semana'] = dia_semana(dia)  # troca um int por uma str de dia de semana
         # cardapio atual>
         # {'_id': {'$oid': '5c2de6c354e6257eebc8a2c3'}, 'tipo_unidade': 'CCI', 'tipo_atendimento': 'TERCEIRIZADA', 'data_publicacao': '2019-02-08T17:13:51.100Z', 'data': '20190118', 'idade': 'D - 0 A 5 MESES', 'cardapio': {'J - JANTAR': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'D - DESJEJUM': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'A - ALMOCO': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'L - LANCHE': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)']}, 'status': 'PENDENTE', 'agrupamento': 'EDITAL 78/2016', 'cardapio_original': {'J - JANTAR': [], 'D - DESJEJUM': [], 'A - ALMOCO': [], 'L - LANCHE': []}, 'dia_semana': 'Sex'}
-        jdata_aux.append(cardapio_atual)
+        if not next((True for item in jdata_aux if item['dia_semana'] == cardapio_atual['dia_semana']), False):
+            jdata_aux.append(cardapio_atual)
+
+    jdata = jdata_aux
     # jdata_aux é um array maluco cheio de dicionarios
     # mesma coisa da maluquice acima, so que para semana anterior...
     jdata_anterior_aux = []
@@ -1197,9 +1202,22 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-@app.route('/unidades-especiais', methods=['POST'])
+@app.route('/unidades-especiais')
 def unidade_especial():
-    special_units = SpecialUnits()
+    model = UnidadeEspecialModel()
+
+    if request.methods == 'POST':
+        pass
+
+    if request.methos == 'GET':
+        pass
+
+    if request.methods == 'DELETE':
+        pass
+
+    if request.methods == 'UPDATE':
+        pass
+
     pass
 
 
