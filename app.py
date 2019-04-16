@@ -20,11 +20,13 @@ import cardapios_terceirizadas
 import db_functions
 import db_setup
 
-from helpers.unidade_especial_model import UnidadeEspecialModel
+from helpers.unidades_especiais_model import UnidadesEspeciaisModel
+
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array)
 from helpers import download_spreadsheet
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -1231,8 +1233,8 @@ def download_speadsheet():
 
 
 @app.route('/unidades-especiais')
-def unidade_especial():
-    model = UnidadeEspecialModel()
+def unidades_especiais():
+    model = UnidadesEspeciaisModel
 
     if request.methods == 'POST':
         pass
