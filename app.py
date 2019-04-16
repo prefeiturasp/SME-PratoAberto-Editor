@@ -336,7 +336,6 @@ def atualiza_cardapio():
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
-    print(data)
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -445,8 +444,6 @@ def calendario():
             cardapio_atual['cardapio_semana_anterior'] = cardapio_anterior['cardapio']
 
             cardapios.append(cardapio_atual)
-
-
         else:
             if cardapio_atual:
                 # faz uma limpa no campo do dicionario, mas por que?
@@ -765,6 +762,53 @@ def atualiza_config_cardapio():
         return ('', 200)
 
 
+class SchoolRegistrationForm(Form):
+    cod_eol = IntegerField('Código EOL', [validators.required()])
+    management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
+    edital = SelectField('Edital', choices=constants.EDITOR_DICT)
+    school_name = StringField('Nome da Escola', [validators.required()])
+    address = StringField('Endereço', [validators.required()])
+    neighbourhood = StringField('Bairro', [validators.required()])
+    latitude = FloatField('Latitude', [validators.optional()])
+    longitude = FloatField('Longitude', [validators.optional()])
+    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
+    ages = MultiCheckboxField('Idades', choices=constants.AGES_DICT)
+
+
+@app.route('/autocomplete', methods=['GET'])
+def autocomplete():
+    schools, _ = get_escolas(limit='4000')
+    schools_array = []
+    for s in schools:
+        schools_array.append(str(s['_id']) + ' - ' + s['nome'])
+    return Response(json.dumps(schools_array), mimetype='application/json')
+
+
+@app.route('/unidades_especiais', methods=['GET', 'POST'])
+@flask_login.login_required
+def unidades_especiais():
+    form = SpecialUnitForm(request.form)
+    form_filter = FilterTypeSchoolForm(request.form)
+    by_type = form_filter.school_types.data
+    if by_type:
+        form.schools.data = get_escolas_dict(params=request.args, by_type=by_type, limit='4000') + \
+            [cod_eol.split(' - ')[0].strip() for cod_eol in form_filter.school_autocomplete.data.split(', ')]
+    else:
+        form.schools.data = [cod_eol.split(' - ')[0].strip() for cod_eol
+                                 in form_filter.school_autocomplete.data.split(', ')]
+    if request.method in ["GET", "POST"]:
+        if 'refer' in session:
+            if request.referrer and '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
+        escolas, pagination = get_escolas(params=request.args)
+    return render_template("unidades_especiais.html", escolas=escolas, form_filter=form_filter,
+                           pagination=pagination, referrer=session['refer'], form=form, )
+
+
 @app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
 @app.route('/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -793,21 +837,6 @@ def escolas(id_escola=None):
         escolas, pagination = get_escolas(params=request.args)
     return render_template("configuracoes_escola_v2.html", escolas=escolas,
                            pagination=pagination, referrer=session['refer'], form=form)
-
-
-class SchoolRegistrationForm(Form):
-    cod_eol = IntegerField('Código EOL', [validators.required()])
-    management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
-    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
-    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
-    edital = SelectField('Edital', choices=constants.EDITOR_DICT)
-    school_name = StringField('Nome da Escola', [validators.required()])
-    address = StringField('Endereço', [validators.required()])
-    neighbourhood = StringField('Bairro', [validators.required()])
-    latitude = FloatField('Latitude', [validators.optional()])
-    longitude = FloatField('Longitude', [validators.optional()])
-    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
-    ages = MultiCheckboxField('Idades', choices=constants.AGES_DICT)
 
 
 @app.route('/adicionar_escola', methods=['POST'])
@@ -1439,11 +1468,16 @@ def _set_datetime(str_date):
         pass
 
 
-def get_escolas(params=None):
+def get_escolas(params=None, limit=None):
     url = api + '/v2/editor/escolas'
     if params:
         extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
         url += extra
+    if limit:
+        if '?' in url:
+            url += '&limit=' + limit
+        else:
+            url += '?limit=' + limit
     r = requests.get(url)
     if 'erro' in r.json():
         return r.json()
@@ -1461,6 +1495,20 @@ def get_escola(cod_eol, raw=False):
         escola = {}
 
     return escola
+
+
+def get_escolas_dict(params=None, by_type=None, limit=None):
+    schools, _ = get_escolas(params=params, limit=limit)
+    schools_dict = []
+    if by_type and len(by_type):
+        for s in schools:
+            if s['tipo_unidade'] in by_type:
+                schools_dict.append(str(s['_id']))
+        return schools_dict
+    else:
+        for s in schools:
+            schools_dict.append((str(s['_id']), str(s['_id']) + ' - ' + s['nome']))
+        return schools_dict
 
 
 def get_grupo_publicacoes(status):
@@ -1654,6 +1702,19 @@ def normaliza_str(lista_str):
     for palavra in lista_str:
         lf.append(' '.join(palavra.split()))
     return lf
+
+
+class SpecialUnitForm(Form):
+    identifier = StringField('Identificador')
+    special_unit = SelectField('Unidade Especial', choices=constants.SPECIAL_UNITS_DICT)
+    initial_date = DateField('Data Inicial', format="%Y%m%d")
+    end_date = DateField('Data Final', format="%Y%m%d")
+    schools = MultiCheckboxField('Escolas', choices=get_escolas_dict(limit='4000'))
+
+
+class FilterTypeSchoolForm(Form):
+    school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_DICT)
+    school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
 
 
 if __name__ == "__main__":

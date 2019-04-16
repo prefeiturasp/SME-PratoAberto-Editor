@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prato Aberto - Editor Cardapio</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">,
+    <link  href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" >
+    <script src="http://code.jquery.com/jquery-2.2.4.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+
+        /* Objetos da tabela */
+        .row {
+            margin-top:40px;
+            padding: 0 10px;
+        }
+
+        .forms {
+            margin-top: 0px;
+            padding-top: 10px;
+        }
+
+        .input-form {
+            display: inline-flex;
+        }
+
+        .container {
+            width: 90%;
+        }
+
+        .clickable{
+            cursor: pointer;
+        }
+
+        .panel-heading div {
+            margin-top: -18px;
+            font-size: 15px;
+        }
+
+        .panel-body{
+            display: none;
+        }
+
+        .table-responsive {
+            height:500px;
+            overflow-y:auto;
+            overflow-x:auto;
+        }
+
+        .panel-heading div span{
+            margin-left:5px;
+        }
+
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th {
+            font-size: 10px;
+        }
+
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td {
+            vertical-align: inherit;
+        }
+
+        .navbar-nav {
+            margin-top: 8px;
+            padding-left:10px;
+            padding-right: 15px;
+        }
+
+        thead th {
+            position: sticky;
+            position: -webkit-sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        input#cod_eol, select#school_type, input#latitude, input#longitude {
+            width: 125px;
+
+        }
+
+        input#school_name, input#address, input#neighbourhood, select#meals, select#ages {
+            margin-left: -8px;
+            width: 452px;
+        }
+
+        select#meals, select#ages {
+            height: 120px;
+        }
+
+        label {
+            text-align: right;
+            padding: 0;
+        }
+
+        .col-sm-6 {
+            padding-right: 11px;
+        }
+
+        .checkbox-form {
+            height: 155px;
+            overflow: auto;
+            margin-left: -47px;
+        }
+        ul {
+            list-style-type: none;
+        }
+        .ui-autocomplete {
+            z-index:2147483647;
+        }
+        textarea {
+           width: 300px;
+           height: 150px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/pendencias_publicacoes">HOME</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="row">
+        <a type="button" class="btn btn-default " href="{{ referrer }}">
+            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
+        </a>
+    </div>
+     <div id='email_user'>
+</div>
+    <div class="row">
+        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="btn btn-primary">
+            <i class="fas fa-edit" aria-hidden="true"></i>
+            <span style="font-family: inherit">EDITAR POLO</span>
+        </button>
+    </div>
+    <div class="row">
+        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="btn btn-primary">
+            <i class="fas fa-edit" aria-hidden="true"></i>
+            <span style="font-family: inherit">EDITAR RECREIO_FERIAS</span>
+        </button>
+    </div>
+    <div style="padding: 15px 0">
+        <h3>Prato Aberto - Listagem de Escolas</h3>
+    </div>
+    <!-- Edição da escola -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
+        <div class="modal-dialog" role="document" style="width: 70%">
+            <form method="post" id="post_json" action="/atualiza_historico_escolas" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Edição da Escola</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row" style="padding-right: 30px; padding-bottom: 15px;">
+                            <a onclick="addRowModal()" class="btn btn-primary" style="float: right"><span
+                                    class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="edicao-escola">
+                                <thead>
+                                <tr>
+                                    <th style="word-wrap: break-word;"></th>
+                                    <th style="word-wrap: break-word;">COD_EOL</th>
+                                    <th style="word-wrap: break-word;">GESTÃO</th>
+                                    <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">ESCOLA</th>
+                                    <th style="word-wrap: break-word;">AGRUPAMENTO</th>
+                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
+                                    <th style="word-wrap: break-word">DATA</th>
+                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
+                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">ENDEREÇO</th>
+                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
+                                    <th style="word-wrap: break-word;">LAT</th>
+                                    <th style="word-wrap: break-word;">LON</th>
+                                    <th style="word-wrap: break-word;">STATUS</th>
+                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">REFEIÇÕES</th>
+                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">IDADES</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+                        <button type="submit" class="btn btn-success">SALVAR</button>
+                        <input type="hidden" name="json_dump" id="json_dump" value="json_dump">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Campos GERAÇAO TABELA -->
+    <div class="panel panel-default">
+        <form method="get" action="/escolas">
+            <div class="row" style="margin-top: 15px">
+                <div class="col-sm-4 col-xs-12">
+                    <label for="nome">Nome ou EOL</label>
+                    <input value="{{request.args.get('nome') or ''}}" type="text" id="nome" name="nome" class="form-control">
+                </div>
+                <div class="col-sm-4 col-xs-12">
+                    <label for="tipo_unidade">Escola</label>
+                    <input value="{{request.args.get('tipo_unidade') or ''}}" type="text" id="tipo_unidade" name="tipo_unidade" class="form-control">
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                    <label for="agrupamento">Agrupamento</label>
+                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
+                        <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
+                        <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
+                        <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
+                        <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
+                    </select>
+                </div>
+                <div class="col-sm-2 col-xs-12">
+                    <label for="tipo_atendimento">Tipo de gestão</label>
+                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
+                        <option>TODOS</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom: 15px; margin-top: 15px">
+                <div class="col-12">
+                    <div class="col-sm-2 col-sm-offset-10">
+                        <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS">
+                            <button type="button" class="btn btn-default">LIMPAR</button>
+                            <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12" style="margin-top: 15px; padding-right: 0px">
+                <div class="pull-right" style="display: flex; padding: 0;">
+                    <label for="agrupamento" style="padding-right: 10px; margin-top: 6px;">Resultados por página</label>
+                    <select onchange="this.form.submit()" value="{{request.args.get('limit')}}" id="limit" name="limit" class="form-control" style="width: 80px">
+                        <option {% if request.args.get('limit') == '10' %} selected {% endif %}>10</option>
+                        <option {% if request.args.get('limit') == '50' %} selected {% endif %}>50</option>
+                        <option {% if request.args.get('limit') in ['100', None]  %} selected {% endif %}>100</option>
+                        <option {% if request.args.get('limit') == '500' %} selected {% endif %}>500</option>
+                        <option {% if request.args.get('limit') == '1000' %} selected {% endif %}>1000</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="row main" style="padding-top: 30px;">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h2 class="panel-title">Escolas</h2>
+            </div>
+            <div class="table-responsive">
+                <div>
+                    <table class="table table-bordered table-hover table-striped" id="task-table">
+                        <thead>
+                        <tr>
+                            <th style="word-wrap: break-word;"></th>
+                            <th style="word-wrap: break-word;">COD_EOL</th>
+                            <th style="word-wrap: break-word;">GESTÃO</th>
+                            <th style="word-wrap: break-word;min-width: 90px;max-width: 90px;">ESCOLA</th>
+                            <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
+                            <th style="word-wrap: break-word;">DATA</th>
+                            <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
+                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
+                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
+                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
+                            <th style="display: none; word-wrap: break-word;">LAT</th>
+                            <th style="display: none; word-wrap: break-word;">LON</th>
+                            <th style="display: none;word-wrap: break-word;">STATUS</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for linha in escolas %}
+                        <tr class="item">
+                            <td><a class="btn btn-info" onclick='editRow({{linha["_id"]}})' href="#" data-toggle="modal"
+                                   data-target="#modalAddSchoolForm{{ linha['_id'] }}"><i class="fas fa-edit"></i></a></td>
+                            <td class="cod_eol">{{ linha['_id'] }}</td>
+                            <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
+                            <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
+                            <td class="agrupamento">{{ linha['agrupamento'] }}</td>
+                            <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">{{ linha['edital'] }}</td>
+                            <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
+                            <td class="info" class="nome">{{ linha['nome'] }}</td>
+                            <td class="default" class="refeicoes">
+                                {% for itens in linha['refeicoes'] %}
+                                    {{ itens }},
+                                {% endfor %}
+                            </td>
+                            <td class="success" class="idades">
+                                {% for itens in linha['idades'] %}
+                                    {{ itens }},
+                                {% endfor %}
+                            </td>
+                            <td style="display: none;" title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
+                            <td style="display: none;" class="bairro">{{ linha['bairro'] }}</td>
+                            <td style="display: none" class="lat">{{ linha['lat'] }}</td>
+                            <td style="display: none" class="lon">{{ linha['lon'] }}</td>
+                            <td style="display: none;" class="status">{{ linha['status']}}</td>
+                            <td><a class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{linha['_id']}}" href="#"
+                                   data-target="#xml_form"><i class="fas fa-trash-alt"></i></a></td>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal{{linha['_id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Exclusão de escola</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    Tem certeza que deseja excluir essa escola?
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="{{linha['_id']}}" data-dismiss="modal">Fechar</button>
+                                    <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-danger">Excluir</a>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </tr>
+                        {% for linha_historico in linha['historico'] %}
+                        <tr class="item" style="display: none;">
+                            <td><a value='Delete' onclick='deleteRowModal(this)'><i
+                                    style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>
+                            <td class="cod_eol" contenteditable='true'>{{ linha['_id'] }}</td>
+                            <td class="tipo_atendimento" contenteditable='true'>{{ linha_historico['tipo_atendimento']
+                                }}
+                            </td>
+                            <td class="tipo_unidade" contenteditable='true'>{{ linha_historico['tipo_unidade'] }}</td>
+                            <td class="agrupamento" contenteditable='true'>{{ linha_historico['agrupamento'] }}
+                            </td>
+                            <td class="edital" contenteditable='true'>{{ linha_historico['edital'] }}</td>
+                            <td class="data" contenteditable='true'>{{ linha_historico['data_inicio_vigencia'] }}</td>
+                            <td class="nome" contenteditable='true'>{{ linha_historico['nome'] }}</td>
+                            <td class="endereco" contenteditable='true'>{{ linha_historico['endereco'] }}</td>
+                            <td class="bairro" contenteditable='true'>{{ linha_historico['bairro'] }}</td>
+                            <td class="lat" contenteditable='true'>{{ linha_historico['lat'] }}</td>
+                            <td class="lon" contenteditable='true'>{{ linha_historico['lon'] }}</td>
+                            <td class="status" contenteditable='true'>{{ linha_historico['status'] }}</td>
+                            <td class="refeicoes" contenteditable='true'>
+                                {% for itens in linha_historico['refeicoes'] %}
+                                {{ itens }},
+                                {% endfor %}
+                            </td>
+                            <td class="idades">
+                                {% for itens in linha_historico['idades'] %}
+                                {{ itens }},
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if escolas|length > 0 %}
+    <div style="text-align: center">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item {{'' if pagination['previous'] else 'disabled'}}">
+              <a class="page-link"
+                 {% if pagination['previous'] %}
+                    href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{request.args.get('page')|int-1}}"
+                 {% else %}
+                    href="javascript:void(0)"
+                 {% endif %}
+               tabindex="-1">Anterior</a>
+            </li>
+              {% for page in range([request.args.get('page')|int - 2, 1]|max,
+                [[pagination['total_pages']|int + 1, 2]|max, request.args.get('page')|int + 3]|min) %}
+                    <li class="page-item"><a class="page-link" href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{page}}">{{page}}</a></li>
+              {% endfor %}
+            {% if request.args.get('page')|int + 3 < pagination['total_pages']|int %}
+            <li class="page-item">
+              <a class="page-link"
+                 href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{pagination['total_pages']}}"
+                >... {{pagination['total_pages']}}</a>
+            </li>
+            {% endif %}
+            <li class="page-item {{'' if pagination['next'] else 'disabled'}}">
+              <a class="page-link"
+                 {% if pagination['next'] %}
+                    href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{(request.args.get('page') or 1)|int + 1}}"
+                 {% else %}
+                    href="javascript:void(0)"
+                 {% endif %}
+                >Próxima</a>
+            </li>
+          </ul>
+        </nav>
+    </div>
+    {% endif %}
+    <footer class="container-fluid text-center">
+        <br>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        </p>
+        <table id="lista-modificacoes">
+            <tbody style="display:none">
+        </table>
+    </footer>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</div>
+<div class="modal fade" id="modalAddSchoolForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="width: 130%">
+      <div class="modal-header text-center">
+        {% if form.identifier.data %}
+            <h4 class="modal-title w-100 pull-left font-weight-bold">Editar unidade especial</h4>
+        {% endif %}
+        {% if not form.identifier.data %}
+            <h4 class="modal-title w-100 pull-left font-weight-bold">Adicionar unidade especial</h4>
+        {% endif %}
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" action="/unidades_especiais?openModal=true">
+          <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-4 col-xs-12">{{ form_filter.school_types.label }}</label>
+                <span class="checkbox-form col-sm-4 col-xs-12">{{ form_filter.school_types }}</span>
+                <button type="submit" class="btn btn-info col-sm-offset-1 col-sm-2">APLICAR</button>
+              </div>
+          </div>
+          <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-4 col-xs-12">{{ form_filter.school_autocomplete.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form_filter.school_autocomplete }}</span>
+                <button type="submit" class="btn btn-info col-sm-offset-1 col-sm-2">ADICIONAR</button>
+              </div>
+          </div>
+      </form>
+      <hr />
+      <form method=post action="/adicionar_escola">
+          <dl>
+              <div>
+                  <div class="row forms" style="padding-top: 40px">
+                      <div class="col-sm-4 col-xs-12">
+                          <label>{{ form.special_unit.label }}</label>
+                          <span>{{ form.special_unit }}</span>
+                      </div>
+                      <div class="col-sm-4 col-xs-12">
+                          <label>Data Inicial</label>
+                          <span><input class="form-control" type="date" name="from" required></span>
+                      </div>
+                      <div class="col-sm-4 col-xs-12">
+                          <label>Data Final</label>
+                          <span><input class="form-control" type="date" name="to" required></span>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-xs-12">
+                        <label class="col-sm-3 col-xs-12">{{ form.schools.label }}</label>
+                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.schools }}</span>
+                      </div>
+                  </div>
+              </div>
+          </dl>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+            <button type="submit" class="btn btn-primary">SALVAR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+<!-- Adiciona linhas na tabela -->
+<script>
+        function addRow() {
+            $('#task-table').prepend(
+                "<tr class='item' id=''>" +
+                "<td><a class='btn btn-info btn-sm' onclick='editRow(this)' href='#' data-toggle='modal' data-target='#xml_form'>EDITAR</a>  <a style='cursor:pointer' onclick='delete_row(this)' class='btn btn-danger btn-sm'>REMOVER</a></td>" +
+                "<td class='cod_eol' contenteditable='false'>COD EOL</td>" +
+                "<td class='tipo_atendimento' contenteditable='false'>GESTÃO</td>" +
+                "<td class='tipo_unidade' contenteditable='false'>ESCOLA</td>" +
+                //"<td class='agrupamento' contenteditable='false'>A DEFINIR</td>" +
+                //"<td class='edital' contenteditable='false'>EDITAL </td>" +
+                "<td class='data' contenteditable='false'></td>" +
+                "<td class='nome' contenteditable='false'></td>" +
+                //"<td class='endereco' contenteditable='false'></td>" +
+                //"<td class='bairro' contenteditable='false'></td>" +
+                //"<td class='lat' contenteditable='false'></td>" +
+                //"<td class='lon' contenteditable='false'></td>" +
+                //"<td class='status' contenteditable='false'></td>" +
+                "<td class='refeicoes' contenteditable='false'></td>" +
+                "<td class='idades' contenteditable='false'></td>" +
+                "</tr>"
+            );
+        };
+
+
+</script>
+
+<!-- Cria json da tabela -->
+<script>
+        $('#post_json').submit(function() {
+            json_dump = [];
+            $('#edicao-escola tr.item').each(function () {
+                var cod_eol = $($(this).children('td')[1]).text();
+                var tipo_atendimento = $($(this).children('td')[2]).text();
+                var tipo_unidade = $($(this).children('td')[3]).text();
+                var agrupamento = $($(this).children('td')[4]).text();
+                var edital = $($(this).children('td')[5]).text();
+                var data = $($(this).children('td')[6]).text();
+                var nome = $($(this).children('td')[7]).text();
+                var endereco = $($(this).children('td')[8]).text();
+                var bairro = $($(this).children('td')[9]).text();
+                var lat = $($(this).children('td')[10]).text();
+                var lon = $($(this).children('td')[11]).text();
+                var status = $($(this).children('td')[12]).text();
+                var refeicoes = $($(this).children('td')[13]).text();
+                var idades = $($(this).children('td')[14]).text();
+                modificacao = {
+                    '_id': cod_eol,
+                    'tipo_atendimento': tipo_atendimento,
+                    'tipo_unidade': tipo_unidade,
+                    'agrupamento': agrupamento,
+                    'edital': edital,
+                    'data_inicio_vigencia': data,
+                    'nome': nome,
+                    'endereco': endereco,
+                    'bairro': bairro,
+                    'lat': lat,
+                    'lon': lon,
+                    'status': status,
+                    'refeicoes': jQuery.trim(refeicoes),
+                    'idades': jQuery.trim(idades)
+                }
+                json_dump.push(modificacao)
+            });
+
+            console.log(json_dump);
+
+            $('#json_dump').attr('value', JSON.stringify(json_dump));
+            return true; // return false to cancel form action
+
+        });
+
+
+</script>
+
+<script>
+    function addSchool() {
+        if (window.location.href.includes('escolas/')) {
+            window.location.href = '/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
+        } else {
+            $('#modalAddSchoolForm').modal('show');
+        }
+    }
+</script>
+
+<!-- Edita escola -->
+<script>
+        function editRow(id) {
+            window.location.href = '/escolas/' + id + '?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
+        }
+
+
+</script>
+
+<script>
+    function deleteSchool(school) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/excluir_escola/' + school._id.toString(),
+            data: JSON.stringify(school),
+            contentType: 'application/json',
+            //dataType: 'json',
+            success: function(data, textStatus, jqXHR){
+                location.reload();
+            }
+        });
+    }
+</script>
+
+<!-- Deleta linha da tabela Modal -->
+<script>
+        function deleteRowModal(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById("edicao-escola").deleteRow(i);
+        }
+
+</script>
+<script>
+    function delete_row(row){
+        if(confirm('Deseja remover nova escola?')){
+            row.parentElement.parentElement.remove();
+        }
+    }
+</script>
+
+<!-- Adiciona linhas na tabela Modal -->
+<script>
+        function addRowModal() {
+            $('#edicao-escola').append(
+                "<tr class='item' id=''>" +
+                "<td><a value='Delete' onclick='deleteRowModal(this)'><i style='color:#D9534F;font-size:30px;text-align: center' class='fas fa-trash-alt'></i></a></td>" +
+                "<td class='cod_eol' contenteditable='true'>Código EOL</td>" +
+                "<td class='tipo_atendimento' contenteditable='true'>Tipo Atendimento</td>" +
+                "<td class='tipo_unidade' contenteditable='true'>Tipo Unidade</td>" +
+                "<td class='agrupamento' contenteditable='true'>Agrupamento</td>" +
+                "<td class='edital' contenteditable='true'>EDITAL</td>" +
+                "<td class='data' contenteditable='true'>Data</td>" +
+                "<td class='nome' contenteditable='true'>Nome Escola</td>" +
+                "<td class='endereco' contenteditable='true'>Endereço</td>" +
+                "<td class='bairro' contenteditable='true'>Bairro</td>" +
+                "<td class='lat' contenteditable='true'></td>" +
+                "<td class='lon' contenteditable='true'></td>" +
+                "<td class='status' contenteditable='true'></td>" +
+                "<td class='refeicoes' contenteditable='true'></td>" +
+                "<td class='idades' contenteditable='true'></td>" +
+                "</tr>"
+            );
+        };
+
+
+</script>
+
+<!-- Pop erro -->
+<script>
+        if ($('#mensagem').length) {
+            window.alert($('#mensagem').text());
+        }
+
+</script>
+
+
+<script>
+    jQuery(function(){
+        jQuery('.item').each(function(){
+            jQuery(this).click(function(){
+                jQuery('.item').removeClass('danger');
+                jQuery(this).addClass('danger');
+            });
+        });
+    });
+</script>
+<script>
+    $(window).on('load',function(){
+        if (location.href.includes('openModal=true')){
+            $('#modalAddSchoolForm').modal('show');
+        }
+    });
+</script>
+<script>
+$(function() {
+    function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+    $.ajax({
+        url: '{{ url_for("autocomplete") }}'
+        }).done(function (data) {
+            $('#autocomplete_school').on( "keydown", function( event ) {
+                if ( event.keyCode === $.ui.keyCode.TAB &&
+                    $( this ).autocomplete( "instance" ).menu.active ) {
+                  event.preventDefault();
+                }
+              }).autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                  // delegate back to autocomplete, but extract the last term
+                  response( $.ui.autocomplete.filter(
+                    data, extractLast( request.term ) ) );
+                },
+                focus: function() {
+                  // prevent value inserted on focus
+                  return false;
+                },
+                select: function( event, ui ) {
+                  var terms = split( this.value );
+                  // remove the current input
+                  terms.pop();
+                  // add the selected item
+                  terms.push( ui.item.value );
+                  // add placeholder to get the comma-and-space at the end
+                  terms.push( "" );
+                  this.value = terms.join( ", " );
+                  return false;
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+
+</script>
+
+</body>
+</html>

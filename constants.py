@@ -60,3 +60,5 @@ AGES_DICT = [('A - 0 A 1 MES', 'A - 0 A 1 MES'),
 MANAGEMENT_DICT = [('DIRETA', 'DIRETA'),
                    ('MISTA', 'MISTA'),
                    ('TERCEIRIZADA', 'TERCEIRIZADA')]
+SPECIAL_UNITS_DICT = [('POLO', 'POLO'),
+                      ('RECREIO_FERIAS', 'RECREIO_FERIAS')]
