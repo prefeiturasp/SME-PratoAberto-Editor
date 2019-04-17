@@ -120,7 +120,7 @@ def get_unidade(id_unidade):
 
             doc = cursor.next()
             cursor.close()
-            return doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas']
+            return doc['nome'], doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas']
 
         except OperationFailure as e:
             print("Problema ao procurar a unidade.")

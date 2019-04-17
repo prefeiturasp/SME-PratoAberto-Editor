@@ -12,21 +12,20 @@ import constants
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
-from wtforms import (Form, StringField, validators, SelectField, DateField,
+from wtforms import (Form, StringField, validators, SelectField,
                      SelectMultipleField, FloatField, IntegerField, TextAreaField)
+from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
 
-from helpers.unidades_especiais_model import UnidadesEspeciaisModel
-
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   format_datetime_array)
+                   format_datetime_array, yyyymmdd_to_date_time)
 from helpers import download_spreadsheet
-
+from ue_mongodb import get_unidade
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -788,17 +787,27 @@ def autocomplete():
     return Response(json.dumps(schools_array), mimetype='application/json')
 
 
+@app.route('/unidades_especiais/<id_unidade_especial>', methods=['GET', 'POST'])
 @app.route('/unidades_especiais', methods=['GET', 'POST'])
 @flask_login.login_required
-def unidades_especiais():
+def unidades_especiais(id_unidade_especial=None):
     form = SpecialUnitForm(request.form)
     form_filter = FilterTypeSchoolForm(request.form)
     by_type = form_filter.school_types.data
+    if id_unidade_especial:
+        special_unit = get_unidade(id_unidade_especial)
+        form.identifier.data = id_unidade_especial
+        form.special_unit.data = special_unit[0]
+        form.creation_date.data = yyyymmdd_to_date_time(special_unit[1])
+        form.initial_date.data = yyyymmdd_to_date_time(special_unit[2])
+        form.end_date.data = yyyymmdd_to_date_time(special_unit[3])
+        form.schools.data = special_unit[4]
     if by_type:
-        form.schools.data = get_escolas_dict(params=request.args, by_type=by_type, limit='4000') + \
-            [cod_eol.split(' - ')[0].strip() for cod_eol in form_filter.school_autocomplete.data.split(', ')]
+        form.schools.data += get_escolas_dict(params=request.args, by_type=by_type, limit='4000') + \
+                             [cod_eol.split(' - ')[0].strip() for cod_eol in
+                              form_filter.school_autocomplete.data.split(', ')]
     else:
-        form.schools.data = [cod_eol.split(' - ')[0].strip() for cod_eol
+        form.schools.data += [cod_eol.split(' - ')[0].strip() for cod_eol
                                  in form_filter.school_autocomplete.data.split(', ')]
     if request.method in ["GET", "POST"]:
         if 'refer' in session:
@@ -807,8 +816,40 @@ def unidades_especiais():
         else:
             session['refer'] = request.referrer
         escolas, pagination = get_escolas(params=request.args)
-    return render_template("unidades_especiais.html", escolas=escolas, form_filter=form_filter,
-                           pagination=pagination, referrer=session['refer'], form=form, )
+    return render_template("unidades_especiais.html", form_filter=form_filter,
+                           referrer=session['refer'], form=form, special_units=get_unidades_especiais())
+
+
+@app.route('/adicionar_unidade_especial', methods=['POST'])
+@flask_login.login_required
+def adicionar_unidade_especial():
+    form = SpecialUnitForm(request.form)
+    new_special_unit = dict()
+    new_special_unit['_id'] = form.identifier.data
+    new_special_unit['nome'] = form.special_unit.data
+    if not form.identifier.data:
+        new_special_unit['data_criacao'] = datetime.datetime.utcnow().strftime('%Y%m%d')
+    new_special_unit['data_inicio'] = form.initial_date.data.strftime('%Y%m%d')
+    new_special_unit['data_fim'] = form.end_date.data.strftime('%Y%m%d')
+    new_special_unit['escolas'] = form.schools.data
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(api + '/editor/unidade_especial/{}'.format(str(new_special_unit['_id'])),
+                      data=json.dumps(new_special_unit),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('unidades_especiais', code=302)
+
+
+@app.route('/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
+@flask_login.login_required
+def excluir_unidade_especial(id_unidade_especial):
+    headers = {'Content-type': 'application/json'}
+    requests.delete(api + '/editor/unidade_especial/{}'.format(str(id_unidade_especial), headers=headers))
+    flash('Escola excluída com sucesso')
+    return ('', 200)
 
 
 @app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
@@ -1232,25 +1273,6 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-@app.route('/unidades-especiais')
-def unidades_especiais():
-    model = UnidadesEspeciaisModel
-
-    if request.methods == 'POST':
-        pass
-
-    if request.methos == 'GET':
-        pass
-
-    if request.methods == 'DELETE':
-        pass
-
-    if request.methods == 'UPDATE':
-        pass
-
-    pass
-
-
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
@@ -1503,14 +1525,27 @@ def get_escolas_dict(params=None, by_type=None, limit=None):
     schools, _ = get_escolas(params=params, limit=limit)
     schools_dict = []
     if by_type and len(by_type):
-        for s in schools:
-            if s['tipo_unidade'] in by_type:
+        if 'TODOS' in by_type:
+            for s in schools:
                 schools_dict.append(str(s['_id']))
-        return schools_dict
+            return schools_dict
+        elif 'NENHUMA' in by_type:
+            return schools_dict
+        else:
+            for s in schools:
+                if s['tipo_unidade'] in by_type:
+                    schools_dict.append(str(s['_id']))
+            return schools_dict
     else:
         for s in schools:
             schools_dict.append((str(s['_id']), str(s['_id']) + ' - ' + s['nome']))
         return schools_dict
+
+
+def get_unidades_especiais():
+    url = api + '/editor/unidades_especiais'
+    r = requests.get(url)
+    return r.json()
 
 
 def get_grupo_publicacoes(status):
@@ -1708,14 +1743,15 @@ def normaliza_str(lista_str):
 
 class SpecialUnitForm(Form):
     identifier = StringField('Identificador')
-    special_unit = SelectField('Unidade Especial', choices=constants.SPECIAL_UNITS_DICT)
-    initial_date = DateField('Data Inicial', format="%Y%m%d")
-    end_date = DateField('Data Final', format="%Y%m%d")
+    special_unit = StringField('Unidade Especial')
+    creation_date = DateField('Data Criacao', format='%Y-%m-%d')
+    initial_date = DateField('Data Inicial', format='%Y-%m-%d')
+    end_date = DateField('Data Final', format='%Y-%m-%d')
     schools = MultiCheckboxField('Escolas', choices=get_escolas_dict(limit='4000'))
 
 
 class FilterTypeSchoolForm(Form):
-    school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_DICT)
+    school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_FILTER_DICT)
     school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
 
 

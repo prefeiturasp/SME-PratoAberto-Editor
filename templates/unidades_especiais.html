@@ -136,23 +136,15 @@
         <a type="button" class="btn btn-default " href="{{ referrer }}">
             <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
         </a>
+        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="pull-right btn btn-primary">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            <span style="font-family: inherit">ADICIONAR UNIDADE ESPECIAL</span>
+        </button>
     </div>
      <div id='email_user'>
 </div>
-    <div class="row">
-        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="btn btn-primary">
-            <i class="fas fa-edit" aria-hidden="true"></i>
-            <span style="font-family: inherit">EDITAR POLO</span>
-        </button>
-    </div>
-    <div class="row">
-        <button onclick='addSchool()' data-target="#modalAddSchoolForm" class="btn btn-primary">
-            <i class="fas fa-edit" aria-hidden="true"></i>
-            <span style="font-family: inherit">EDITAR RECREIO_FERIAS</span>
-        </button>
-    </div>
     <div style="padding: 15px 0">
-        <h3>Prato Aberto - Listagem de Escolas</h3>
+        <h3>Prato Aberto - Listagem de Unidades Especiais</h3>
     </div>
     <!-- Edição da escola -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
@@ -162,7 +154,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Edição da Escola</h4>
+                        <h4 class="modal-title">Edição de Unidade Especial</h4>
                     </div>
 
                     <div class="modal-body">
@@ -175,20 +167,12 @@
                                 <thead>
                                 <tr>
                                     <th style="word-wrap: break-word;"></th>
-                                    <th style="word-wrap: break-word;">COD_EOL</th>
-                                    <th style="word-wrap: break-word;">GESTÃO</th>
-                                    <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">ESCOLA</th>
-                                    <th style="word-wrap: break-word;">AGRUPAMENTO</th>
-                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
-                                    <th style="word-wrap: break-word">DATA</th>
-                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
-                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">ENDEREÇO</th>
-                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
-                                    <th style="word-wrap: break-word;">LAT</th>
-                                    <th style="word-wrap: break-word;">LON</th>
-                                    <th style="word-wrap: break-word;">STATUS</th>
-                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">REFEIÇÕES</th>
-                                    <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">IDADES</th>
+                                    <th style="word-wrap: break-word;">NOME</th>
+                                    <th style="word-wrap: break-word;">DATA CRIACAO</th>
+                                    <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">DATA INICIO</th>
+                                    <th style="word-wrap: break-word;">DATA FIM</th>
+                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLAS</th>
+                                    <th style="word-wrap: break-word;"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -205,68 +189,10 @@
             </form>
         </div>
     </div>
-
-    <!-- Campos GERAÇAO TABELA -->
-    <div class="panel panel-default">
-        <form method="get" action="/escolas">
-            <div class="row" style="margin-top: 15px">
-                <div class="col-sm-4 col-xs-12">
-                    <label for="nome">Nome ou EOL</label>
-                    <input value="{{request.args.get('nome') or ''}}" type="text" id="nome" name="nome" class="form-control">
-                </div>
-                <div class="col-sm-4 col-xs-12">
-                    <label for="tipo_unidade">Escola</label>
-                    <input value="{{request.args.get('tipo_unidade') or ''}}" type="text" id="tipo_unidade" name="tipo_unidade" class="form-control">
-                </div>
-                <div class="col-sm-2 col-xs-12">
-                    <label for="agrupamento">Agrupamento</label>
-                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
-                        <option>TODOS</option>
-                        <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
-                        <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
-                        <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
-                        <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
-                        <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
-                    </select>
-                </div>
-                <div class="col-sm-2 col-xs-12">
-                    <label for="tipo_atendimento">Tipo de gestão</label>
-                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
-                        <option>TODOS</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row" style="padding-bottom: 15px; margin-top: 15px">
-                <div class="col-12">
-                    <div class="col-sm-2 col-sm-offset-10">
-                        <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS">
-                            <button type="button" class="btn btn-default">LIMPAR</button>
-                            <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-12" style="margin-top: 15px; padding-right: 0px">
-                <div class="pull-right" style="display: flex; padding: 0;">
-                    <label for="agrupamento" style="padding-right: 10px; margin-top: 6px;">Resultados por página</label>
-                    <select onchange="this.form.submit()" value="{{request.args.get('limit')}}" id="limit" name="limit" class="form-control" style="width: 80px">
-                        <option {% if request.args.get('limit') == '10' %} selected {% endif %}>10</option>
-                        <option {% if request.args.get('limit') == '50' %} selected {% endif %}>50</option>
-                        <option {% if request.args.get('limit') in ['100', None]  %} selected {% endif %}>100</option>
-                        <option {% if request.args.get('limit') == '500' %} selected {% endif %}>500</option>
-                        <option {% if request.args.get('limit') == '1000' %} selected {% endif %}>1000</option>
-                    </select>
-                </div>
-            </div>
-        </form>
-    </div>
     <div class="row main" style="padding-top: 30px;">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h2 class="panel-title">Escolas</h2>
+                <h2 class="panel-title">Unidades Especiais</h2>
             </div>
             <div class="table-responsive">
                 <div>
@@ -274,53 +200,32 @@
                         <thead>
                         <tr>
                             <th style="word-wrap: break-word;"></th>
-                            <th style="word-wrap: break-word;">COD_EOL</th>
-                            <th style="word-wrap: break-word;">GESTÃO</th>
-                            <th style="word-wrap: break-word;min-width: 90px;max-width: 90px;">ESCOLA</th>
-                            <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
-                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">EDITAL</th>
-                            <th style="word-wrap: break-word;">DATA</th>
-                            <th  style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
-                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
-                            <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
-                            <th style="display: none;word-wrap: break-word;min-width: 300px;max-width: 300px;">ENDEREÇO</th>
-                            <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">BAIRRO</th>
-                            <th style="display: none; word-wrap: break-word;">LAT</th>
-                            <th style="display: none; word-wrap: break-word;">LON</th>
-                            <th style="display: none;word-wrap: break-word;">STATUS</th>
+                            <th style="word-wrap: break-word;">NOME</th>
+                            <th style="word-wrap: break-word;">DATA CRIACAO</th>
+                            <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">DATA INICIO</th>
+                            <th style="word-wrap: break-word;">DATA FIM</th>
+                            <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLAS</th>
+                            <th style="word-wrap: break-word;"></th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for linha in escolas %}
+                        {% for special_unit in special_units %}
                         <tr class="item">
-                            <td><a class="btn btn-info" onclick='editRow({{linha["_id"]}})' href="#" data-toggle="modal"
-                                   data-target="#modalAddSchoolForm{{ linha['_id'] }}"><i class="fas fa-edit"></i></a></td>
-                            <td class="cod_eol">{{ linha['_id'] }}</td>
-                            <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
-                            <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
-                            <td class="agrupamento">{{ linha['agrupamento'] }}</td>
-                            <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">{{ linha['edital'] }}</td>
-                            <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
-                            <td class="info" class="nome">{{ linha['nome'] }}</td>
-                            <td class="default" class="refeicoes">
-                                {% for itens in linha['refeicoes'] %}
-                                    {{ itens }},
+                            <td><a class="btn btn-info" onclick='editRow({{ special_unit["_id"] }})' href="#" data-toggle="modal"
+                                   data-target="#modalAddSchoolForm{{ special_unit['_id'] }}"><i class="fas fa-edit"></i></a></td>
+                            <td class="nome">{{ special_unit['nome'] }}</td>
+                            <td class="data_criacao">{{ special_unit['data_criacao'] }}</td>
+                            <td class="data_inicio">{{ special_unit['data_inicio'] }}</td>
+                            <td class="data_fim">{{ special_unit['data_fim'] }}</td>
+                            <td class="escolas">
+                                {% for item in special_unit['escolas'] %}
+                                    {{ item }},
                                 {% endfor %}
                             </td>
-                            <td class="success" class="idades">
-                                {% for itens in linha['idades'] %}
-                                    {{ itens }},
-                                {% endfor %}
-                            </td>
-                            <td style="display: none;" title="{{ linha['endereco'] }}" class="endereco">{{ linha['endereco'] }}</td>
-                            <td style="display: none;" class="bairro">{{ linha['bairro'] }}</td>
-                            <td style="display: none" class="lat">{{ linha['lat'] }}</td>
-                            <td style="display: none" class="lon">{{ linha['lon'] }}</td>
-                            <td style="display: none;" class="status">{{ linha['status']}}</td>
-                            <td><a class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{linha['_id']}}" href="#"
+                            <td><a class="btn btn-danger" data-toggle="modal" data-target="#exampleModal{{special_unit['nome']}}" href="#"
                                    data-target="#xml_form"><i class="fas fa-trash-alt"></i></a></td>
                             <!-- Modal -->
-                            <div class="modal fade" id="exampleModal{{linha['_id']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="exampleModal{{special_unit['nome']}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                               <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                   <div class="modal-header">
@@ -330,47 +235,16 @@
                                     </button>
                                   </div>
                                   <div class="modal-body">
-                                    Tem certeza que deseja excluir essa escola?
+                                    Tem certeza que deseja excluir essa unidade especial?
                                   </div>
                                   <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" id="{{linha['_id']}}" data-dismiss="modal">Fechar</button>
-                                    <a href="#" onclick='deleteSchool({{linha}})' type="button" class="btn btn-danger">Excluir</a>
+                                    <button type="button" class="btn btn-secondary" id="{{special_unit['nome']}}" data-dismiss="modal">Fechar</button>
+                                    <a href="#" onclick='deleteSpecialUnit({{special_unit}})' type="button" class="btn btn-danger">Excluir</a>
                                   </div>
                                 </div>
                               </div>
                             </div>
                         </tr>
-                        {% for linha_historico in linha['historico'] %}
-                        <tr class="item" style="display: none;">
-                            <td><a value='Delete' onclick='deleteRowModal(this)'><i
-                                    style='color:#D9534F;font-size:30px;text-align: center' class='fa'></i></a></td>
-                            <td class="cod_eol" contenteditable='true'>{{ linha['_id'] }}</td>
-                            <td class="tipo_atendimento" contenteditable='true'>{{ linha_historico['tipo_atendimento']
-                                }}
-                            </td>
-                            <td class="tipo_unidade" contenteditable='true'>{{ linha_historico['tipo_unidade'] }}</td>
-                            <td class="agrupamento" contenteditable='true'>{{ linha_historico['agrupamento'] }}
-                            </td>
-                            <td class="edital" contenteditable='true'>{{ linha_historico['edital'] }}</td>
-                            <td class="data" contenteditable='true'>{{ linha_historico['data_inicio_vigencia'] }}</td>
-                            <td class="nome" contenteditable='true'>{{ linha_historico['nome'] }}</td>
-                            <td class="endereco" contenteditable='true'>{{ linha_historico['endereco'] }}</td>
-                            <td class="bairro" contenteditable='true'>{{ linha_historico['bairro'] }}</td>
-                            <td class="lat" contenteditable='true'>{{ linha_historico['lat'] }}</td>
-                            <td class="lon" contenteditable='true'>{{ linha_historico['lon'] }}</td>
-                            <td class="status" contenteditable='true'>{{ linha_historico['status'] }}</td>
-                            <td class="refeicoes" contenteditable='true'>
-                                {% for itens in linha_historico['refeicoes'] %}
-                                {{ itens }},
-                                {% endfor %}
-                            </td>
-                            <td class="idades">
-                                {% for itens in linha_historico['idades'] %}
-                                {{ itens }},
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        {% endfor %}
                         {% endfor %}
                         </tbody>
                     </table>
@@ -378,43 +252,6 @@
             </div>
         </div>
     </div>
-    {% if escolas|length > 0 %}
-    <div style="text-align: center">
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <li class="page-item {{'' if pagination['previous'] else 'disabled'}}">
-              <a class="page-link"
-                 {% if pagination['previous'] %}
-                    href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{request.args.get('page')|int-1}}"
-                 {% else %}
-                    href="javascript:void(0)"
-                 {% endif %}
-               tabindex="-1">Anterior</a>
-            </li>
-              {% for page in range([request.args.get('page')|int - 2, 1]|max,
-                [[pagination['total_pages']|int + 1, 2]|max, request.args.get('page')|int + 3]|min) %}
-                    <li class="page-item"><a class="page-link" href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{page}}">{{page}}</a></li>
-              {% endfor %}
-            {% if request.args.get('page')|int + 3 < pagination['total_pages']|int %}
-            <li class="page-item">
-              <a class="page-link"
-                 href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{pagination['total_pages']}}"
-                >... {{pagination['total_pages']}}</a>
-            </li>
-            {% endif %}
-            <li class="page-item {{'' if pagination['next'] else 'disabled'}}">
-              <a class="page-link"
-                 {% if pagination['next'] %}
-                    href="{{request.url|replace('&page='+(request.args.get('page') or '1'), '')}}&page={{(request.args.get('page') or 1)|int + 1}}"
-                 {% else %}
-                    href="javascript:void(0)"
-                 {% endif %}
-                >Próxima</a>
-            </li>
-          </ul>
-        </nav>
-    </div>
-    {% endif %}
     <footer class="container-fluid text-center">
         <br>
         <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
@@ -448,7 +285,11 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      {% if form.identifier.data %}
+      <form method="post" action="/unidades_especiais/{{ form.identifier.data }}?openModal=true">
+      {% else %}
       <form method="post" action="/unidades_especiais?openModal=true">
+      {% endif %}
           <div class="row forms">
               <div class="col-xs-12">
                 <label class="col-sm-4 col-xs-12">{{ form_filter.school_types.label }}</label>
@@ -465,21 +306,31 @@
           </div>
       </form>
       <hr />
-      <form method=post action="/adicionar_escola">
+      <form method=post action="/adicionar_unidade_especial">
           <dl>
               <div>
-                  <div class="row forms" style="padding-top: 40px">
-                      <div class="col-sm-4 col-xs-12">
-                          <label>{{ form.special_unit.label }}</label>
-                          <span>{{ form.special_unit }}</span>
+                  <div class="row forms">
+                      <div style="display: none">
+                          <label>{{ form.identifier.label }}</label>
+                          <span>{{ form.identifier }}</span>
+                      </div>
+                      <div class="col-sm-offset-2 col-sm-8 col-xs-12">
+                          {{ form.special_unit.label }}
+                          <div>{{ form.special_unit }}</div>
+                      </div>
+                  </div>
+                  <div class="row forms">
+                      <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+                          {{form.initial_date.label}}
+                          <div>
+                              {{form.initial_date}}
+                          </div>
                       </div>
                       <div class="col-sm-4 col-xs-12">
-                          <label>Data Inicial</label>
-                          <span><input class="form-control" type="date" name="from" required></span>
-                      </div>
-                      <div class="col-sm-4 col-xs-12">
-                          <label>Data Final</label>
-                          <span><input class="form-control" type="date" name="to" required></span>
+                          {{form.end_date.label}}
+                          <div>
+                              {{form.end_date}}
+                          </div>
                       </div>
                   </div>
                   <div class="row forms">
@@ -576,8 +427,8 @@
 
 <script>
     function addSchool() {
-        if (window.location.href.includes('escolas/')) {
-            window.location.href = '/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
+        if (window.location.href.includes('unidades_especiais/')) {
+            window.location.href = '/unidades_especiais?openModal=true';
         } else {
             $('#modalAddSchoolForm').modal('show');
         }
@@ -587,18 +438,17 @@
 <!-- Edita escola -->
 <script>
         function editRow(id) {
-            window.location.href = '/escolas/' + id + '?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1&addSchool=true';
+            window.location.href = '/unidades_especiais/' + id.$oid + '?openModal=true';
         }
 
 
 </script>
-
 <script>
-    function deleteSchool(school) {
+    function deleteSpecialUnit(special_unit) {
         $.ajax({
             type: 'DELETE',
-            url: '/excluir_escola/' + school._id.toString(),
-            data: JSON.stringify(school),
+            url: '/excluir_unidade_especial/' + special_unit._id.$oid,
+            data: JSON.stringify(special_unit),
             contentType: 'application/json',
             //dataType: 'json',
             success: function(data, textStatus, jqXHR){

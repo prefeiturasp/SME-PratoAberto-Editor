@@ -10,6 +10,13 @@ def datetime_to_brstring(dt):
         return ''
 
 
+def convert_datetime_format(dt_str, dt_str_format, to_format):
+    try:
+        return datetime.datetime.strptime(dt_str, dt_str_format).strftime(to_format)
+    except AttributeError as e:
+        return ''
+
+
 def yyyymmdd_to_date_time(dt_str):
     try:
         return datetime.datetime.strptime(dt_str, '%Y%m%d')
