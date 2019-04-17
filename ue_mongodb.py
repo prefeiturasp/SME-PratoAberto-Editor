@@ -119,14 +119,16 @@ def get_unidade(id_unidade):
                 return -1
 
             doc = cursor.next()
+            datas = doc['data_criacao']+ "," + doc['data_inicio']+ "," +doc['data_fim']
             cursor.close()
-            return doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas']
+            return doc['nome'], datas, doc['escolas']
 
         except OperationFailure as e:
             print("Problema ao procurar a unidade.")
             print(e)
         client.close()
         return 1
+
 
 # ..EXTRAI OS IDs E O NOME DE TODAS AS ESCOLAS
 def get_db_escolas():
@@ -145,7 +147,7 @@ def get_db_escolas():
 
 
 # - Main ---------------------------------------------------------------------------------------------------------------
-# if __name__ == "__main__":
+#if __name__ == "__main__":
 
     # .. Criação
     # print(create('POLO','20190401','20190415','20190430',[1,2,3]))
@@ -163,8 +165,11 @@ def get_db_escolas():
     # print(set_unidade("5cb5ed414619f0726f26a351", data_criacao, data_ini, data_fim, id_escolas))
 
     # .. Extrai os dados da unidade
-    # data_criacao, data_inicio,data_fim, escolas = get_unidade("5cb5ed414619f0726f26a351")
-    # print(data_criacao, data_inicio,data_fim, escolas)
+    #datas, escolas = get_unidade("5cb5ed414619f0726f26a351")
+
+    #data_criacao, data_inicio, data_fim = datas.split(',')
+
+    #print(data_criacao, data_inicio, data_fim, escolas)
 
     # # .. Verifica se a unidade está ativa
     # print(isactive("5cb5ed414619f0726f26a351"))
