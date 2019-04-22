@@ -286,5 +286,6 @@ def gera_excel(id_unidade):
 
 # - Main ---------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    gera_excel("5cb5ed414619f0726f26a351")
-    gera_excel("5cb5ed424619f0726f26a353")
+    # .. _id da unidade especial
+    # gera_excel("5cb5ed414619f0726f26a351")
+    # gera_excel("5cb5ed424619f0726f26a353")
