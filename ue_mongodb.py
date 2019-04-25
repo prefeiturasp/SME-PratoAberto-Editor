@@ -10,7 +10,7 @@ from pymongo.errors import ConfigurationError, ConnectionFailure, OperationFailu
 from datetime import datetime
 
 
-# ..ESTABELECE CONEXÃO
+# ..CONNECTS WITH MONGODB
 def connect(colecao=None):
     client = MongoClient(os.environ.get('MONGO_HOST'))
     db = client.pratoaberto
@@ -33,7 +33,7 @@ def connect(colecao=None):
             return db, client
 
 
-# ..INICIALIZA A ESTRUTURA DE UMA UNIDADE ESPECIAL
+# ..SPECIAL UNIT STRUCTURE INITIALIZATION
 def create(unidade, dta_criacao, dta_ini, dta_fim, id_escolas):
     db, client = connect()
     if db is not None:
@@ -51,7 +51,7 @@ def create(unidade, dta_criacao, dta_ini, dta_fim, id_escolas):
     return 1
 
 
-# ..APAGA UMA OU TODAS AS UNIDADES DA COLLECTION
+# ..DELETES ONE OR ALL SPECIAL UNITS FROM THE COLLECTION
 def delete(id_unidade=None):
     client = MongoClient(os.environ.get('MONGO_HOST'))
     db = client.pratoaberto
@@ -69,21 +69,23 @@ def delete(id_unidade=None):
         return 1
 
 
-# ..VERIFICA SE A UNIDADE ESPECIAL ESTA ATIVA
+# ..CHECKS IF THE SPECIAL UNIT IS ACTIVE
 def isactive(id_unidade):
     db, client=connect()
     if db is not None:
         try:
-            dta_criacao, dta_ini, dta_fim, escolas = get_unidade(id_unidade)
+            nome, datas, escolas = get_unidade(id_unidade)
+            dta_criacao, dta_ini, dta_fim = datas.split(',')
             dta_now = f'{datetime.now():%Y%m%d}'
             return (dta_now >= dta_ini and dta_now <= dta_fim)
+
         except OperationFailure as e:
             print("Problema ao verificar se a unidade está ativa.")
             print(e)
         client.close()
 
 
-# ..ATUALIZA UM, VARIOS OU TODOS OS DADOS DE UMA UNIDADE ESPECIAL
+# ..UPDATES ONE, SOME OR ALL ATTRIBUTES OF THE SPECIAL UNIT
 def set_unidade(id_unidade, data_criacao=None, data_ini=None, data_fim=None, id_escolas=[]):
     db, client = connect()
     if db is not None:
@@ -107,7 +109,7 @@ def set_unidade(id_unidade, data_criacao=None, data_ini=None, data_fim=None, id_
         return 1
 
 
-# ..EXTRAI TODOS OS DADOS DE UMA UNIDADE ESPECIAL
+# ..RETRIEVES ALL ATTRIBUTES OF THE SPECIAL UNIT
 def get_unidade(id_unidade):
     db, client = connect()
     if db is not None:
@@ -130,7 +132,7 @@ def get_unidade(id_unidade):
         return 1
 
 
-# ..EXTRAI OS IDs E O NOME DE TODAS AS ESCOLAS
+# ..RETRIEVES THE IDs OF ALL SCHOOLS
 def get_db_escolas():
     """Retorna lista de todas as escolas ordenadas alfabeticamente.Formato id:nome_escola"""
     ids_escolas = []
@@ -146,8 +148,39 @@ def get_db_escolas():
         return ids_escolas
 
 
+# ..CHECKS IF THE SCHOOL BELONGS FROM A UNIDADE ESPECIAL
+def check_school(id_school):
+    """If the school belongs to a UE, return the UE's id"""
+    num_recs = 0
+    id_ue = ''
+    db, client=connect()
+    if db is not None:
+        try:
+            cursor = db.find()
+            doc = cursor.next()
+            while num_recs < cursor.count():
+                if isactive(doc['_id']):
+                    if id_school in doc['escolas']:
+                        id_ue = doc['_id']
+                num_recs += 1
+                try:
+                    doc = cursor.next()
+                except Exception as e:
+                    print(e)
+
+            cursor.close()
+            client.close()
+
+        except OperationFailure as e:
+            print("Problema ao extrair os ids da tabela escolas.")
+            print(e)
+        client.close()
+        return id_ue
+
+
 # - Main ---------------------------------------------------------------------------------------------------------------
 #if __name__ == "__main__":
+    # print(".. ",check_school('10'))
 
     # .. Criação
     # print(create('POLO','20190401','20190415','20190430',[1,2,3]))

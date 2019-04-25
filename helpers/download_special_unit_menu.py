@@ -1,13 +1,12 @@
 #
 #  download_special_unit_menu.py
-#
-#   Uso:  <unidade> onde: <unidade> = _id mongodb da unidade
+#     Uso:  download_special_unit_menu <unidade>  onde: <unidade> = _id da unidade
 #
 
-from datetime import datetime
 import os
 import pymongo
 import ue_mongodb as ue
+from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment
 
@@ -15,10 +14,8 @@ wrk_idades = []
 wrk_refeicoes = []
 wrk_cardapios = {}
 
-# .. xls_file_path = os.path.dirname(__file__) + '\\'
-xls_file_path = "/home/amcom/PycharmProjects/jaime/tmp/"
+xls_file_path = os.path.dirname(__file__) + '/'
 
-# ..Meses e dias da semana
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junio', 'Julio', 'Agosto', 'Setembro', 'Outubro',
          'Novembro', 'Dezemnbro']
 dias_semana = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo']
@@ -39,20 +36,20 @@ def estilo(linha, coluna, ws):
 def format_cels(refeicoes_idade, ws):
     n_refeicoes = sum(refeicoes_idade.values())
 
-    # ..Bordas da da planilha
+    # ..Cell borders
     for lin in range(1, 9):
         for col in range(1, n_refeicoes + 2):
             estilo(lin, col, ws)
 
-    # ..Merge celulas do título Dia
+    # ..Merge the Dia cells
     ws.merge_cells(start_row=1, start_column=1, end_row=3, end_column=1)
     estilo(1, 1, ws)
 
-    # ..Merge celulas do titulo da planilha
+    # ..Merge the title cells
     ws.merge_cells(start_row=1, start_column=2, end_row=1, end_column=n_refeicoes + 1)
     estilo(1, 2, ws)
 
-    # ..Merge celulas das faixas etárias
+    # ..Merge the age bands cells
     coluna = 2
     for k in refeicoes_idade.keys():
         f_refeicoes = refeicoes_idade[k]
@@ -80,11 +77,6 @@ def nome_refeicoes(lista, coluna, ws):
 
 
 def get_cardapios(unidade, data_de, data_ate, c_status):
-    # ..Acesso ao banco de dados
-    # client = pymongo.MongoClient('localhost', 27017)
-    # db = client.pratoaberto
-    # collection = db.cardapios
-
     client = pymongo.MongoClient(os.environ.get('MONGO_HOST'))
     db = client.pratoaberto
     collection = db.cardapios
@@ -153,7 +145,7 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
                     wrk_refeicoes.append(refeicao)
 
                 if doc['idade'] not in wrk_cardapios:
-                    wrk_cardapios[doc['idade']]={}
+                    wrk_cardapios[doc['idade']] = {}
 
                 if refeicao not in wrk_cardapios[doc['idade']]:
                     wrk_cardapios[doc['idade']][refeicao] = ''
@@ -162,12 +154,12 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
 
         try:
             doc = cursor.next()
-        except Exception:
+        except StopIteration:
             num_recs += 1
             cursor.close()
     cursor.close()
 
-    # ..Ordena as faixas etárias e nome das refeições encontradas
+    """Sorts alphabetically the age band names and meals"""
     idades = sorted(wrk_idades)
     refeicoes = sorted(wrk_refeicoes)
 
@@ -177,9 +169,9 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
         cardapios[k] = wrk_cardapios[k]
         num_refeicoes_por_idade[k] = len(cardapios[k])
 
-    # ..Monta a lista das refeições por idade
-    idade_refeicoes={}
-    lista=[]
+    """Sets the list of the meals by age"""
+    idade_refeicoes = {}
+    lista = []
     for k in idades:
         for r in refeicoes:
             if r in cardapios[k]:
@@ -187,8 +179,8 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
         idade_refeicoes[k] = lista
         lista = []
 
-    # ..Refaz cardapios: ordena o nome das refeicoes
-    x_cardapios={}
+    """Rewrites the menu structure with ordered age bands and meal names"""
+    x_cardapios = {}
     for idade in idade_refeicoes.keys():
         if idade not in x_cardapios:
             x_cardapios[idade] = {}
@@ -196,7 +188,7 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
             if r not in x_cardapios[idade]:
                 x_cardapios[idade][r] = ''
 
-    # ..Formata a planilha e preenche os tiltulos
+    """Formats the spreadsheet and includes the title, age band names and meal's names"""
     if len(num_refeicoes_por_idade) > 0:
         format_cels(num_refeicoes_por_idade, ws)
         titulos(idade_refeicoes, ws, titulo)
@@ -206,12 +198,13 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
 
 
 def clean_up(wb, xls_file):
-    # ..Apaga planilhas sem cardápios
+    """Apaga planilhas sem cardápios"""
     for ws in wb.worksheets:
         semana = ws.title
         if ws['A4'].value is None:
             wb.remove(wb[semana])
             save_xls(wb, xls_file)
+
 
 def save_xls(wb, xls_file):
     wb.save(xls_file)
@@ -226,16 +219,17 @@ def gera_excel(id_unidade):
     cursor = get_cardapios(unidade, data_de, data_ate, 'PUBLICADO')
 
     if cursor.count() == 0:
-        print('Não há cardápios publicados no período {0} a {1} para a unidade {0}.'.format(data_de, data_ate,unidade))
+        print('Não há cardápios publicados no período {0} a {1} para a unidade {0}.'.format(data_de, data_ate, unidade))
         return -1
 
-    # ..Arquivo xls de saída
+    """Output file name"""
     xls_file = xls_file_path + 'Cardapios_' + unidade + '_' + data_de + '_' + data_ate + '.xlsx'
+    print(xls_file)
 
     wb = Workbook()
-    cardapios={}
+    cardapios = {}
 
-    # ..Cria as planilhas preparadas para receber os cardapios por dia.
+    """Creates and sets the spreadsheet to receive the daily menus"""
     for semana in lista_semanas:
         ws = wb.create_sheet('Semana ' + str(semana))
         cardapios = set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file)
@@ -271,7 +265,7 @@ def gera_excel(id_unidade):
         lin += 1
         data_ant = doc['data']
 
-        # ..Limpa o conteúdo da estrutura
+        """Cleans the menu structure"""
         l_idades = list(cardapios.keys())
         for idade in l_idades:
             l_refeicoes = list(cardapios[idade].keys())
@@ -286,6 +280,5 @@ def gera_excel(id_unidade):
 
 # - Main ---------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    # .. _id da unidade especial
     # gera_excel("5cb5ed414619f0726f26a351")
-    # gera_excel("5cb5ed424619f0726f26a353")
+    gera_excel("5cb5ed424619f0726f26a353")
