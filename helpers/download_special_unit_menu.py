@@ -224,7 +224,6 @@ def gera_excel(id_unidade):
 
     """Output file name"""
     xls_file = xls_file_path + 'Cardapios_' + unidade + '_' + data_de + '_' + data_ate + '.xlsx'
-    print(xls_file)
 
     wb = Workbook()
     cardapios = {}
@@ -250,7 +249,7 @@ def gera_excel(id_unidade):
             set_cardapio(cardapios, doc[r'cardapio'], doc[r'idade'])
             try:
                 doc = cursor.next()
-            except Exception:
+            except StopIteration:
                 save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
                 clean_up(wb, xls_file)
                 return -1
@@ -276,9 +275,3 @@ def gera_excel(id_unidade):
     save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
     cursor.close()
     clean_up(wb, xls_file)
-
-
-# - Main ---------------------------------------------------------------------------------------------------------------
-if __name__ == "__main__":
-    # gera_excel("5cb5ed414619f0726f26a351")
-    gera_excel("5cb5ed424619f0726f26a353")
