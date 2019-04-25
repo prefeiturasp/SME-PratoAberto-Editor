@@ -233,8 +233,8 @@
             <div class="col-sm-8">
                 <div id="lista-refeicao" style="text-align: left">
                     {% for refeicao in refeicoes %}
-                        <span type="button" class="btn btn-default" style="margin-right: 8px"
-                              id="{{ refeicao }}">{{ refeicao }}</span>
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" onclick="deletar(this)"
+                              id="{{ refeicao }}">{{ refeicao }} x</span>
                     {% endfor %}
                 </div>
             </div>
