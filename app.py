@@ -32,7 +32,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-# api = 'http://127.0.0.1:8000'
+api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -508,7 +508,8 @@ def cria_direta_mista_sem_refeicao():
         editais = set([x[1] for x in quebras])
         tipo_unidade = set([x[0] for x in quebras])
         idade = set([x[2] for x in quebras])
-        refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        # refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        refeicao = set([x[3] for x in quebras])
         gestoes = set([x[-1] for x in quebras if x[-1] != 'TERCEIRIZADA'])
 
         return render_template("cria_direta_mista_sem_refeicao.html",
@@ -748,7 +749,7 @@ def atualiza_config_cardapio():
     new_menu.append(form.ages.data)
 
     if 'is_direta_mista' in request.form:
-        new_menu.append('SR - SEM REFEICAO')
+        new_menu.append(form.meals.data)
     else:
         new_menu.append(form.meals.data)
 

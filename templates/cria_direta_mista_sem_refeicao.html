@@ -166,7 +166,7 @@
             </div>
             <div class="col-sm-8">
                 <div id="lista-editais" style="text-align: left">
-                    {% for edital in editais: %}
+                    {% for edital in editais %}
                         <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
                               id="{{ edital }}">{{ edital }} &times;</span>
                     {% endfor %}
