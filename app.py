@@ -690,18 +690,6 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = CheckboxInput()
 
 
-class OutSourcedMenuForm(Form):
-    menu_id = IntegerField('ID')
-    management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
-    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
-    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016')])
-    weekday = DateField('Dia Semana', format='%Y%m%d')
-    ages = SelectField('Idades', choices=constants.AGES_DICT)
-    meals = SelectField('Refeições', choices=constants.MEALS_DICT)
-    menu = TextAreaField('Cardápio')
-    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
-
-
 @app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
@@ -716,6 +704,23 @@ def config_cardapio():
         form = OutSourcedMenuForm(request.form)
         config_editor = db_functions.select_all_receitas_terceirizadas()
         return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
+
+
+@app.route("/configuracoes_cardapio_unidades_especiais", methods=['GET', 'POST'])
+@flask_login.login_required
+def config_cardapio_unidades_especiais():
+    referrer = '/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio_unidades_especiais' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
+    if request.method == "GET":
+        form = OutSourcedMenuForm(request.form)
+        config_editor = db_functions.select_all_receitas_unidades_especiais()
+        return render_template("configuracoes_unidades_especiais.html", config=config_editor, referrer=referrer,
+                               form=form)
 
 
 @app.route('/remove-lista-terceirizada/<id>')
@@ -733,13 +738,19 @@ def remove_menu_list(id):
 def atualiza_config_cardapio():
     form = OutSourcedMenuForm(request.form)
     new_menu = list()
-    new_menu.append(form.management.data)
-    new_menu.append(form.school_type.data)
+    if 'is_unidade_especial' in request.form:
+        new_menu.append('UE')
+        new_menu.append(form.special_unit.data)
+    else:
+        new_menu.append(form.management.data)
+        new_menu.append(form.school_type.data)
 
     if 'is_direta_mista' in request.form:
         new_menu.append(request.form['grouping'])
-    else:
+    elif 'is_unidade_especial' not in request.form:
         new_menu.append(form.edital.data)
+    else:
+        new_menu.append('UE')
 
     if form.weekday.data:
         new_menu.append(form.weekday.data.strftime('%Y%m%d'))
@@ -747,21 +758,18 @@ def atualiza_config_cardapio():
         new_menu.append('')
 
     new_menu.append(form.ages.data)
-
-    if 'is_direta_mista' in request.form:
-        new_menu.append(form.meals.data)
-    else:
-        new_menu.append(form.meals.data)
-
+    new_menu.append(form.meals.data)
     new_menu.append(form.menu.data)
-
     db_functions.add_bulk_cardapio([new_menu])
 
     if request.form:
         flash('Cardápio terceirizado adicionado com sucesso.', 'success')
-        return (redirect(url_for('config_cardapio')))
+        if 'is_unidade_especial' not in request.form:
+            return redirect(url_for('config_cardapio'))
+        else:
+            return redirect(url_for('config_cardapio_unidades_especiais'))
     else:
-        return ('', 200)
+        return '', 200
 
 
 class SchoolRegistrationForm(Form):
@@ -1549,6 +1557,16 @@ def get_unidades_especiais():
     return r.json()
 
 
+def get_unidades_especiais_dict():
+    url = api + '/editor/unidades_especiais'
+    r = requests.get(url)
+    special_unities = r.json()
+    special_unities_dict = []
+    for special_unit in special_unities:
+        special_unities_dict.append((special_unit['nome'], special_unit['nome']))
+    return special_unities_dict
+
+
 def get_grupo_publicacoes(status):
     url = api + '/editor/cardapios?status=' + status
     r = requests.get(url)
@@ -1740,6 +1758,19 @@ def normaliza_str(lista_str):
     for palavra in lista_str:
         lf.append(' '.join(palavra.split()))
     return lf
+
+
+class OutSourcedMenuForm(Form):
+    menu_id = IntegerField('ID')
+    management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    special_unit = SelectField('Unidade Especial', choices=get_unidades_especiais_dict())
+    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016')])
+    weekday = DateField('Dia Semana', format='%Y%m%d')
+    ages = SelectField('Idades', choices=constants.AGES_DICT)
+    meals = SelectField('Refeições', choices=constants.MEALS_DICT)
+    menu = TextAreaField('Cardápio')
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
 
 
 class SpecialUnitForm(Form):

@@ -132,6 +132,15 @@ def select_all_receitas_terceirizadas():
     return list
 
 
+def select_all_receitas_unidades_especiais():
+    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
+    Base.metadata.bind = engine
+    dbsession = sessionmaker(bind=engine)
+    session = dbsession()
+    res = session.query(ReceitasTerceirizadas).filter(ReceitasTerceirizadas.tipo_gestao == 'UE')
+    list = [(x.id, x.tipo_gestao, x.tipo_escola, x.edital, x.diasemana, x.idade, x.refeicao, x.cardapio) for x in res]
+    return list
+
 def select_receitas_terceirizadas(tipo_gestao, tipo_escola, edital, idade):
     engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
     Base.metadata.bind = engine
