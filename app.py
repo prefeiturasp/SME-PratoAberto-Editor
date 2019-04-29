@@ -32,7 +32,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-# api = 'http://127.0.0.1:8000'
+api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -521,6 +521,31 @@ def cria_direta_mista_sem_refeicao():
                                referrer=request.referrer)
 
 
+@app.route('/criar-unidade-especial')
+@flask_login.login_required
+def cria_unidade_especial():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_terceirizadas()
+
+        ue_dict = [x['nome'] for x in get_unidades_especiais()]
+
+        # editais = set([x[1] for x in quebras if x[1] == 'UE'])
+        editais = ['UE']
+        tipo_unidade = set(ue_dict)
+        idade = set([x[2] for x in quebras])
+        # refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' not in x[3]])
+        gestoes = set([x[-1] for x in quebras if x[-1] == 'UE'])
+
+        return render_template("criar_unidade_especial.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               gestoes=gestoes,
+                               referrer=request.referrer)
+
+
 @app.route("/visualizador_cardapio", methods=["GET"])
 @flask_login.login_required
 def visualizador():
@@ -817,7 +842,7 @@ def unidades_especiais(id_unidade_especial=None):
                               form_filter.school_autocomplete.data.split(', ')]
     else:
         form.schools.data += [cod_eol.split(' - ')[0].strip() for cod_eol
-                                 in form_filter.school_autocomplete.data.split(', ')]
+                              in form_filter.school_autocomplete.data.split(', ')]
     if request.method in ["GET", "POST"]:
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
