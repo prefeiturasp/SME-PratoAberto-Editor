@@ -743,6 +743,7 @@ def config_cardapio_unidades_especiais():
 
     if request.method == "GET":
         form = OutSourcedMenuForm(request.form)
+        form.special_unit.choices = get_unidades_especiais_dict()
         config_editor = db_functions.select_all_receitas_unidades_especiais()
         return render_template("configuracoes_unidades_especiais.html", config=config_editor, referrer=referrer,
                                form=form)
