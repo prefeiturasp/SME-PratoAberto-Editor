@@ -183,6 +183,16 @@ def select_quebras_terceirizadas():
     return list
 
 
+def select_quebras_unidades_especiais():
+    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
+    Base.metadata.bind = engine
+    dbsession = sessionmaker(bind=engine)
+    session = dbsession()
+    res = session.query(ReceitasTerceirizadas).filter(ReceitasTerceirizadas.tipo_gestao == 'UE')
+    list = set([(x.tipo_escola, x.edital, x.idade, x.refeicao, x.tipo_gestao) for x in res])
+    return list
+
+
 if __name__ == '__main__':
     # add_replacements('TEMPEROS', 'Ingredientes', 'ALHO', '')
     # a = select_receitas_terceirizadas('TERCEIRIZADA', 'CEI', 'EDITAL 1', 'D - 6 MESES')

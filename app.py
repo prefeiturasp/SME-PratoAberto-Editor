@@ -525,7 +525,7 @@ def cria_direta_mista_sem_refeicao():
 @flask_login.login_required
 def cria_unidade_especial():
     if request.method == "GET":
-        quebras = db_functions.select_all_receitas_unidades_especiais()
+        quebras = db_functions.select_quebras_unidades_especiais()
 
         ue_dict = [x['nome'] for x in get_unidades_especiais()]
 
