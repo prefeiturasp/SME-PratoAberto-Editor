@@ -1,5 +1,4 @@
 SCHOOL_TYPES_DICT = [('CCI', 'CCI'),
-                     ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
                      ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
                      ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
                      ('CEMEI', 'CEMEI'),
@@ -13,7 +12,6 @@ SCHOOL_TYPES_DICT = [('CCI', 'CCI'),
                      ('SME_CONVÊNIO', 'SME_CONVÊNIO')]
 SCHOOL_TYPES_FILTER_DICT = [('TODOS', 'TODOS'),
                             ('CCI', 'CCI'),
-                             ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
                              ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
                              ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
                              ('CEMEI', 'CEMEI'),

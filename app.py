@@ -111,12 +111,17 @@ def unauthorized_handler():
 def backlog():
     semanas_pendentes = sorted(get_semanas_pendentes(), reverse=True)
     semanas = format_datetime_array(semanas_pendentes)
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
     pendentes = get_pendencias(request_obj=request,
                                semana_default=semanas_pendentes[0] if len(semanas_pendentes) else current_week())
     pendentes = sort_array_date_br(pendentes)
     return render_template("pendencias_publicacao.html",
                            pendentes=pendentes,
-                           semanas=semanas)
+                           semanas=semanas,
+                           unidades_especiais=ue_dict)
 
 
 @app.route("/pendencias_deletadas", methods=["GET", "POST"])
@@ -143,6 +148,10 @@ def publicados():
     weeks = reversed(generate_ranges())
     default_week = list(weeks)[2]
     published_menus = sort_array_date_br(get_publicados(request_obj=request, default_week=default_week))
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
     period = request.args.get('filtro_periodo', '30')
     if period not in [None, 'all']:
         date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
@@ -168,7 +177,8 @@ def publicados():
                            published_menus=published_menus,
                            week_ranges=list(periods),
                            period_ranges=period_ranges,
-                           default_week=default_week)
+                           default_week=default_week,
+                           unidades_especiais=ue_dict)
 
 
 @app.route("/edicao_de_notas", methods=["GET", "POST"])

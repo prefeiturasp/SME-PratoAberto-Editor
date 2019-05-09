@@ -99,6 +99,7 @@
                         <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
                         <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
                         <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'UE' %} selected {% endif %}>UE</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12">
@@ -106,7 +107,6 @@
                     <select value="{{request.args.get('tipo_unidade')}}" name="tipo_unidade" class="form-control">
                          <option value="TODOS">TODOS</option>
                          <option {% if request.args.get('tipo_unidade') == 'CCI' %} selected {% endif %}>CCI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEI_CONVENIADO' %} selected {% endif %}>CEI_CONVENIADO</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEI_MUNICIPAL' %} selected {% endif %}>CEI_MUNICIPAL</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO_(RP)' %} selected {% endif %}>CEI_PARCEIRO_(RP)</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEMEI' %} selected {% endif %}>CEMEI</option>
@@ -162,6 +162,14 @@
                 </div>
             </div>
             <div class="row" style="padding-bottom: 15px; margin-top: 15px">
+                <div class="col-sm-3 col-xs-12 dropdown">
+                    <label> Unidade especial</label>
+                    <select value="{{ request.args.get('unidade_especial') }}" class="form-control input" id="unidade_especial" name="unidade_especial">
+                        {% for ue in unidades_especiais: %}
+                            <option {% if request.args.get('unidade_especial') == ue %} selected {% endif %}>{{ ue }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="col-sm-3 col-xs-12">
                     <label class="control-label">Status</label>
                     <select value="{{ request.args.get('status') }}" name="status" class="form-control">
@@ -180,7 +188,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-sm-3 col-xs-12 pull-right" style="padding-top: 25px">
+                <div class="col-sm-3 col-xs-12" style="padding-top: 25px">
                     <a href="/pendencias_publicacoes">
                         <button type="button" class="col-sm-5 btn btn-default">LIMPAR</button>
                         <button type="submit" class="col-sm-5 pull-right btn btn-success">FILTRAR</button>

@@ -131,6 +131,7 @@
                         <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
                         <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
                         <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
+                        <option {% if request.args.get('tipo_atendimento') == 'UE' %} selected {% endif %}>UE</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12">
@@ -138,7 +139,6 @@
                     <select value="{{request.args.get('tipo_unidade')}}" name="tipo_unidade" class="form-control">
                          <option value="TODOS">TODOS</option>
                          <option {% if request.args.get('tipo_unidade') == 'CCI' %} selected {% endif %}>CCI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEI_CONVENIADO' %} selected {% endif %}>CEI_CONVENIADO</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEI_MUNICIPAL' %} selected {% endif %}>CEI_MUNICIPAL</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO_(RP)' %} selected {% endif %}>CEI_PARCEIRO_(RP)</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEMEI' %} selected {% endif %}>CEMEI</option>
@@ -195,6 +195,14 @@
             </div>
             <div class="row" style="padding-bottom: 15px; margin-top: 15px">
                 <div class="col-sm-3 col-xs-12 dropdown">
+                    <label> Unidade especial</label>
+                    <select value="{{ request.args.get('unidade_especial') }}" class="form-control input" id="unidade_especial" name="unidade_especial">
+                        {% for ue in unidades_especiais: %}
+                            <option {% if request.args.get('unidade_especial') == ue %} selected {% endif %}>{{ ue }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a extensão das datas:</label>
                     <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
                         {% for period_range in period_ranges.keys() %}
@@ -209,10 +217,6 @@
                             <option {% if request.args.get('filtro_semana_mes') == week_range or (not request.args.get('filtro_semana_mes') and default_week == week_range) %} selected {% endif %}>{{ week_range }}</option>
                         {% endfor %}
                     </select>
-                </div>
-                <div class="col-sm-3 col-xs-12">
-                    <label> Total de publicados no período:</label>
-                    <p style="padding-top: 10px">{{ published_menus | length }} cardápios</p>
                 </div>
                 <div class="col-sm-3 col-xs-12" style="padding-top: 25px">
                     <a href="/pendencias_publicadas?{{current_date}}">
