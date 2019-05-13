@@ -26,13 +26,14 @@ from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str
                    format_datetime_array, yyyymmdd_to_date_time)
 from helpers import download_spreadsheet
 from ue_mongodb import get_unidade
+from helpers.download_special_unit_menu import gera_excel
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-# api = 'http://127.0.0.1:8000'
+api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -1318,6 +1319,24 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
+@app.route('/download-unidade-especial', methods=['POST'])
+@flask_login.login_required
+def dowload_special_unit():
+    if request.method == 'POST':
+        ue_id = request.form['unit_special']
+        xlsx_file = gera_excel(ue_id)
+        if xlsx_file:
+            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+        else:
+            return redirect(request.referrer)
+
+
+@app.context_processor
+def get_all_special_unit():
+    ue_dict = [{'id': ue['_id']['$oid'], 'label': ue['nome']} for ue in get_unidades_especiais()]
+    return dict(ue_dict=ue_dict)
+
+
 # FUNÇÕES AUXILIARES
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
@@ -1589,6 +1608,12 @@ def get_escolas_dict(params=None, by_type=None, limit=None):
 
 def get_unidades_especiais():
     url = api + '/editor/unidades_especiais'
+    r = requests.get(url)
+    return r.json()
+
+
+def get_unidades_especiais_by_id(id):
+    url = api + '/editor/unidades_especiais/' + id
     r = requests.get(url)
     return r.json()
 

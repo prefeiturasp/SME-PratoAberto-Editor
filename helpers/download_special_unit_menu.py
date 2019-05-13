@@ -6,6 +6,7 @@
 
 from datetime import datetime
 import os
+from pathlib import Path
 import pymongo
 import ue_mongodb as ue
 from openpyxl import Workbook
@@ -15,8 +16,7 @@ wrk_idades = []
 wrk_refeicoes = []
 wrk_cardapios = {}
 
-# .. xls_file_path = os.path.dirname(__file__) + '\\'
-xls_file_path = "/home/amcom/PycharmProjects/jaime/tmp/"
+xls_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tmp'))
 
 # ..Meses e dias da semana
 meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junio', 'Julio', 'Agosto', 'Setembro', 'Outubro',
@@ -153,7 +153,7 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
                     wrk_refeicoes.append(refeicao)
 
                 if doc['idade'] not in wrk_cardapios:
-                    wrk_cardapios[doc['idade']]={}
+                    wrk_cardapios[doc['idade']] = {}
 
                 if refeicao not in wrk_cardapios[doc['idade']]:
                     wrk_cardapios[doc['idade']][refeicao] = ''
@@ -178,8 +178,8 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
         num_refeicoes_por_idade[k] = len(cardapios[k])
 
     # ..Monta a lista das refeições por idade
-    idade_refeicoes={}
-    lista=[]
+    idade_refeicoes = {}
+    lista = []
     for k in idades:
         for r in refeicoes:
             if r in cardapios[k]:
@@ -188,7 +188,7 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
         lista = []
 
     # ..Refaz cardapios: ordena o nome das refeicoes
-    x_cardapios={}
+    x_cardapios = {}
     for idade in idade_refeicoes.keys():
         if idade not in x_cardapios:
             x_cardapios[idade] = {}
@@ -213,27 +213,34 @@ def clean_up(wb, xls_file):
             wb.remove(wb[semana])
             save_xls(wb, xls_file)
 
+
 def save_xls(wb, xls_file):
     wb.save(xls_file)
 
 
 def gera_excel(id_unidade):
-    unidade, datas, escolas = ue.get_unidade(id_unidade)
-    data_de, data_ate = (datas[9:]).split(',')
-    semana_de, semana_ate = str(get_num_semana(data_de)), str(get_num_semana(data_ate))
+    xls_file = None
+    ue_dict = ue.get_unidade(id_unidade)
+    unidade = ue_dict[0]
+    data_de = ue_dict[2]
+    data_ate = ue_dict[3]
+    semana_de = str(get_num_semana(data_de))
+    semana_ate = str(get_num_semana(data_ate))
     lista_semanas = [i for i in range(int(semana_de), int(semana_ate) + 1)]
 
+    # TODO BUSCAR NA API O CARDÁRPIO DA INIDADE ESPECIAL
     cursor = get_cardapios(unidade, data_de, data_ate, 'PUBLICADO')
 
     if cursor.count() == 0:
-        print('Não há cardápios publicados no período {0} a {1} para a unidade {0}.'.format(data_de, data_ate,unidade))
-        return -1
+        print('Não há cardápios publicados no período {0} a {1} para a unidade {0}.'.format(data_de, data_ate, unidade))
+        return False
 
     # ..Arquivo xls de saída
-    xls_file = xls_file_path + 'Cardapios_' + unidade + '_' + data_de + '_' + data_ate + '.xlsx'
+    # xls_file = xls_file_path / 'Cardapios_' + unidade + '_' + data_de + '_' + data_ate + '.xlsx'
+    xls_file = '{}/{}_{}_{}_{}.xlsx'.format(xls_file_path, 'Cardapios_', unidade, data_de, data_ate)
 
     wb = Workbook()
-    cardapios={}
+    cardapios = {}
 
     # ..Cria as planilhas preparadas para receber os cardapios por dia.
     for semana in lista_semanas:
@@ -259,7 +266,7 @@ def gera_excel(id_unidade):
             except Exception:
                 save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
                 clean_up(wb, xls_file)
-                return -1
+                return False
 
         save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
 
@@ -282,9 +289,10 @@ def gera_excel(id_unidade):
     save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
     cursor.close()
     clean_up(wb, xls_file)
+    return xls_file
 
 
 # - Main ---------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
-    gera_excel("5cb5ed414619f0726f26a351")
-    gera_excel("5cb5ed424619f0726f26a353")
+    gera_excel("5cd412b6c9a1820007e2dd36")
+    # gera_excel("5cb5ed424619f0726f26a353")

@@ -71,7 +71,7 @@ def delete(id_unidade=None):
 
 # ..VERIFICA SE A UNIDADE ESPECIAL ESTA ATIVA
 def isactive(id_unidade):
-    db, client=connect()
+    db, client = connect()
     if db is not None:
         try:
             dta_criacao, dta_ini, dta_fim, escolas = get_unidade(id_unidade)
@@ -120,7 +120,7 @@ def get_unidade(id_unidade):
 
             doc = cursor.next()
             cursor.close()
-            return doc['nome'], doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas']
+            return (doc['nome'], doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas'])
 
         except OperationFailure as e:
             print("Problema ao procurar a unidade.")
@@ -133,45 +133,44 @@ def get_unidade(id_unidade):
 def get_db_escolas():
     """Retorna lista de todas as escolas ordenadas alfabeticamente.Formato id:nome_escola"""
     ids_escolas = []
-    db, client=connect('escolas')
+    db, client = connect('escolas')
     if db is not None:
         try:
-            a=db.aggregate([{"$match": {"nome": {"$gt": ''}}}, {"$sort": {"nome": 1}}])
-            ids_escolas = [str(e['_id']).strip()+':'+e['nome'].strip() for e in a]
+            a = db.aggregate([{"$match": {"nome": {"$gt": ''}}}, {"$sort": {"nome": 1}}])
+            ids_escolas = [str(e['_id']).strip() + ':' + e['nome'].strip() for e in a]
         except OperationFailure as e:
             print("Problema ao extrair os ids da tabela escolas.")
             print(e)
         client.close()
         return ids_escolas
 
-
 # - Main ---------------------------------------------------------------------------------------------------------------
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # .. Criação
-    # print(create('POLO','20190401','20190415','20190430',[1,2,3]))
-    # print(create('RECREIO_FERIAS', '20190401', '20190415', '20190430', [1, 2, 3]))
+# .. Criação
+# print(create('POLO','20190401','20190415','20190430',[1,2,3]))
+# print(create('RECREIO_FERIAS', '20190401', '20190415', '20190430', [1, 2, 3]))
 
-    # .. Apaga uma ou todas as unidades especiais
-    # print(delete("POLO"))
-    # print(delete(""))
+# .. Apaga uma ou todas as unidades especiais
+# print(delete("POLO"))
+# print(delete(""))
 
-    # .. Atualiza dados da unidade
-    # data_criacao=""
-    # data_ini="11112233"
-    # data_fim=""
-    # id_escolas=[10,20,30]
-    # print(set_unidade("5cb5ed414619f0726f26a351", data_criacao, data_ini, data_fim, id_escolas))
+# .. Atualiza dados da unidade
+# data_criacao=""
+# data_ini="11112233"
+# data_fim=""
+# id_escolas=[10,20,30]
+# print(set_unidade("5cb5ed414619f0726f26a351", data_criacao, data_ini, data_fim, id_escolas))
 
-    # .. Extrai os dados da unidade
-    #datas, escolas = get_unidade("5cb5ed414619f0726f26a351")
+# .. Extrai os dados da unidade
+# datas, escolas = get_unidade("5cb5ed414619f0726f26a351")
 
-    #data_criacao, data_inicio, data_fim = datas.split(',')
+# data_criacao, data_inicio, data_fim = datas.split(',')
 
-    #print(data_criacao, data_inicio, data_fim, escolas)
+# print(data_criacao, data_inicio, data_fim, escolas)
 
-    # # .. Verifica se a unidade está ativa
-    # print(isactive("5cb5ed414619f0726f26a351"))
+# # .. Verifica se a unidade está ativa
+# print(isactive("5cb5ed414619f0726f26a351"))
 
-    # .. Extrai o id + nome de todas as escolas da tabela escolas
-    # print(get_db_escolas())
+# .. Extrai o id + nome de todas as escolas da tabela escolas
+# print(get_db_escolas())
