@@ -1323,12 +1323,21 @@ def download_speadsheet():
 @flask_login.login_required
 def dowload_special_unit():
     if request.method == 'POST':
-        ue_id = request.form['unit_special']
-        xlsx_file = gera_excel(ue_id)
-        if xlsx_file:
-            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
-        else:
+        try:
+
+            ue_id = request.form['unit_special']
+            xlsx_file = gera_excel(ue_id)
+            if xlsx_file:
+                return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+            else:
+                return redirect(request.referrer)
+        except UnicodeEncodeError('Erro no unicode do arquivo!'):
+            pass
+        except IOError('Error ao tentar escrever no arquivo!'):
+            pass
+        finally:
             return redirect(request.referrer)
+
 
 
 @app.context_processor
