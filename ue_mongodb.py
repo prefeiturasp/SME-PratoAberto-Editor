@@ -128,6 +128,9 @@ def get_unidade(id_unidade):
         client.close()
         return 1
 
+def get_unidade_especial_by_id(id):
+    pass
+
 
 # ..EXTRAI OS IDs E O NOME DE TODAS AS ESCOLAS
 def get_db_escolas():

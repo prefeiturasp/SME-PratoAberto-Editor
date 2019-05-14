@@ -33,7 +33,7 @@ app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
-api = 'http://127.0.0.1:8000'
+# api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -1349,6 +1349,13 @@ def get_cardapio(args):
     refeicoes = r.json()
 
     return refeicoes
+
+
+def get_cardapio_unidade_especial_by_api(unidade, inicio, fim):
+    url = api + '/editor/cardapios-unidade-especial/?unidade={}&inicio={}&fim={}'.format(unidade, inicio, fim)
+    r = requests.get(url)
+
+    return r.json()
 
 
 def get_pendencias(request_obj, semana_default=None):

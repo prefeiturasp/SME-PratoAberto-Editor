@@ -6,11 +6,10 @@
 
 from datetime import datetime
 import os
-from pathlib import Path
 import pymongo
-import ue_mongodb as ue
 from openpyxl import Workbook
 from openpyxl.styles import Border, Side, Alignment
+import requests
 
 wrk_idades = []
 wrk_refeicoes = []
@@ -95,6 +94,24 @@ def get_cardapios(unidade, data_de, data_ate, c_status):
     return cursor
 
 
+def get_cardapio_unidade_especial_by_api(unidade, inicio, fim):
+    api = os.environ.get('PRATOABERTO_API')
+    # api = 'http://localhost:8000'
+    url = api + '/editor/cardapios-unidade-especial/?unidade={}&inicio={}&fim={}'.format(unidade, inicio, fim)
+    r = requests.get(url)
+
+    return r.json()
+
+
+def get_unidade_especial_by_id(id_ue):
+    api = os.environ.get('PRATOABERTO_API')
+    # api = 'http://localhost:8000'
+    url = api + '/editor/unidade-especial/{}'.format(id_ue)
+    r = requests.get(url)
+
+    return r.json()
+
+
 def set_cardapio(cardapios, doc_cardapio, doc_idade):
     l_refeicoes = list(doc_cardapio.keys())
     for refeicao in l_refeicoes:
@@ -122,7 +139,7 @@ def save_dia(wb, ws, lin, data_ant, cardapios, xls_file):
     save_xls(wb, xls_file)
 
 
-def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
+def set_planilha(unidade, menu, semana, data_de, data_ate, wb, ws, xls_file):
     semana_de, semana_ate = str(get_num_semana(data_de)), str(get_num_semana(data_ate))
     lista_semanas = [i for i in range(int(semana_de), int(semana_ate) + 1)]
     w_de, w_ate = str(get_num_semana(data_de)), str(get_num_semana(data_ate))
@@ -136,14 +153,15 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
 
     titulo = 'CARDÁPIOS ' + unidade + ' - Período: ' + dta_de + ' até ' + dta_ate + semanas
 
-    num_recs = 0
-    cursor.rewind()
-    doc = cursor.next()
-    cursor.rewind()
+    # num_recs = 0
+    # cursor.rewind()
+    # doc = cursor.next()
+    # cursor.rewind()
 
-    while num_recs <= cursor.count():
+    # while num_recs <= cursor.count():
+    for doc in menu:
         if semana == get_num_semana(doc['data']):
-            l_refeicoes = list(doc[r'cardapio'].keys())
+            l_refeicoes = list(doc['cardapio'].keys())
 
             for refeicao in l_refeicoes:
                 if doc['idade'] not in wrk_idades:
@@ -158,14 +176,14 @@ def set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file):
                 if refeicao not in wrk_cardapios[doc['idade']]:
                     wrk_cardapios[doc['idade']][refeicao] = ''
 
-        num_recs += 1
+        # num_recs += 1
 
-        try:
-            doc = cursor.next()
-        except Exception:
-            num_recs += 1
-            cursor.close()
-    cursor.close()
+    #     try:
+    #         doc = cursor.next()
+    #     except Exception:
+    #         num_recs += 1
+    #         cursor.close()
+    # cursor.close()
 
     # ..Ordena as faixas etárias e nome das refeições encontradas
     idades = sorted(wrk_idades)
@@ -220,18 +238,20 @@ def save_xls(wb, xls_file):
 
 def gera_excel(id_unidade):
     xls_file = None
-    ue_dict = ue.get_unidade(id_unidade)
-    unidade = ue_dict[0]
-    data_de = ue_dict[2]
-    data_ate = ue_dict[3]
+    # ue_dict = ue.get_unidade(id_unidade)
+    ue_dict = get_unidade_especial_by_id(id_unidade)
+    unidade = ue_dict['nome']
+    data_de = ue_dict['data_inicio']
+    data_ate = ue_dict['data_fim']
+
     semana_de = str(get_num_semana(data_de))
     semana_ate = str(get_num_semana(data_ate))
     lista_semanas = [i for i in range(int(semana_de), int(semana_ate) + 1)]
 
-    # TODO BUSCAR NA API O CARDÁRPIO DA INIDADE ESPECIAL
-    cursor = get_cardapios(unidade, data_de, data_ate, 'PUBLICADO')
+    # cursor = get_cardapios(unidade, data_de, data_ate, 'PUBLICADO')
+    menu = get_cardapio_unidade_especial_by_api(id_unidade, data_de, data_ate)
 
-    if cursor.count() == 0:
+    if len(menu) == 0:
         print('Não há cardápios publicados no período {0} a {1} para a unidade {0}.'.format(data_de, data_ate, unidade))
         return False
 
@@ -245,28 +265,32 @@ def gera_excel(id_unidade):
     # ..Cria as planilhas preparadas para receber os cardapios por dia.
     for semana in lista_semanas:
         ws = wb.create_sheet('Semana ' + str(semana))
-        cardapios = set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file)
+        # cardapios = set_planilha(unidade, cursor, semana, data_de, data_ate, wb, ws, xls_file)
+        cardapios = set_planilha(unidade, menu, semana, data_de, data_ate, wb, ws, xls_file)
 
     num_recs = 0
     lin = 4
 
-    cursor.rewind()
-    doc = cursor.next()
-    data_ant = doc['data']
-    semana_ant = get_num_semana(doc['data'])
+    # cursor.rewind()
+    # doc = cursor.next()
+    # data_ant = doc['data']
+    data_ant = menu[0]['data']
+    # semana_ant = get_num_semana(doc['data'])
+    semana_ant = get_num_semana(data_ant)
     ws = wb['Semana ' + str(semana_ant)]
-    cursor.rewind()
+    # cursor.rewind()
 
-    while num_recs < cursor.count():
-        while data_ant == doc['data']:
-            num_recs += 1
-            set_cardapio(cardapios, doc[r'cardapio'], doc[r'idade'])
-            try:
-                doc = cursor.next()
-            except Exception:
-                save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
-                clean_up(wb, xls_file)
-                return False
+    # while num_recs < cursor.count():
+    for doc in menu:
+        # while data_ant == doc['data']:
+        #     num_recs += 1
+        set_cardapio(cardapios, doc[r'cardapio'], doc[r'idade'])
+        # try:
+        #     doc = cursor.next()
+        # except Exception:
+        #     save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
+        #     clean_up(wb, xls_file)
+        #     return -1
 
         save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
 
@@ -285,9 +309,9 @@ def gera_excel(id_unidade):
             for refeicao in l_refeicoes:
                 cardapios[idade][refeicao] = []
 
-    set_cardapio(cardapios, doc[r'cardapio'], doc[r'idade'])
+    set_cardapio(cardapios, doc['cardapio'], doc['idade'])
     save_dia(wb, ws, lin, data_ant, cardapios, xls_file)
-    cursor.close()
+    # cursor.close()
     clean_up(wb, xls_file)
     return xls_file
 
