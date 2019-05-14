@@ -1324,7 +1324,6 @@ def download_speadsheet():
 def dowload_special_unit():
     if request.method == 'POST':
         try:
-
             ue_id = request.form['unit_special']
             xlsx_file = gera_excel(ue_id)
             if xlsx_file:
@@ -1332,10 +1331,10 @@ def dowload_special_unit():
             else:
                 return redirect(request.referrer)
         except UnicodeEncodeError('Erro no unicode do arquivo!'):
-            pass
+            flash('Error no unicode do arquivo!','danger')
+            return redirect(request.referrer)
         except IOError('Error ao tentar escrever no arquivo!'):
-            pass
-        finally:
+            flash('Error ao tentar escrever no arquivo!','danger')
             return redirect(request.referrer)
 
 

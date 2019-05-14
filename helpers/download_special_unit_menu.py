@@ -257,7 +257,7 @@ def gera_excel(id_unidade):
 
     # ..Arquivo xls de saída
     # xls_file = xls_file_path / 'Cardapios_' + unidade + '_' + data_de + '_' + data_ate + '.xlsx'
-    xls_file = '{}/{}_{}_{}_{}.xlsx'.format(xls_file_path, 'Cardapios_', unidade, data_de, data_ate)
+    xls_file = '{}/{}_{}_{}.xlsx'.format(xls_file_path, 'CARDAPIOS_', 'UNIDADE_ESPECIAL_', id_unidade)
 
     wb = Workbook()
     cardapios = {}
