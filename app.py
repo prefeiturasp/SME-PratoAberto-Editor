@@ -182,6 +182,25 @@ def publicados():
                            unidades_especiais=ue_dict)
 
 
+@app.route("/pendencias_unidades_especiais", methods=["GET"])
+@flask_login.login_required
+def cardapios_unidades_especiais():
+    semanas_unidades_especiais = sorted(get_semanas_unidades_especiais(), reverse=True)
+    semanas = format_datetime_array(semanas_unidades_especiais)
+    default_week = semanas[0] if len(semanas) else current_week()
+    published_menus = sort_array_date_br(get_cardapios_unidades_especiais(request_obj=request,
+        semana_default=default_week))
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
+    return render_template("pendencias_unidades_especiais.html",
+                           published_menus=published_menus,
+                           week_ranges=semanas,
+                           default_week=default_week,
+                           unidades_especiais=ue_dict)
+
+
 @app.route("/edicao_de_notas", methods=["GET", "POST"])
 @flask_login.login_required
 def edicao_de_notas():
@@ -1446,6 +1465,24 @@ def get_semanas_pendentes():
     return [min(s) + ' - ' + max(s) for s in semanas.values()]
 
 
+def get_semanas_unidades_especiais():
+    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO' +\
+          '&agrupamento=UE'
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    # Formatar as chaves
+    semanas = {}
+    for refeicao in refeicoes:
+        _key_semana = data_semana_format(refeicao['data'])
+        if _key_semana in semanas.keys():
+            semanas[_key_semana].append(refeicao['data'])
+        else:
+            semanas[_key_semana] = [refeicao['data']]
+
+    return [min(s) + ' - ' + max(s) for s in semanas.values()]
+
+
 def get_deletados():
     url = api + '/editor/cardapios?status=DELETADO'
     r = requests.get(url)
@@ -1560,6 +1597,88 @@ def get_publicados(request_obj, default_week):
 
     pendentes.sort()
     pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
+    return pendentes
+
+
+def get_cardapios_unidades_especiais(request_obj, semana_default=None):
+    params = request_obj.query_string.decode('utf-8')
+    if 'filtro_semana' in params:
+        week_filter = request_obj.args.get('filtro_semana')
+        initial_date = datetime.datetime.strptime(week_filter.split(' - ')[0], '%d/%m/%Y').strftime('%Y%m%d')
+        end_date = datetime.datetime.strptime(week_filter.split(' - ')[1], '%d/%m/%Y').strftime('%Y%m%d')
+        dates_str = '&data_inicial=' + initial_date + '&data_final=' + end_date
+        params += dates_str
+    else:
+        params += '&data_inicial=' + semana_default.split(' - ')[0] + '&data_final=' + semana_default.split(' - ')[1]
+    if 'status' not in params:
+        params += '&status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO'
+    elif 'status=TODOS' in params:
+        params = params.replace('status=TODOS', 'status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO')
+    url = api + '/editor/cardapios-unidades-especiais?' + params
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    unidades_especiais = get_unidades_especiais()
+
+    # Formatar as chaves
+    semanas = {}
+    for refeicao in refeicoes:
+        _key_semana = data_semana_format(refeicao['data'])
+        if _key_semana in semanas.keys():
+            semanas[_key_semana].append(refeicao['data'])
+        else:
+            semanas[_key_semana] = [refeicao['data']]
+
+    pendentes = []
+    _ids = collections.defaultdict(list)
+    for refeicao in refeicoes:
+        escolas = []
+        params_escola = {'limit': 4000}
+        agrupamento = request.args.get('agrupamento', None)
+        if agrupamento and agrupamento != 'TODOS':
+            params_escola.update({'agrupamento': agrupamento})
+        tipo_atendimento = request.args.get('tipo_atendimento', None)
+        if tipo_atendimento and tipo_atendimento != 'TODOS':
+            params_escola.update({'tipo_atendimento': tipo_atendimento})
+        tipo_unidade = request.args.get('tipo_unidade', None)
+        if tipo_unidade and tipo_unidade != 'TODOS':
+            params_escola.update({'tipo_unidade': tipo_unidade})
+        for unidade_especial in unidades_especiais:
+            if refeicao['tipo_unidade'] == unidade_especial['nome']:
+                escolas_api = get_escolas(params_escola)[0]
+                ids = [_id['_id'] for _id in escolas_api]
+                escolas = ', '.join(escola for escola in unidade_especial['escolas'] if int(escola) in ids)
+        agrupamento = str(refeicao['agrupamento'])
+        tipo_unidade = refeicao['tipo_unidade']
+        tipo_atendimento = refeicao['tipo_atendimento']
+        status = refeicao['status']
+        idade = refeicao['idade']
+        _key_semana = data_semana_format(refeicao['data'])
+        _key = frozenset([agrupamento, tipo_unidade, tipo_atendimento, status, idade, _key_semana])
+        _ids[_key].append(refeicao['_id']['$oid'])
+        data_inicial = min(semanas[_key_semana])
+        data_final = max(semanas[_key_semana])
+
+        _args = (tipo_atendimento, tipo_unidade, agrupamento, idade, status, data_inicial, data_final)
+        query_str = 'tipo_atendimento={}&tipo_unidade={}&agrupamento={}&idade={}&status={}&data_inicial={}&data_final={}'
+        href = query_str.format(*_args)
+
+        pendentes.append(
+            #[tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
+            [tipo_unidade, escolas, '', idade, data_inicial, data_final, status, href, _key_semana])
+
+    pendentes.sort()
+    pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
+
+    for pendente in pendentes:
+        _key = frozenset([pendente[2],
+                          pendente[1],
+                          pendente[0],
+                          pendente[6],
+                          pendente[3],
+                          pendente[8]])
+        pendente.append(','.join(_ids[_key]))
+
     return pendentes
 
 

@@ -114,20 +114,20 @@
     <!-- Informações do agrupamento -->
     <div class="row">
         <div class="col-12" style="text-align: left">
-            <a href="/pendencias_unidades_especiais" class="col-md-3 btn btn-lg btn-info">Cardápios Unidades Especiais</a>
+            <a href="/pendencias_unidades_especiais" class="col-md-3 btn btn-lg btn-default disabled">Cardápios Unidades Especiais</a>
         </div>
     </div>
     <div class="row">
         <div class="col-12">
             <a href="/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios Pendentes</a>
-            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios
+            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-success">Cardápios
                 Publicados</a>
             <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios
                 Deletados</a>
         </div>
     </div>
     <div class="panel panel-default" style="margin-top: 30px;">
-        <form method="get" action="/pendencias_publicadas">
+        <form method="get" action="/pendencias_unidades_especiais">
             <div class="row" style="margin-top: 15px">
                  <div class="col-sm-3 col-xs-12">
                     <label for="tipo_atendimento">Tipo de gestão</label>
@@ -145,7 +145,7 @@
                          <option value="TODOS">TODOS</option>
                          <option {% if request.args.get('tipo_unidade') == 'CCI' %} selected {% endif %}>CCI</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEI_MUNICIPAL' %} selected {% endif %}>CEI_MUNICIPAL</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO_(RP)' %} selected {% endif %}>CEI_PARCEIRO_(RP)</option>
+                         <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO' %} selected {% endif %}>CEI_PARCEIRO</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEMEI' %} selected {% endif %}>CEMEI</option>
                          <option {% if request.args.get('tipo_unidade') == 'CEU_GESTÃO' %} selected {% endif %}>CEU_GESTÃO</option>
                          <option {% if request.args.get('tipo_unidade') == 'CIEJA' %} selected {% endif %}>CIEJA</option>
@@ -207,24 +207,26 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-sm-3 col-xs-12 dropdown">
-                    <label> Selecione a extensão das datas:</label>
-                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
-                        {% for period_range in period_ranges.keys() %}
-                            <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if request.args.get('filtro_periodo') == period_ranges[period_range] %} selected {% endif %}></option>
-                        {% endfor %}
+                <div class="col-sm-3 col-xs-12">
+                    <label class="control-label">Status</label>
+                    <select value="{{ request.args.get('status') }}" name="status" class="form-control">
+                         <option>TODOS</option>
+                         <option {% if request.args.get('status') == 'PENDENTE' %} selected {% endif %}>PENDENTE</option>
+                         <option {% if request.args.get('status') == 'SALVO' %} selected {% endif %}>SALVO</option>
+                         <option {% if request.args.get('status') == 'A_CONFERIR' %} selected {% endif %}>A_CONFERIR</option>
+                         <option {% if request.args.get('status') == 'CONFERIDO' %} selected {% endif %}>CONFERIDO</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
-                    <label> Selecione a data:</label>
-                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana_mes') }}" class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
-                        {% for week_range in week_ranges %}
-                            <option {% if request.args.get('filtro_semana_mes') == week_range or (not request.args.get('filtro_semana_mes') and default_week == week_range) %} selected {% endif %}>{{ week_range }}</option>
+                    <label> Selecione a semana:</label>
+                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana') }}" class="form-control input" id="filtro_semana" name="filtro_semana">
+                        {% for semana in week_ranges: %}
+                            <option {% if request.args.get('filtro_semana') == semana %} selected {% endif %}>{{ semana }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12" style="padding-top: 25px">
-                    <a href="/pendencias_publicadas?{{current_date}}">
+                    <a href="/pendencias_publicacoes">
                         <button type="button" class="col-sm-5 btn btn-default">LIMPAR</button>
                         <button type="submit" class="col-sm-5 pull-right btn btn-success">FILTRAR</button>
                     </a>
@@ -251,16 +253,9 @@
                 <table class="table table-hover table-striped" id="task-table">
                     <thead>
                     <tr>
-
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                            GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
                         <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                            ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                            AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">UNIDADE ESPECIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
+                        <th style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLAS</th>
                         <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
                             style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
                             <i class="fa fa-sort" aria-hidden="true"></i></th>
@@ -281,9 +276,8 @@
                         <tr class="item" style="display: none;">
                             <td class="ids" style="display: none;">{{ published_menu[10] }}</td>
                             <td class="semana" style="display: none;">{{ published_menu[8] }}</td>
-                            <td class="tipo_gestao">{{ published_menu[0] }}</td>
-                            <td class="tipo_escola">{{ published_menu[1] }}</td>
-                            <td class="agrupamento">{{ published_menu[2] }}</td>
+                            <td class="tipo_escola">{{ published_menu[0] }}</td>
+                            <td class="escolas">{{ published_menu[1] }}</td>
                             <td class="idade">{{ published_menu[3] }}</td>
                             <td class="data_inicial">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
                             <td class="data_final">{{ published_menu[9] }}</td>
