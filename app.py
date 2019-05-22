@@ -23,7 +23,7 @@ import db_setup
 
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   format_datetime_array, yyyymmdd_to_date_time)
+                   format_datetime_array, yyyymmdd_to_date_time, convert_datetime_format)
 from helpers import download_spreadsheet
 from ue_mongodb import get_unidade
 from helpers.download_special_unit_menu import gera_excel
@@ -1357,10 +1357,14 @@ def dowload_special_unit():
             return redirect(request.referrer)
 
 
-
 @app.context_processor
 def get_all_special_unit():
-    ue_dict = [{'id': ue['_id']['$oid'], 'label': ue['nome']} for ue in get_unidades_especiais()]
+    ue_dict = [{'id': ue['_id']['$oid'],
+                'label': ue['nome'],
+                'range': convert_datetime_format(ue['data_inicio'], '%Y%m%d', '%d/%m/%Y') +
+                         ' - ' +
+                         convert_datetime_format(ue['data_fim'], '%Y%m%d', '%d/%m/%Y')}
+               for ue in get_unidades_especiais()]
     return dict(ue_dict=ue_dict)
 
 

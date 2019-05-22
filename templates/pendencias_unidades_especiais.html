@@ -114,7 +114,7 @@
     <!-- Informações do agrupamento -->
     <div class="row">
         <div class="col-12" style="text-align: left">
-            <a href="/pendencias_unidades_especiais" class="col-md-3 btn btn-lg btn-default disabled">Cardápios Unidades Especiais</a>
+            <a href="/pendencias_unidades_especiais" class="col-md-4 btn btn-lg btn-default disabled">Histórico de Cardápios Unidades Especiais</a>
         </div>
     </div>
     <div class="row">
@@ -215,6 +215,7 @@
                          <option {% if request.args.get('status') == 'SALVO' %} selected {% endif %}>SALVO</option>
                          <option {% if request.args.get('status') == 'A_CONFERIR' %} selected {% endif %}>A_CONFERIR</option>
                          <option {% if request.args.get('status') == 'CONFERIDO' %} selected {% endif %}>CONFERIDO</option>
+                         <option {% if request.args.get('status') == 'PUBLICADO' %} selected {% endif %}>PUBLICADO</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
@@ -287,9 +288,6 @@
                                     href="/visualizador_cardapio?{{ published_menu[7] }}">
                                     <i class="fas fa-clipboard-list fa-lg" aria-hidden="true"></i>
                                 </a>
-                                <button title="Mover para Pendentes" style="margin-left: 10px" class="btn btn-default pendente" value="PENDENTE">
-                                    <i class="fas fa-paste fa-lg" aria-hidden="true"></i></a>
-                                </button>
                             </td>
                             <td class="semana_inter" style="display: none;">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
                         </tr>

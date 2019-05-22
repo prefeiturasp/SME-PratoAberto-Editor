@@ -13,7 +13,7 @@
                         <div class="col-sm-6">
                             <select name="unit_special" class="form-control">
                                 {% for ue in ue_dict %}
-                                    <option value="{{ ue.id }}">{{ ue.label }}</option>
+                                    <option value="{{ ue.id }}">{{ ue.label }} ({{ ue.range }})</option>
                                 {% endfor %}
                             </select>
                         </div>
