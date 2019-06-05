@@ -9,6 +9,7 @@ XLSX_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '
 DATA_GERACAO = str(datetime.now()).replace(' ', '_').replace(':', '_').replace('.', '_')
 bd = Side(style='thin', color="000000")
 BORDER = Border(left=bd, top=bd, right=bd, bottom=bd)
+ALIGNMENT = Alignment(horizontal='center', vertical='center')
 ORDENS_REFEICOES = {
     "D - DESJEJUM": "Desjejum",
     "C - COLACAO": "Colação",
@@ -35,7 +36,7 @@ ORDENS_REFEICOES = {
 class GeradorExcelCardapioUE(object):
 
     def __init__(self, id_unidade_especial):
-        # self.api = os.environ.get('PRATOABERTO_API')
+        self.api = os.environ.get('PRATOABERTO_API')
         self.api = 'http://localhost:8000'
         self.id_unidade_especial = id_unidade_especial
         self.data_inicio = None
@@ -99,7 +100,10 @@ class GeradorExcelCardapioUE(object):
         return self._ordernar_categorias(list(cardapio_list[0]))
 
     def _get_datas_cardapios(self, semana):
-        return [cardapio.get('data') for cardapio in self.cardapios if cardapio.get('semana') == semana]
+        datas_lista = []
+        [datas_lista.append(cardapio.get('data')) for cardapio in self.cardapios if
+         cardapio.get('semana') == semana and (cardapio.get('data') not in datas_lista)]
+        return datas_lista
 
     def _criar_estrutura_planilha(self):
         workbook = Workbook()
@@ -110,17 +114,54 @@ class GeradorExcelCardapioUE(object):
             aba_planilha = workbook.create_sheet('Semana {}'.format(semana), contador_coluna)
             contador_coluna += 1
             faixa_etarias = self._get_faixas_etarias_by_semana(semana)
-            categorias = self._get_categorias_by_faixa_etaria(semana, faixa_etarias)
+            categorias_faixas_dict = self._get_categorias_by_faixa_etaria_dict(semana, faixa_etarias)
             datas_cardapio = self._get_datas_cardapios(semana)
             self._criar_titulos(aba_planilha, semanas, titulo_polo)
-            self._criar_faixa_etarias(faixa_etarias, aba_planilha)
-            self._cria_categorias_cardapio(categorias, aba_planilha)
+            self._criar_faixa_etaria_com_categoria(categorias_faixas_dict, aba_planilha)
             self._criar_datas_cardapio(datas_cardapio, aba_planilha)
-            for faixa in faixa_etarias:
-                self._get_refeicoes_cardapio_by_faixa_categoria_data_semana(semana, faixa, categorias,
-                                                                            datas_cardapio, aba_planilha)
+            self._criar_refeicoes_cardapios(semana, categorias_faixas_dict, datas_cardapio, aba_planilha)
+            # for faixa in faixa_etarias:
+            #     self._get_refeicoes_cardapio_by_faixa_categoria_data_semana(semana, faixa, categorias_faixas_dict,
+            #                                                                 datas_cardapio, aba_planilha)
+            # exit()
+            # categorias = self._get_categorias_by_faixa_etaria(semana, faixa_etarias)
+            # self._criar_faixa_etarias(faixa_etarias, aba_planilha)
+            # self._cria_categorias_cardapio(categorias, aba_planilha)
         arquivo_excel = '{}/CARDAPIOS_UNIDADE_ESPCIAL_{}.xlsx'.format(XLSX_FILE_PATH, DATA_GERACAO)
         workbook.save(arquivo_excel)
+        # return arquivo_excel
+
+    def _criar_refeicoes_cardapios(self, semana, categorias_faixas_dict, datas_cardapio, aba_planilha):
+        posicao_linha_inicial = 4
+        posicisao_coluna_inicial = 2
+        for faixa, values in categorias_faixas_dict.items():
+            quantidade_categoria = len(values)
+            for data_cardapio in datas_cardapio:
+                for categoria in values:
+                    refeicao = self.get_refeicao_by_categoria(faixa, data_cardapio, categoria, semana)
+                    self.adicionando_refeicao_planilha(refeicao, posicao_linha_inicial, posicisao_coluna_inicial,
+                                                       aba_planilha)
+                    posicisao_coluna_inicial += 1
+                posicao_linha_inicial += 1
+                posicisao_coluna_inicial = 2
+                # TODO melhorar na hora de mudar de coluna
+            posicisao_coluna_inicial = quantidade_categoria + 2
+            posicao_linha_inicial = 2
+
+    def adicionando_refeicao_planilha(self, refeicao, linha, coluna, aba_planilha):
+        celula_refeicao = aba_planilha.cell(row=linha, column=coluna)
+        celula_refeicao.value = ', '.join(refeicao)
+        celula_refeicao.alignment = ALIGNMENT
+        celula_refeicao.border = BORDER
+
+
+    def get_refeicao_by_categoria(self, faixa, data, categoria, semana):
+        for cardapio in self.cardapios:
+            if cardapio.get('data') == data and cardapio.get('faixa') == faixa and cardapio.get('semana') == semana:
+                for categ, refeicao in cardapio.get('cardapio').items():
+                    if categ == categoria:
+                        return refeicao
+        return []
 
     def _criar_titulos(self, aba_planilha, semanas, titulo_polo):
         data_inicio_formatada = self._converte_str_to_date(self.data_inicio, format='%d/%m/%Y')
@@ -145,8 +186,9 @@ class GeradorExcelCardapioUE(object):
         comeco_coluna = 2
         final_coluna = 5
         for faixa in faixa_etaria:
+            # TODO CRIAR METODO PARA ESCREVER NO XLSX
             aba_planilha.merge_cells(start_row=2, end_row=2, start_column=comeco_coluna, end_column=final_coluna)
-            linha_faixa = aba_planilha.cell(row=2, column=coluna_faixas_etaria)
+            linha_faixa = aba_planilha.cell(row=2, column=comeco_coluna)
             linha_faixa.value = faixa
             linha_faixa.alignment = Alignment(horizontal='center', vertical='center')
             linha_faixa.border = BORDER
@@ -173,6 +215,7 @@ class GeradorExcelCardapioUE(object):
             coluna_dias.alignment = Alignment(horizontal='center', vertical='center')
             contador_linha += 1
 
+    # TODO REMOVER ESTE MÉTODO DECREPETADO
     def _get_refeicoes_cardapio_by_faixa_categoria_data_semana(self, semana, faixa_etaria, categorias,
                                                                datas_cardapio, aba_planilha):
         quantidade_categorias = 0
@@ -186,7 +229,6 @@ class GeradorExcelCardapioUE(object):
                                   categoria in cardapio.get('cardapio').keys()]
             quantidade_categorias += 1
         cardapio_planilha = self._ordena_dicionario_cardapio(cardapio_categoria)
-
         contador_linha = 0
         posicao_coluna = 2
         posicao_linha = 3
@@ -258,15 +300,47 @@ class GeradorExcelCardapioUE(object):
         self.data_inicio = unidade_especial['data_inicio']
         self.data_final = unidade_especial['data_fim']
         self.cardapios = self._get_cardapio_unidade_especial()
-        self._criar_estrutura_planilha()
+        if len(self.cardapios):
+            return self._criar_estrutura_planilha()
+        return False
 
     def _ordernar_categorias(self, refeicoes_desord):
         ordenado = []
         [ordenado.append(key) for key, value in ORDENS_REFEICOES.items() if key in refeicoes_desord]
         return ordenado
 
+    def _get_categorias_by_faixa_etaria_dict(self, semana, faixa_etarias):
+        categoria_dict = {}
+        for faixa in faixa_etarias:
+            categoria_dict[faixa] = []
+            for cardapio in self.cardapios:
+                if cardapio.get('semana') == semana and cardapio.get('faixa') == faixa:
+                    categoria_dict[faixa] = self._ordernar_categorias(cardapio.get('cardapio').keys())
+        return categoria_dict
+
+    def _criar_faixa_etaria_com_categoria(self, categorias_faixas_dict, aba_planilha):
+        coluna_inicial_faixa = 2
+        coluna_inicial_categoria = 2
+        for key, values in categorias_faixas_dict.items():
+            if coluna_inicial_faixa > 2:
+                coluna_final = (coluna_inicial_faixa + len(values) - 1)
+            else:
+                coluna_final = len(values) + 1
+            # GERANDO AS LINHA E COLUNAS NO EXCEL
+            # TODO CRIAR MÉTODO PARA DIMINUIR LINHAS DE CÓDIGO
+            aba_planilha.merge_cells(start_row=2, end_row=2, start_column=coluna_inicial_faixa, end_column=coluna_final)
+            linha_faixa = aba_planilha.cell(row=2, column=coluna_inicial_faixa)
+            linha_faixa.value = str(key)
+            linha_faixa.alignment = ALIGNMENT
+            linha_faixa.border = BORDER
+            for categoria in values:
+                linha_categoria = aba_planilha.cell(row=3, column=coluna_inicial_categoria)
+                linha_categoria.value = categoria
+                linha_categoria.alignment = ALIGNMENT
+                linha_categoria.border = BORDER
+                coluna_inicial_categoria += 1
+            coluna_inicial_faixa = coluna_inicial_categoria
+
 
 if __name__ == '__main__':
-    id_ue = '5cf007848a689b00071cb4be'
-    gerador = GeradorExcelCardapioUE(id_ue)
-    gerador.produzir_excel()
+    GeradorExcelCardapioUE('5cf7fe984bae020007adc1c7').produzir_excel()

@@ -20,6 +20,7 @@ import cardapio_xml_para_dict
 import cardapios_terceirizadas
 import db_functions
 import db_setup
+from helpers.gerador_excel_cardapio_ue import GeradorExcelCardapioUE
 
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
@@ -189,7 +190,7 @@ def cardapios_unidades_especiais():
     semanas = format_datetime_array(semanas_unidades_especiais)
     default_week = semanas[0] if len(semanas) else current_week()
     published_menus = sort_array_date_br(get_cardapios_unidades_especiais(request_obj=request,
-        semana_default=default_week))
+                                                                          semana_default=default_week))
     unidades_especiais = get_unidades_especiais()
     ue_dict = ['NENHUMA']
     if len(unidades_especiais):
@@ -1344,16 +1345,18 @@ def dowload_special_unit():
     if request.method == 'POST':
         try:
             ue_id = request.form['unit_special']
-            xlsx_file = gera_excel(ue_id)
+
+            xlsx_file = GeradorExcelCardapioUE(ue_id).produzir_excel()
             if xlsx_file:
                 return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
             else:
+                flash('Nenhum cardápio encontrado!', 'danger')
                 return redirect(request.referrer)
         except UnicodeEncodeError('Erro no unicode do arquivo!'):
-            flash('Error no unicode do arquivo!','danger')
+            flash('Error no unicode do arquivo!', 'danger')
             return redirect(request.referrer)
         except IOError('Error ao tentar escrever no arquivo!'):
-            flash('Error ao tentar escrever no arquivo!','danger')
+            flash('Error ao tentar escrever no arquivo!', 'danger')
             return redirect(request.referrer)
 
 
@@ -1470,7 +1473,7 @@ def get_semanas_pendentes():
 
 
 def get_semanas_unidades_especiais():
-    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO' +\
+    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO' + \
           '&agrupamento=UE'
     r = requests.get(url)
     refeicoes = r.json()
@@ -1617,7 +1620,8 @@ def get_cardapios_unidades_especiais(request_obj, semana_default=None):
     if 'status' not in params:
         params += '&status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO'
     elif 'status=TODOS' in params:
-        params = params.replace('status=TODOS', 'status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO')
+        params = params.replace('status=TODOS',
+                                'status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO')
     url = api + '/editor/cardapios-unidades-especiais?' + params
     r = requests.get(url)
     refeicoes = r.json()
@@ -1668,7 +1672,7 @@ def get_cardapios_unidades_especiais(request_obj, semana_default=None):
         href = query_str.format(*_args)
 
         pendentes.append(
-            #[tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
+            # [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
             [tipo_unidade, escolas, '', idade, data_inicial, data_final, status, href, _key_semana])
 
     pendentes.sort()
