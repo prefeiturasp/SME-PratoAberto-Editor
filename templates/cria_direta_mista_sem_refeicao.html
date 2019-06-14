@@ -422,9 +422,12 @@
 <script>
     function adicionaData() {
         var DATA = document.getElementById("data").value;
-        $('#lista-datas').append(
-            "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
-        );
+        if (DATA === 'Data')
+            alert("Selecione uma data")
+        else
+            $('#lista-datas').append(
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
+            );
     };
 </script>
 
