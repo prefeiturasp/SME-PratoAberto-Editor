@@ -1,14 +1,13 @@
 import collections
 import datetime
-import dateutil.parser
+import itertools
 import json
 import os
 from operator import itemgetter
 
+import dateutil.parser
 import flask_login
-import itertools
 import requests
-import constants
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
@@ -16,24 +15,25 @@ from wtforms import (Form, StringField, validators, SelectField,
                      SelectMultipleField, FloatField, IntegerField, TextAreaField)
 from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
+
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
+import constants
 import db_functions
 import db_setup
+from helpers import download_spreadsheet
 from helpers.gerador_excel_cardapio_ue import GeradorExcelCardapioUE
-
+from ue_mongodb import get_unidade
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array, yyyymmdd_to_date_time, convert_datetime_format)
-from helpers import download_spreadsheet
-from ue_mongodb import get_unidade
-from helpers.download_special_unit_menu import gera_excel
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
+raiz = os.environ.get('RAIZ', 'editor')
 # api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
@@ -78,7 +78,7 @@ def request_loader(request):
     return user
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -95,7 +95,7 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout')
+@app.route(f'/{raiz}/logout')
 @flask_login.login_required
 def logout():
     flask_login.logout_user()
@@ -108,7 +108,7 @@ def unauthorized_handler():
 
 
 # BLOCO DE QUEBRA CARDÁPIOS
-@app.route("/pendencias_publicacoes", methods=["GET", "POST"])
+@app.route(f"/{raiz}/pendencias_publicacoes", methods=["GET", "POST"])
 @flask_login.login_required
 def backlog():
     semanas_pendentes = sorted(get_semanas_pendentes(), reverse=True)
@@ -126,7 +126,7 @@ def backlog():
                            unidades_especiais=ue_dict)
 
 
-@app.route("/pendencias_deletadas", methods=["GET", "POST"])
+@app.route(f"/{raiz}/pendencias_deletadas", methods=["GET", "POST"])
 @flask_login.login_required
 def deletados():
     if request.method == "GET":
@@ -144,7 +144,7 @@ def deletados():
                                semanas=semanas)
 
 
-@app.route("/pendencias_publicadas", methods=["GET"])
+@app.route(f"/{raiz}/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
     weeks = reversed(generate_ranges())
@@ -183,7 +183,7 @@ def publicados():
                            unidades_especiais=ue_dict)
 
 
-@app.route("/pendencias_unidades_especiais", methods=["GET"])
+@app.route(f"/{raiz}/pendencias_unidades_especiais", methods=["GET"])
 @flask_login.login_required
 def cardapios_unidades_especiais():
     semanas_unidades_especiais = sorted(get_semanas_unidades_especiais(), reverse=True)
@@ -202,7 +202,7 @@ def cardapios_unidades_especiais():
                            unidades_especiais=ue_dict)
 
 
-@app.route("/edicao_de_notas", methods=["GET", "POST"])
+@app.route(f"/{raiz}/edicao_de_notas", methods=["GET", "POST"])
 @flask_login.login_required
 def edicao_de_notas():
     if request.method == 'GET':
@@ -218,7 +218,7 @@ def edicao_de_notas():
 
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
-@app.route('/upload', methods=['POST'])
+@app.route(f'/{raiz}/upload', methods=['POST'])
 @flask_login.login_required
 def upload_file():
     if 'file' not in request.files:
@@ -287,7 +287,7 @@ def upload_file():
                                json_dump=json_dump)
 
 
-@app.route('/upload_terceirizada', methods=['POST'])
+@app.route(f'/{raiz}/upload_terceirizada', methods=['POST'])
 @flask_login.login_required
 def upload_terceirizadas():
     headers = {'Content-type': 'application/json'}
@@ -361,7 +361,7 @@ def upload_terceirizadas():
         return ('', 200)
 
 
-@app.route('/atualiza_cardapio', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_cardapio', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio():
     """Colocar o campode ultima modificação aqui..."""
@@ -378,7 +378,7 @@ def atualiza_cardapio():
 
 
 # BLOCO DE EDIÇÃO DOS CARDÁPIOS
-@app.route('/atualiza_cardapio2', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_cardapio2', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio2():
     """Usado somente para alterar os status dos cardapios"""
@@ -394,7 +394,7 @@ def atualiza_cardapio2():
         return ('', 200)
 
 
-@app.route("/calendario", methods=["GET"])
+@app.route(f"/{raiz}/calendario", methods=["GET"])
 @flask_login.login_required
 def calendario():
     """
@@ -512,7 +512,7 @@ def calendario():
 
 
 # comments = []
-@app.route('/cria_terceirizada', methods=['GET'])
+@app.route(f'/{raiz}/cria_terceirizada', methods=['GET'])
 @flask_login.login_required
 def cria_terceirizada():
     if request.method == "GET":
@@ -530,7 +530,7 @@ def cria_terceirizada():
                                referrer=request.referrer)
 
 
-@app.route('/criar-direta-mista-sem-refeicao')
+@app.route(f'/{raiz}/criar-direta-mista-sem-refeicao')
 @flask_login.login_required
 def cria_direta_mista_sem_refeicao():
     if request.method == "GET":
@@ -552,7 +552,7 @@ def cria_direta_mista_sem_refeicao():
                                referrer=request.referrer)
 
 
-@app.route('/criar-unidade-especial')
+@app.route(f'/{raiz}/criar-unidade-especial')
 @flask_login.login_required
 def cria_unidade_especial():
     if request.method == "GET":
@@ -577,7 +577,7 @@ def cria_unidade_especial():
                                referrer=request.referrer)
 
 
-@app.route("/visualizador_cardapio", methods=["GET"])
+@app.route(f"/{raiz}/visualizador_cardapio", methods=["GET"])
 @flask_login.login_required
 def visualizador():
     args = request.args
@@ -616,7 +616,7 @@ def visualizador():
                            referrer=referrer)
 
 
-@app.route("/calendario_editor_grupo", methods=["POST"])
+@app.route(f"/{raiz}/calendario_editor_grupo", methods=["POST"])
 @flask_login.login_required
 def calendario_grupo_cardapio():
     data = request.form.get('json_dump', request.data)
@@ -716,7 +716,7 @@ def calendario_grupo_cardapio():
 
 
 # BLOCO DE CONFIGURAÇÕES
-@app.route("/configuracoes_gerais", methods=['GET', 'POST'])
+@app.route(f"/{raiz}/configuracoes_gerais", methods=['GET', 'POST'])
 @flask_login.login_required
 def config():
     if request.method == "GET":
@@ -724,7 +724,7 @@ def config():
         return render_template("configurações.html", config=config_editor, referrer=request.referrer)
 
 
-@app.route('/atualiza_configuracoes', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_configuracoes', methods=['POST'])
 @flask_login.login_required
 def atualiza_configuracoes():
     headers = {'Content-type': 'application/json'}
@@ -746,7 +746,7 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = CheckboxInput()
 
 
-@app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
+@app.route(f"/{raiz}/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
     referrer = '/pendencias_publicacoes'
@@ -762,7 +762,7 @@ def config_cardapio():
         return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
 
 
-@app.route("/configuracoes_cardapio_unidades_especiais", methods=['GET', 'POST'])
+@app.route(f"/{raiz}/configuracoes_cardapio_unidades_especiais", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio_unidades_especiais():
     referrer = '/pendencias_publicacoes'
@@ -780,7 +780,7 @@ def config_cardapio_unidades_especiais():
                                form=form)
 
 
-@app.route('/remove-lista-terceirizada/<id>')
+@app.route(f'/{raiz}/remove-lista-terceirizada/<id>')
 def remove_menu_list(id):
     removed = db_functions.del_receitas_terceirizadas(id)
     return app.response_class(
@@ -790,7 +790,7 @@ def remove_menu_list(id):
     )
 
 
-@app.route('/atualiza_receitas', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_receitas', methods=['POST'])
 @flask_login.login_required
 def atualiza_config_cardapio():
     form = OutSourcedMenuForm(request.form)
@@ -844,7 +844,7 @@ class SchoolRegistrationForm(Form):
     ages = MultiCheckboxField('Idades', choices=constants.AGES_DICT)
 
 
-@app.route('/autocomplete', methods=['GET'])
+@app.route(f'/{raiz}/autocomplete', methods=['GET'])
 def autocomplete():
     schools, _ = get_escolas(limit='4000')
     schools_array = []
@@ -853,8 +853,8 @@ def autocomplete():
     return Response(json.dumps(schools_array), mimetype='application/json')
 
 
-@app.route('/unidades_especiais/<id_unidade_especial>', methods=['GET', 'POST'])
-@app.route('/unidades_especiais', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/unidades_especiais/<id_unidade_especial>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/unidades_especiais', methods=['GET', 'POST'])
 @flask_login.login_required
 def unidades_especiais(id_unidade_especial=None):
     form = SpecialUnitForm(request.form)
@@ -886,7 +886,7 @@ def unidades_especiais(id_unidade_especial=None):
                            referrer=session['refer'], form=form, special_units=get_unidades_especiais())
 
 
-@app.route('/adicionar_unidade_especial', methods=['POST'])
+@app.route(f'/{raiz}/adicionar_unidade_especial', methods=['POST'])
 @flask_login.login_required
 def adicionar_unidade_especial():
     form = SpecialUnitForm(request.form)
@@ -909,7 +909,7 @@ def adicionar_unidade_especial():
     return redirect('unidades_especiais', code=302)
 
 
-@app.route('/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
+@app.route(f'/{raiz}/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
 @flask_login.login_required
 def excluir_unidade_especial(id_unidade_especial):
     headers = {'Content-type': 'application/json'}
@@ -918,8 +918,8 @@ def excluir_unidade_especial(id_unidade_especial):
     return ('', 200)
 
 
-@app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
-@app.route('/escolas', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/escolas/<int:id_escola>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
 def escolas(id_escola=None):
     form = SchoolRegistrationForm(request.form)
@@ -948,7 +948,7 @@ def escolas(id_escola=None):
                            pagination=pagination, referrer=session['refer'], form=form)
 
 
-@app.route('/adicionar_escola', methods=['POST'])
+@app.route(f'/{raiz}/adicionar_escola', methods=['POST'])
 @flask_login.login_required
 def adicionar_escola():
     form = SchoolRegistrationForm(request.form)
@@ -984,7 +984,7 @@ def adicionar_escola():
     return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
-@app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
+@app.route(f'/{raiz}/excluir_escola/<int:id_escola>', methods=['DELETE'])
 @flask_login.login_required
 def excluir_escola(id_escola):
     headers = {'Content-type': 'application/json'}
@@ -995,7 +995,7 @@ def excluir_escola(id_escola):
     return ('', 200)
 
 
-@app.route('/atualiza_historico_escolas', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
 def atualiza_historico_escolas():
     data = request.form.get('json_dump', request.data)
@@ -1132,7 +1132,7 @@ def atualiza_historico_escolas():
 
 
 # BLOCO DE DOWNLOAD DAS PUBLICAÇÕES
-@app.route("/download_publicacao", methods=["GET", "POST"])
+@app.route(f"/{raiz}/download_publicacao", methods=["GET", "POST"])
 @flask_login.login_required
 def publicacao():
     opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
@@ -1197,7 +1197,7 @@ def publicacao():
                                    inicio=data_inicial, fim=data_final, status=opt_status, selected=filtro)
 
 
-@app.route('/download_csv', methods=['POST'])
+@app.route(f'/{raiz}/download_csv', methods=['POST'])
 @flask_login.login_required
 def download_csv():
     data_inicio_fim_str = request.form.get('datas', request.data)
@@ -1244,7 +1244,7 @@ def download_csv():
 
 
 # BLOCO MAPA DE PENDENCIAS
-@app.route('/mapa_pendencias', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/mapa_pendencias', methods=['GET', 'POST'])
 @flask_login.login_required
 def mapa_pendencias():
     if request.method == "GET":
@@ -1312,7 +1312,7 @@ def mapa_pendencias():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
 
 
-@app.route('/remove-cardapio', methods=['DELETE'])
+@app.route(f'/{raiz}/remove-cardapio', methods=['DELETE'])
 @flask_login.login_required
 def remove_menus():
     if request.method == 'DELETE':
@@ -1322,7 +1322,7 @@ def remove_menus():
         return Response(resp, 200, mimetype='text/json')
 
 
-@app.route('/download-planilha', methods=['POST'])
+@app.route(f'/{raiz}/download-planilha', methods=['POST'])
 @flask_login.login_required
 def download_speadsheet():
     if request.method == 'POST':
@@ -1339,7 +1339,7 @@ def download_speadsheet():
             return redirect(request.referrer)
 
 
-@app.route('/download-unidade-especial', methods=['POST'])
+@app.route(f'/{raiz}/download-unidade-especial', methods=['POST'])
 @flask_login.login_required
 def dowload_special_unit():
     if request.method == 'POST':
