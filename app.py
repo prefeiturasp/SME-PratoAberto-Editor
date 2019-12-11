@@ -1210,7 +1210,7 @@ def download_csv():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
     else:
         cardapio_aux = []
-        for cardapio in get_grupo_publicacoes(filtro):
+        for cardapio in get_grupo_publicacoes(filtro, data_inicial, data_final):
             try:
                 # transforma as datas em formato br para o formato que ta no bd...
                 data_inicial = datetime.datetime.strptime(data_inicial, '%d/%m/%Y').strftime('%Y%m%d')
@@ -1770,8 +1770,8 @@ def get_unidades_especiais_dict():
     return special_unities_dict
 
 
-def get_grupo_publicacoes(status):
-    url = api + '/editor/cardapios?status=' + status
+def get_grupo_publicacoes(status, data_inicial, data_final):
+    url = api + '/editor/cardapios?status=' + status + '&data_inicial=' + data_inicial + '&data_final=' + data_final
     r = requests.get(url)
     refeicoes = r.json()
 
