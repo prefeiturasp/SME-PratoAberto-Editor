@@ -1201,8 +1201,8 @@ def publicacao():
 @flask_login.login_required
 def download_csv():
     data_inicio_fim_str = request.form.get('datas', request.data)
-    data_inicial = data_inicio_fim_str.split('-')[0]
-    data_final = data_inicio_fim_str.split('-')[1]
+    data_inicial = convert_datetime_format(data_inicio_fim_str.split('-')[0], '%d/%m/%Y', '%Y%m%d')
+    data_final = convert_datetime_format(data_inicio_fim_str.split('-')[1], '%d/%m/%Y', '%Y%m%d')
     filtro = request.form.get('filtro_selected', request.data)
 
     if filtro == 'STATUS':
@@ -1334,7 +1334,7 @@ def download_speadsheet():
 
         if xlsx_file:
 
-            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+            return send_file(str(xlsx_file), attachment_filename=str(xlsx_file).split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
