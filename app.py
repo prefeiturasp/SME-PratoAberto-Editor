@@ -36,9 +36,12 @@ sentry_url = os.environ.get('SENTRY_URL')
 if sentry_url:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
+    
+    sentry_environment = os.environ.get('SENTRY_ENVIRONMENT')
 
     sentry_sdk.init(
         dsn=sentry_url,
+        environment=sentry_environment,
         integrations=[FlaskIntegration()]
     )
 
@@ -106,11 +109,6 @@ def login():
 
     flash('Senha ou usuario nao identificados')
     return render_template('login.html')
-
-
-@app.route('/debug-sentry')
-def trigger_error():
-    division_by_zero = 1 / 0
     
 
 @app.route('/logout')
