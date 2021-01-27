@@ -28,6 +28,9 @@ from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str
 from helpers import download_spreadsheet
 from ue_mongodb import get_unidade
 from helpers.download_special_unit_menu import gera_excel
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
