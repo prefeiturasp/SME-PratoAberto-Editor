@@ -27,6 +27,25 @@ from ue_mongodb import get_unidade
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
                    format_datetime_array, yyyymmdd_to_date_time, convert_datetime_format)
+from helpers import download_spreadsheet
+from ue_mongodb import get_unidade
+from helpers.download_special_unit_menu import gera_excel
+from dotenv import load_dotenv
+
+load_dotenv()
+
+sentry_url = os.environ.get('SENTRY_URL')
+if sentry_url:
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    
+    sentry_environment = os.environ.get('SENTRY_ENVIRONMENT')
+
+    sentry_sdk.init(
+        dsn=sentry_url,
+        environment=sentry_environment,
+        integrations=[FlaskIntegration()]
+    )
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './tmp'
@@ -93,6 +112,7 @@ def login():
 
     flash('Senha ou usuario nao identificados')
     return render_template('login.html')
+    
 
 
 @app.route(f'/{raiz}/logout')
@@ -1201,8 +1221,8 @@ def publicacao():
 @flask_login.login_required
 def download_csv():
     data_inicio_fim_str = request.form.get('datas', request.data)
-    data_inicial = data_inicio_fim_str.split('-')[0]
-    data_final = data_inicio_fim_str.split('-')[1]
+    data_inicial = convert_datetime_format(data_inicio_fim_str.split('-')[0], '%d/%m/%Y', '%Y%m%d')
+    data_final = convert_datetime_format(data_inicio_fim_str.split('-')[1], '%d/%m/%Y', '%Y%m%d')
     filtro = request.form.get('filtro_selected', request.data)
 
     if filtro == 'STATUS':
@@ -1210,7 +1230,7 @@ def download_csv():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
     else:
         cardapio_aux = []
-        for cardapio in get_grupo_publicacoes(filtro):
+        for cardapio in get_grupo_publicacoes(filtro, data_inicial, data_final):
             try:
                 # transforma as datas em formato br para o formato que ta no bd...
                 data_inicial = datetime.datetime.strptime(data_inicial, '%d/%m/%Y').strftime('%Y%m%d')
@@ -1334,7 +1354,7 @@ def download_speadsheet():
 
         if xlsx_file:
 
-            return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+            return send_file(str(xlsx_file), attachment_filename=str(xlsx_file).split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
 
@@ -1770,8 +1790,8 @@ def get_unidades_especiais_dict():
     return special_unities_dict
 
 
-def get_grupo_publicacoes(status):
-    url = api + '/editor/cardapios?status=' + status
+def get_grupo_publicacoes(status, data_inicial, data_final):
+    url = api + '/editor/cardapios?status=' + status + '&data_inicial=' + data_inicial + '&data_final=' + data_final
     r = requests.get(url)
     refeicoes = r.json()
 

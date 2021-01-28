@@ -14,17 +14,15 @@ Instale os requisitos através do requirements.txt
 ```
 pip install -r requirements.txt
 ```
+
+Se estiver em desenvolvimento, copie o arquivo .env.sample para .env, e edite as variáveis que estão no arquivo para o seu ambiente
+Se estiver em produção, configure as variáveis que estão no arquivo no ambiente
+
 Para executar o editor:
 
 ```
-FLASK_APP=app.py flask run
+flask run
 ```
-Caso alguma dependência esteja faltando após o processo instale com:
-
-```
-pip install nomeDependecia
-```
-Repita o processo até não faltar mais nenhuma dependência.
 
 # Pátio Digital
 
@@ -38,11 +36,15 @@ Nós somos o **pátio digital**, uma iniciativa da Secretaria Municipal de Educa
 
 ## Conteúdo
 
-1. [Sobre o prato aberto](#sobre-o-prato-aberto)
-2. [Comunicação](#comunicação)
-3. [Roadmap de tecnologia](#roadmap-de-tecnologia)
-4. [Como contribuir](#como-contribuir)
-5. [Instalação](#instalação)
+- [Pátio Digital](#pátio-digital)
+- [Prato Aberto](#prato-aberto)
+  - [Conteúdo](#conteúdo)
+- [Editor](#editor)
+    - [Nossos outros repositórios](#nossos-outros-repositórios)
+  - [Comunicação](#comunicação)
+  - [Roadmap de tecnologia](#roadmap-de-tecnologia)
+    - [Passos iniciais](#passos-iniciais)
+  - [Como contribuir](#como-contribuir)
 
  Sobre o prato aberto
 
