@@ -114,6 +114,10 @@ def login():
     return render_template('login.html')
     
 
+@app.route('/debug-sentry')
+def trigger_error():
+    division_by_zero = 1 / 0    
+
 
 @app.route(f'/{raiz}/logout')
 @flask_login.login_required
