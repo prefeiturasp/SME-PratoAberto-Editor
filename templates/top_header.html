@@ -16,7 +16,8 @@
                             <ul class="dropdown-menu">
                                 <li><a href="/download_publicacao">CARDÁPIOS</a></li>
                                 <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS POR
-                                <li><a href="#" data-toggle="modal" data-target="#download-unidade-especial">CARDÁPIOS UNIDADE ESPECIAL</a>
+                                <li><a href="#" data-toggle="modal" data-target="#download-unidade-especial">CARDÁPIOS
+                                        UNIDADE ESPECIAL</a>
                                 </li>
                             </ul>
                             {% include 'modal_download.html' %}
@@ -32,7 +33,8 @@
                                 <li><a href="/criar-direta-mista-sem-refeicao">DIRETA/MISTA (SEM REFEIÇÃO)</a></li>
                                 <li><a href="/criar-unidade-especial">UNIDADE ESPECIAL</a></li>
                                 <li>
-                                    <a href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
+                                    <a
+                                        href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
                                 </li>
                             </ul>
                         </li>
@@ -44,14 +46,15 @@
                             <ul class="dropdown-menu">
                                 <li><a href="/configuracoes_gerais">DE-PARA</a></li>
                                 <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS</a></li>
-                                <li><a href="/configuracoes_cardapio_unidades_especiais">HISTÓRICO CARDÁPIOS U.E.</a></li>
+                                <li><a href="/configuracoes_cardapio_unidades_especiais">HISTÓRICO CARDÁPIOS U.E.</a>
+                                </li>
                                 <li><a href="/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
                                 <li><a href="/unidades_especiais">UNIDADES ESPECIAIS</a></li>
                                 <li><a href="/edicao_de_notas">NOTAS - EDITAR</a></li>
                             </ul>
                         </li>
                         <li style="padding-right: 7px">
-                            <button class="btn btn-default" onclick="location.href='/logout';"><i
+                            <button class="btn btn-default" onclick="location.href='/editor/logout';"><i
                                     class="glyphicon glyphicon-user" aria-hidden="true"></i> SAIR
                             </button>
                         </li>
@@ -61,4 +64,4 @@
         </nav>
     </div>
 
-{% include 'modal_unidade_especial.html' %}
+    {% include 'modal_unidade_especial.html' %}
