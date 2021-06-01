@@ -87,7 +87,7 @@
                                     <i class="glyphicon glyphicon-download-alt"></i> DOWNLOADS
                                     <span class="caret"></span></button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="/download_publicacao">CARDÁPIOS</a></li>
+                                    <li><a href="/editor/download_publicacao">CARDÁPIOS</a></li>
                                     <li><a href="#" data-toggle="modal" data-target="#download-mensal">CARDÁPIOS
                                             MENSAIS</a></li>
                                 </ul>
@@ -101,10 +101,10 @@
                                     <li><a href="#" data-toggle="modal"
                                             data-target="#xml_form">DIRETA/MISTA/CONVENIADA</a>
                                     </li>
-                                    <li><a href="/cria_terceirizada">TERCEIRIZADAS</a></li>
+                                    <li><a href="/editor/cria_terceirizada">TERCEIRIZADAS</a></li>
                                     <li>
                                         <a
-                                            href="/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
+                                            href="/editor/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS&page=1">ESCOLAS</a>
                                     </li>
                                 </ul>
                             </li>
@@ -113,9 +113,10 @@
                                     <i class="glyphicon glyphicon-list-alt"></i> CONFIGURAÇÕES
                                     <span class="caret"></span></button>
                                 <ul class="dropdown-menu">
-                                    <li><a href="/configuracoes_gerais">DE-PARA</a></li>
-                                    <li><a href="/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a></li>
-                                    <li><a href="/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
+                                    <li><a href="/editor/configuracoes_gerais">DE-PARA</a></li>
+                                    <li><a href="/editor/configuracoes_cardapio">HISTÓRICO CARDÁPIOS TECEIRIZADAS</a>
+                                    </li>
+                                    <li><a href="/editor/mapa_pendencias">MAPA DE PENDÊNCIAS</a></li>
                                 </ul>
                             </li>
                             <li style="padding-right: 7px">
@@ -155,12 +156,12 @@
         <!-- Informações do agrupamento -->
         <div class="row">
             <div class="col-12">
-                <a href="/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios
+                <a href="/editor/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios
                     Pendentes</a>
-                <a href="/pendencias_publicadas"
+                <a href="/editor/pendencias_publicadas"
                     class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios
                     Publicados</a>
-                <a href="/pendencias_deletadas"
+                <a href="/editor/pendencias_deletadas"
                     class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios
                     Deletados</a>
             </div>
@@ -257,7 +258,7 @@
                                 <td class="status" style="display: flex">
                                     <span style="padding-top: 10px">{{ published_menu[6] }}</span>
                                     <a title="Ver Cardápio" style="margin-left: 10px" class="btn btn-default"
-                                        href="/visualizador_cardapio?{{ published_menu[7] }}">
+                                        href="/editor/visualizador_cardapio?{{ published_menu[7] }}">
                                         <i class="fas fa-clipboard-list fa-lg" aria-hidden="true"></i>
                                     </a>
                                     <button title="Mover para Pendentes" style="margin-left: 10px"

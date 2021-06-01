@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Prato aberto</title>
@@ -11,14 +12,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
     <style>
-
         .row.tbl {
             padding-top: 40px;
         }
@@ -29,12 +31,12 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:20px;
+            margin-top: 20px;
             margin-bottom: 20px;
             padding: 0 10px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -43,174 +45,184 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
         .table-responsive {
-            height:450px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 450px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
-        .table > tbody > tr > td,
-        .table > tfoot > tr > td {
+        .table>tbody>tr>td,
+        .table>tfoot>tr>td {
             vertical-align: inherit;
         }
 
         .navbar-nav {
             margin-top: 8px;
         }
-
     </style>
 </head>
+
 <body>
-<div class="container">
-    <!-- NAVBAR -->
-    <div class="row">
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/pendencias_publicacoes">HOME</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <a type="button" class="btn btn-default " href="{{ referrer }}">
-                            <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
-                        </a>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-    <h3 style="padding-bottom: 20px">Prato Aberto - Downloads</h3>
-
-    {% include 'messages.html' %}
-
-    <!-- Campos GERAÇAO TABELA -->
-    <div class ="panel panel-default">
+    <div class="container">
+        <!-- NAVBAR -->
         <div class="row">
-            <form method="post" action="/download_publicacao">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label for="data-inicial">Data Inicial:</label>
-                        <input required="required" autocomplete="Off" type="text" id="data-inicial" name="data-inicial" value="{{ inicio }}" class="form-control">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/editor/pendencias_publicacoes">HOME</a>
                     </div>
-                    <div class="col-sm-3">
-                        <label for="data-final">Data Final:</label>
-                        <input required="required" autocomplete="Off" type="text" id="data-final" name="data-final" value="{{ fim }}" class="form-control">
-                    </div>
-                    <div class="col-sm-offset-3 col-sm-3">
-                        <button style="margin-top: 25px;" type="submit" class="btn btn-success col-sm-12">GERAR TABELA</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <label for="filtro">Status:</label>
-                        <select class="form-control input"  id="filtro" name="filtro">
-                            <option>PUBLICADO</option>
-                            <option>PENDENTE</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="tipo_atendimento">Atendimento:</label>
-                        <select id="tipo_atendimento" name="tipo_atendimento" class="form-control">
-                            <option>TODOS</option>
-                            <option>DIRETA</option>
-                            <option>MISTA</option>
-                            <option>TERCEIRIZADA</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-3">
-                        <label for="tipo_unidade">Tipo de unidade:</label>
-                        <select id="tipo_unidade" name="tipo_unidade" class="form-control">
-                            <option>TODOS</option>
-                            <option>CEI_MUNICIPAL</option>
-                            <option>CEI_PARCEIRO_(RP)</option>
-                            <option>CCI</option>
-                            <option>EMEF</option>
-                            <option>CEMEI</option>
-                            <option>SME_CONVÊNIO</option>
-                            <option>EMEBS</option>
-                            <option>PROJETO_CECI</option>
-                            <option>CIEJA</option>
-                            <option>CEU_GESTÃO</option>
-                            <option>CMCT</option>
-                        </select>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <a type="button" class="btn btn-default " href="{{ referrer }}">
+                                <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
+                            </a>
+                        </ul>
                     </div>
                 </div>
-            </form>
-            <div class="col-sm-3 pull-right" style="margin-top: -80px">
-                <form method="post" action="/download_csv">
-                    <button style="margin-top: 25px;" type="submit" id="btn_download" class="btn col-sm-12"><i class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
-                    <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
-                    <input type="hidden" id="download_input_tipo_unidade" name="tipo_unidade_download" value="{{tipo_unidade}}">
-                    <input type="hidden" id="download_input_tipo_atendimento" name="tipo_atendimento_download" value="{{tipo_atendimento}}">
-                    <input type="hidden" id="download_input_filtro" name="filtro_selected" value="{{filtro_selected}}">
+            </nav>
+        </div>
+        <h3 style="padding-bottom: 20px">Prato Aberto - Downloads</h3>
+
+        {% include 'messages.html' %}
+
+        <!-- Campos GERAÇAO TABELA -->
+        <div class="panel panel-default">
+            <div class="row">
+                <form method="post" action="/download_publicacao">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label for="data-inicial">Data Inicial:</label>
+                            <input required="required" autocomplete="Off" type="text" id="data-inicial"
+                                name="data-inicial" value="{{ inicio }}" class="form-control">
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="data-final">Data Final:</label>
+                            <input required="required" autocomplete="Off" type="text" id="data-final" name="data-final"
+                                value="{{ fim }}" class="form-control">
+                        </div>
+                        <div class="col-sm-offset-3 col-sm-3">
+                            <button style="margin-top: 25px;" type="submit" class="btn btn-success col-sm-12">GERAR
+                                TABELA</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <label for="filtro">Status:</label>
+                            <select class="form-control input" id="filtro" name="filtro">
+                                <option>PUBLICADO</option>
+                                <option>PENDENTE</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="tipo_atendimento">Atendimento:</label>
+                            <select id="tipo_atendimento" name="tipo_atendimento" class="form-control">
+                                <option>TODOS</option>
+                                <option>DIRETA</option>
+                                <option>MISTA</option>
+                                <option>TERCEIRIZADA</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="tipo_unidade">Tipo de unidade:</label>
+                            <select id="tipo_unidade" name="tipo_unidade" class="form-control">
+                                <option>TODOS</option>
+                                <option>CEI_MUNICIPAL</option>
+                                <option>CEI_PARCEIRO_(RP)</option>
+                                <option>CCI</option>
+                                <option>EMEF</option>
+                                <option>CEMEI</option>
+                                <option>SME_CONVÊNIO</option>
+                                <option>EMEBS</option>
+                                <option>PROJETO_CECI</option>
+                                <option>CIEJA</option>
+                                <option>CEU_GESTÃO</option>
+                                <option>CMCT</option>
+                            </select>
+                        </div>
+                    </div>
                 </form>
+                <div class="col-sm-3 pull-right" style="margin-top: -80px">
+                    <form method="post" action="/download_csv">
+                        <button style="margin-top: 25px;" type="submit" id="btn_download" class="btn col-sm-12"><i
+                                class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
+                        <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
+                        <input type="hidden" id="download_input_tipo_unidade" name="tipo_unidade_download"
+                            value="{{tipo_unidade}}">
+                        <input type="hidden" id="download_input_tipo_atendimento" name="tipo_atendimento_download"
+                            value="{{tipo_atendimento}}">
+                        <input type="hidden" id="download_input_filtro" name="filtro_selected"
+                            value="{{filtro_selected}}">
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <br>
-    <br>
-    <div class="row tbl">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Cardápios</h3>
-                <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+        <br>
+        <br>
+        <div class="row tbl">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Cardápios</h3>
+                    <div class="pull-right">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                            data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
+                    </div>
                 </div>
-            </div>
-            <div class="panel-body">
-                <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
-            </div>
-            <div class="table-responsive">
-                <div class="panel panel-default">
-                    <table class="table table-hover table-striped" id="task-table">
-                        <thead>
-                        <tr>
-                            <th style="cursor:pointer">ATENDIMENTO</th>
-                            <th style="cursor:pointer">UNIDADE</th>
-                            <th style="cursor:pointer">AGRUPAMENTO</th>
-                            <th style="cursor:pointer">IDADE</th>
-                            <th style="cursor:pointer">DATA</th>
-                            <th style="cursor:pointer">REFEICÃO</th>
-                            <th style="cursor:pointer">CARDÁPIO</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for linha in publicados: %}
-                        <tr class="item">
-                            <td class="tipo_atendimento">{{ linha[0] }}</td>
-                            <td class="tipo_unidade">{{ linha[1] }}</td>
-                            <td class="agrupamento">{{ linha[2] }}</td>
-                            <td class="idade">{{ linha[3] }}</td>
-                            <td class="data">{{ linha[4] }}</td>
-                            <td class="status">{{ linha[5] }}</td>
-                            <td class="refeicao_dia">{{ linha[6] }}</td>
-                            <td class="cardapio">{{ linha[7] }}</td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="panel-body">
+                    <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                        data-filters="#task-table" placeholder="Filter Tasks" />
+                </div>
+                <div class="table-responsive">
+                    <div class="panel panel-default">
+                        <table class="table table-hover table-striped" id="task-table">
+                            <thead>
+                                <tr>
+                                    <th style="cursor:pointer">ATENDIMENTO</th>
+                                    <th style="cursor:pointer">UNIDADE</th>
+                                    <th style="cursor:pointer">AGRUPAMENTO</th>
+                                    <th style="cursor:pointer">IDADE</th>
+                                    <th style="cursor:pointer">DATA</th>
+                                    <th style="cursor:pointer">REFEICÃO</th>
+                                    <th style="cursor:pointer">CARDÁPIO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for linha in publicados: %}
+                                <tr class="item">
+                                    <td class="tipo_atendimento">{{ linha[0] }}</td>
+                                    <td class="tipo_unidade">{{ linha[1] }}</td>
+                                    <td class="agrupamento">{{ linha[2] }}</td>
+                                    <td class="idade">{{ linha[3] }}</td>
+                                    <td class="data">{{ linha[4] }}</td>
+                                    <td class="status">{{ linha[5] }}</td>
+                                    <td class="refeicao_dia">{{ linha[6] }}</td>
+                                    <td class="cardapio">{{ linha[7] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        <footer class="container-fluid text-center">
+            <br>
+            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
+                    title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+        </footer>
     </div>
-    <footer class="container-fluid text-center">
-        <br>
-        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
-    </footer>
-</div>
 
-<!-- Script com a funcionalidade do filtro da tabela -->
-<script>
+    <!-- Script com a funcionalidade do filtro da tabela -->
+    <script>
         /**
         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
         *   but will likely encounter performance issues on larger tables.
@@ -220,13 +232,13 @@
         *
         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
         */
-        (function(){
+        (function () {
             'use strict';
             var $ = jQuery;
             $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
+                filterTable: function () {
+                    return this.each(function () {
+                        $(this).on('keyup', function (e) {
                             $('.filterTable_no_results').remove();
                             var $this = $(this),
                                 search = $this.val().toLowerCase(),
@@ -234,16 +246,16 @@
                                 $target = $(target),
                                 $rows = $target.find('tbody tr');
 
-                            if(search == '') {
+                            if (search == '') {
                                 $rows.show();
                             } else {
-                                $rows.each(function(){
+                                $rows.each(function () {
                                     var $this = $(this);
                                     $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
                                 })
-                                if($target.find('tbody tr:visible').size() === 0) {
+                                if ($target.find('tbody tr:visible').size() === 0) {
                                     var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
+                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
                                     $target.find('tbody').append(no_results);
                                 }
                             }
@@ -254,16 +266,16 @@
             $('[data-action="filter"]').filterTable();
         })(jQuery);
 
-        $(function(){
+        $(function () {
             // attach table filter plugin to inputs
             $('[data-action="filter"]').filterTable();
 
-            $('.container').on('click', '.panel-heading span.filter', function(e){
+            $('.container').on('click', '.panel-heading span.filter', function (e) {
                 var $this = $(this),
                     $panel = $this.parents('.panel');
 
                 $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
+                if ($this.css('display') != 'none') {
                     $panel.find('.panel-body input').focus();
                 }
             });
@@ -271,27 +283,27 @@
         });
     </script>
 
-<!-- Botões de ordenação da tabela -->
-<script src="static/js/w3.js"></script>
+    <!-- Botões de ordenação da tabela -->
+    <script src="static/js/w3.js"></script>
 
-<!-- Deleta linha da tabela -->
-<script>
+    <!-- Deleta linha da tabela -->
+    <script>
         function deleteRow(r) {
             var i = r.parentNode.parentNode.rowIndex;
             document.getElementById("task-table").deleteRow(i);
         }
     </script>
 
-<!-- Seta Datas -->
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<!-- Referência do arquivo JS do plugin após carregar o jquery -->
-<!-- Datepicker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<!--Data Picker Inicial-->
-<script>
+    <!-- Seta Datas -->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Referência do arquivo JS do plugin após carregar o jquery -->
+    <!-- Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <!--Data Picker Inicial-->
+    <script>
         $(document).ready(function () {
             $('#data-inicial').datepicker({
                 format: "dd/mm/yyyy",
@@ -299,8 +311,8 @@
             });
         });
     </script>
-<!--Data Picker Final-->
-<script>
+    <!--Data Picker Final-->
+    <script>
         $(document).ready(function () {
             $('#data-final').datepicker({
                 format: "dd/mm/yyyy",
@@ -309,26 +321,26 @@
         });
     </script>
 
-<!-- Seta Refeições -->
-<script>
+    <!-- Seta Refeições -->
+    <script>
         function adicionaRefeicao() {
             var REFEICAO = document.getElementById("REFEICAO").value;
             $('#lista-refeicao').append(
-                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id="+REFEICAO+">"+REFEICAO+" &times;</span>"
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id=" + REFEICAO + ">" + REFEICAO + " &times;</span>"
             );
         };
     </script>
 
-<!-- Deleta botões -->
-<script>
+    <!-- Deleta botões -->
+    <script>
         function deletar(r) {
             $(r).remove()
         };
     </script>
 
-<!-- Habilita botão de download-->
-<script>
-        $(document).ready(function() {
+    <!-- Habilita botão de download-->
+    <script>
+        $(document).ready(function () {
             if ($('#download_input').val() == 'disabled') {
                 $('#btn_download').prop('disabled', true);
             }
@@ -338,13 +350,14 @@
         });
     </script>
 
-<!-- Atualiza dropdown -->
-<script>
-        $("#dropdown-status li a").click(function(){
-            $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
-            $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
+    <!-- Atualiza dropdown -->
+    <script>
+        $("#dropdown-status li a").click(function () {
+            $("#dropdown-name").html($(this).text() + ' <span class="caret"></span>');
+            $("#dropdown-name").html($(this).text() + ' <span class="caret"></span>');
         });
     </script>
 
 </body>
+
 </html>

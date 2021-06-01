@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Prato Aberto - Editor Cardapio</title>
@@ -11,7 +12,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
-
         /* Objetos da tabela */
         .row {
             margin-top: 30px;
@@ -45,13 +45,13 @@
             display: none;
         }
 
-        .table > tbody > tr > th,
-        .table > tfoot > tr > th {
+        .table>tbody>tr>th,
+        .table>tfoot>tr>th {
             font-size: 10px;
         }
 
-        .table > tbody > tr > td,
-        .table > tfoot > tr > td {
+        .table>tbody>tr>td,
+        .table>tfoot>tr>td {
             vertical-align: inherit;
         }
 
@@ -69,23 +69,23 @@
         }
 
         #btn-top {
-          display: none;
-          position: fixed;
-          bottom: 20px;
-          right: 30px;
-          z-index: 99;
-          outline: none;
-          padding: 5px;
-          border-radius: 10px;
-          font-size: 18px;
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            outline: none;
+            padding: 5px;
+            border-radius: 10px;
+            font-size: 18px;
         }
-
     </style>
 </head>
+
 <body>
 
 
-{% include 'top_header.html' %}
+    {% include 'top_header.html' %}
 
 
     <!-- Upload form -->
@@ -100,7 +100,8 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            <input type="file" name="file" class="form-control-file"></p>
+                            <input type="file" name="file" class="form-control-file">
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
@@ -114,117 +115,162 @@
     <!-- Informações do agrupamento -->
     <div class="row">
         <div class="col-12" style="text-align: left">
-            <a href="/pendencias_unidades_especiais" class="col-md-4 btn btn-lg btn-info">Histórico de Cardápios Unidades Especiais</a>
+            <a href="/editor/pendencias_unidades_especiais" class="col-md-4 btn btn-lg btn-info">Histórico de Cardápios
+                Unidades Especiais</a>
         </div>
     </div>
     <div class="row">
         <div class="col-12">
-            <a href="/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios Pendentes</a>
-            <a href="/pendencias_publicadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios
+            <a href="/editor/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios
+                Pendentes</a>
+            <a href="/editor/pendencias_publicadas"
+                class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-default disabled">Cardápios
                 Publicados</a>
-            <a href="/pendencias_deletadas" class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios
+            <a href="/editor/pendencias_deletadas"
+                class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios
                 Deletados</a>
         </div>
     </div>
     <div class="panel panel-default" style="margin-top: 30px;">
         <form method="get" action="/pendencias_publicadas">
             <div class="row" style="margin-top: 15px">
-                 <div class="col-sm-3 col-xs-12">
+                <div class="col-sm-3 col-xs-12">
                     <label for="tipo_atendimento">Tipo de gestão</label>
-                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input" id="tipo_atendimento" name="tipo_atendimento">
+                    <select value="{{request.args.get('tipo_atendimento')}}" class="form-control input"
+                        id="tipo_atendimento" name="tipo_atendimento">
                         <option>TODOS</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'DIRETA' %} selected {% endif %}>DIRETA</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'TERCEIRIZADA' %} selected {% endif %}>TERCEIRIZADA</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'MISTA' %} selected {% endif %}>MISTA</option>
-                        <option {% if request.args.get('tipo_atendimento') == 'UE' %} selected {% endif %}>UE</option>
+                        <option {% if request.args.get('tipo_atendimento')=='DIRETA' %} selected {% endif %}>DIRETA
+                        </option>
+                        <option {% if request.args.get('tipo_atendimento')=='TERCEIRIZADA' %} selected {% endif %}>
+                            TERCEIRIZADA</option>
+                        <option {% if request.args.get('tipo_atendimento')=='MISTA' %} selected {% endif %}>MISTA
+                        </option>
+                        <option {% if request.args.get('tipo_atendimento')=='UE' %} selected {% endif %}>UE</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12">
                     <label class="control-label">Tipo de Escola</label>
                     <select value="{{request.args.get('tipo_unidade')}}" name="tipo_unidade" class="form-control">
-                         <option value="TODOS">TODOS</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CCI' %} selected {% endif %}>CCI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEI_MUNICIPAL' %} selected {% endif %}>CEI_MUNICIPAL</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEI_PARCEIRO_(RP)' %} selected {% endif %}>CEI_PARCEIRO_(RP)</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEMEI' %} selected {% endif %}>CEMEI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CEU_GESTÃO' %} selected {% endif %}>CEU_GESTÃO</option>
-                         <option {% if request.args.get('tipo_unidade') == 'CIEJA' %} selected {% endif %}>CIEJA</option>
-                         <option {% if request.args.get('tipo_unidade') == 'EMEBS' %} selected {% endif %}>EMEBS</option>
-                         <option {% if request.args.get('tipo_unidade') == 'EMEF' %} selected {% endif %}>EMEF</option>
-                         <option {% if request.args.get('tipo_unidade') == 'EMEFM' %} selected {% endif %}>EMEFM</option>
-                         <option {% if request.args.get('tipo_unidade') == 'EMEI' %} selected {% endif %}>EMEI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'PROJETO_CECI' %} selected {% endif %}>PROJETO_CECI</option>
-                         <option {% if request.args.get('tipo_unidade') == 'SME_CONVÊNIO' %} selected {% endif %}>SME_CONVÊNIO</option>
+                        <option value="TODOS">TODOS</option>
+                        <option {% if request.args.get('tipo_unidade')=='CCI' %} selected {% endif %}>CCI</option>
+                        <option {% if request.args.get('tipo_unidade')=='CEI_MUNICIPAL' %} selected {% endif %}>
+                            CEI_MUNICIPAL</option>
+                        <option {% if request.args.get('tipo_unidade')=='CEI_PARCEIRO_(RP)' %} selected {% endif %}>
+                            CEI_PARCEIRO_(RP)</option>
+                        <option {% if request.args.get('tipo_unidade')=='CEMEI' %} selected {% endif %}>CEMEI</option>
+                        <option {% if request.args.get('tipo_unidade')=='CEU_GESTÃO' %} selected {% endif %}>CEU_GESTÃO
+                        </option>
+                        <option {% if request.args.get('tipo_unidade')=='CIEJA' %} selected {% endif %}>CIEJA</option>
+                        <option {% if request.args.get('tipo_unidade')=='EMEBS' %} selected {% endif %}>EMEBS</option>
+                        <option {% if request.args.get('tipo_unidade')=='EMEF' %} selected {% endif %}>EMEF</option>
+                        <option {% if request.args.get('tipo_unidade')=='EMEFM' %} selected {% endif %}>EMEFM</option>
+                        <option {% if request.args.get('tipo_unidade')=='EMEI' %} selected {% endif %}>EMEI</option>
+                        <option {% if request.args.get('tipo_unidade')=='PROJETO_CECI' %} selected {% endif %}>
+                            PROJETO_CECI</option>
+                        <option {% if request.args.get('tipo_unidade')=='SME_CONVÊNIO' %} selected {% endif %}>
+                            SME_CONVÊNIO</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12">
                     <label class="control-label">Idades</label>
                     <select value="{{request.args.get('idade')}}" name="idade" class="form-control">
-                         <option value="TODOS">TODOS</option>
-                         <option {% if request.args.get('idade') == 'A - 0 A 1 MES' %} selected {% endif %}>A - 0 A 1 MES</option>
-                         <option {% if request.args.get('idade') == 'B - 1 A 3 MESES' %} selected {% endif %}>B - 1 A 3 MESES</option>
-                         <option {% if request.args.get('idade') == 'C - 4 A 5 MESES' %} selected {% endif %}>C - 4 A 5 MESES</option>
-                         <option {% if request.args.get('idade') == 'D - 0 A 5 MESES' %} selected {% endif %}>D - 0 A 5 MESES</option>
-                         <option {% if request.args.get('idade') == 'D - 6 A 7 MESES' %} selected {% endif %}>D - 6 A 7 MESES</option>
-                         <option {% if request.args.get('idade') == 'D - 6 MESES' %} selected {% endif %}>D - 6 MESES</option>
-                         <option {% if request.args.get('idade') == 'D - 7 MESES' %} selected {% endif %}>D - 7 MESES</option>
-                         <option {% if request.args.get('idade') == 'E - 8 MESES' %} selected {% endif %}>E - 8 A 11 MESES</option>
-                         <option {% if request.args.get('idade') == 'X - 1A -1A E 11MES MESES' %} selected {% endif %}>X - 1A -1A E 11MES</option>
-                         <option {% if request.args.get('idade') == 'F - 2 A 3 ANOS' %} selected {% endif %}>F - 2 A 3 ANOS</option>
-                         <option {% if request.args.get('idade') == 'G - 4 A 6 ANOS' %} selected {% endif %}>G - 4 A 6 ANOS</option>
-                         <option {% if request.args.get('idade') == 'I - 2 A 6 ANOS' %} selected {% endif %}>I - 2 A 6 ANOS</option>
-                         <option {% if request.args.get('idade') == 'W - EMEI DA CEMEI' %} selected {% endif %}>W - EMEI DA CEMEI</option>
-                         <option {% if request.args.get('idade') == 'N - 6 A 7 MESES PARCIAL' %} selected {% endif %}>N - 6 A 7 MESES PARCIAL</option>
-                         <option {% if request.args.get('idade') == 'O - 8 A 11 MESES PARCIAL' %} selected {% endif %}>O - 8 A 11 MESES PARCIAL</option>
-                         <option {% if request.args.get('idade') == 'Y - 1A -1A E 11MES PARCIAL' %} selected {% endif %}>Y - 1A -1A E 11MES PARCIAL</option>
-                         <option {% if request.args.get('idade') == 'P - 2 A 3 ANOS PARCIAL' %} selected {% endif %}>P - 2 A 3 ANOS PARCIAL</option>
-                         <option {% if request.args.get('idade') == 'Q - 4 A 6 ANOS PARCIAL' %} selected {% endif %}>Q - 4 A 6 ANOS PARCIAL</option>
-                         <option {% if request.args.get('idade') == 'H - ADULTO' %} selected {% endif %}>H - ADULTO</option>
-                         <option {% if request.args.get('idade') == 'Z - UNIDADES SEM FAIXA' %} selected {% endif %}>Z - UNIDADES SEM FAIXA</option>
-                         <option {% if request.args.get('idade') == 'S - FILHOS PRO JOVEM' %} selected {% endif %}>S - FILHOS PRO JOVEM</option>
-                         <option {% if request.args.get('idade') == 'V - PROFESSOR' %} selected {% endif %}>V - PROFESSOR</option>
-                         <option {% if request.args.get('idade') == 'U - PROFESSOR JANTAR CEI' %} selected {% endif %}>U - PROFESSOR JANTAR CEI</option>
+                        <option value="TODOS">TODOS</option>
+                        <option {% if request.args.get('idade')=='A - 0 A 1 MES' %} selected {% endif %}>A - 0 A 1 MES
+                        </option>
+                        <option {% if request.args.get('idade')=='B - 1 A 3 MESES' %} selected {% endif %}>B - 1 A 3
+                            MESES</option>
+                        <option {% if request.args.get('idade')=='C - 4 A 5 MESES' %} selected {% endif %}>C - 4 A 5
+                            MESES</option>
+                        <option {% if request.args.get('idade')=='D - 0 A 5 MESES' %} selected {% endif %}>D - 0 A 5
+                            MESES</option>
+                        <option {% if request.args.get('idade')=='D - 6 A 7 MESES' %} selected {% endif %}>D - 6 A 7
+                            MESES</option>
+                        <option {% if request.args.get('idade')=='D - 6 MESES' %} selected {% endif %}>D - 6 MESES
+                        </option>
+                        <option {% if request.args.get('idade')=='D - 7 MESES' %} selected {% endif %}>D - 7 MESES
+                        </option>
+                        <option {% if request.args.get('idade')=='E - 8 MESES' %} selected {% endif %}>E - 8 A 11 MESES
+                        </option>
+                        <option {% if request.args.get('idade')=='X - 1A -1A E 11MES MESES' %} selected {% endif %}>X -
+                            1A -1A E 11MES</option>
+                        <option {% if request.args.get('idade')=='F - 2 A 3 ANOS' %} selected {% endif %}>F - 2 A 3 ANOS
+                        </option>
+                        <option {% if request.args.get('idade')=='G - 4 A 6 ANOS' %} selected {% endif %}>G - 4 A 6 ANOS
+                        </option>
+                        <option {% if request.args.get('idade')=='I - 2 A 6 ANOS' %} selected {% endif %}>I - 2 A 6 ANOS
+                        </option>
+                        <option {% if request.args.get('idade')=='W - EMEI DA CEMEI' %} selected {% endif %}>W - EMEI DA
+                            CEMEI</option>
+                        <option {% if request.args.get('idade')=='N - 6 A 7 MESES PARCIAL' %} selected {% endif %}>N - 6
+                            A 7 MESES PARCIAL</option>
+                        <option {% if request.args.get('idade')=='O - 8 A 11 MESES PARCIAL' %} selected {% endif %}>O -
+                            8 A 11 MESES PARCIAL</option>
+                        <option {% if request.args.get('idade')=='Y - 1A -1A E 11MES PARCIAL' %} selected {% endif %}>Y
+                            - 1A -1A E 11MES PARCIAL</option>
+                        <option {% if request.args.get('idade')=='P - 2 A 3 ANOS PARCIAL' %} selected {% endif %}>P - 2
+                            A 3 ANOS PARCIAL</option>
+                        <option {% if request.args.get('idade')=='Q - 4 A 6 ANOS PARCIAL' %} selected {% endif %}>Q - 4
+                            A 6 ANOS PARCIAL</option>
+                        <option {% if request.args.get('idade')=='H - ADULTO' %} selected {% endif %}>H - ADULTO
+                        </option>
+                        <option {% if request.args.get('idade')=='Z - UNIDADES SEM FAIXA' %} selected {% endif %}>Z -
+                            UNIDADES SEM FAIXA</option>
+                        <option {% if request.args.get('idade')=='S - FILHOS PRO JOVEM' %} selected {% endif %}>S -
+                            FILHOS PRO JOVEM</option>
+                        <option {% if request.args.get('idade')=='V - PROFESSOR' %} selected {% endif %}>V - PROFESSOR
+                        </option>
+                        <option {% if request.args.get('idade')=='U - PROFESSOR JANTAR CEI' %} selected {% endif %}>U -
+                            PROFESSOR JANTAR CEI</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12">
                     <label for="agrupamento">Agrupamento</label>
-                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento" class="form-control">
+                    <select value="{{request.args.get('agrupamento')}}" id="agrupamento" name="agrupamento"
+                        class="form-control">
                         <option>TODOS</option>
-                        <option {% if request.args.get('agrupamento') == '1' %} selected {% endif %}>1</option>
-                        <option {% if request.args.get('agrupamento') == '2' %} selected {% endif %}>2</option>
-                        <option {% if request.args.get('agrupamento') == '3' %} selected {% endif %}>3</option>
-                        <option {% if request.args.get('agrupamento') == '4' %} selected {% endif %}>4</option>
-                        <option {% if request.args.get('agrupamento') == 'EDITAL 78/2016' %} selected {% endif %}>EDITAL 78/2016</option>
+                        <option {% if request.args.get('agrupamento')=='1' %} selected {% endif %}>1</option>
+                        <option {% if request.args.get('agrupamento')=='2' %} selected {% endif %}>2</option>
+                        <option {% if request.args.get('agrupamento')=='3' %} selected {% endif %}>3</option>
+                        <option {% if request.args.get('agrupamento')=='4' %} selected {% endif %}>4</option>
+                        <option {% if request.args.get('agrupamento')=='EDITAL 78/2016' %} selected {% endif %}>EDITAL
+                            78/2016</option>
                     </select>
                 </div>
             </div>
             <div class="row" style="padding-bottom: 15px; margin-top: 15px">
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Unidade especial</label>
-                    <select value="{{ request.args.get('unidade_especial') }}" class="form-control input" id="unidade_especial" name="unidade_especial">
+                    <select value="{{ request.args.get('unidade_especial') }}" class="form-control input"
+                        id="unidade_especial" name="unidade_especial">
                         {% for ue in unidades_especiais: %}
-                            <option {% if request.args.get('unidade_especial') == ue %} selected {% endif %}>{{ ue }}</option>
+                        <option {% if request.args.get('unidade_especial')==ue %} selected {% endif %}>{{ ue }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a extensão das datas:</label>
-                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}" class="form-control input" id="filtro_periodo" name="filtro_periodo">
+                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_periodo') }}"
+                        class="form-control input" id="filtro_periodo" name="filtro_periodo">
                         {% for period_range in period_ranges.keys() %}
-                            <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if request.args.get('filtro_periodo') == period_ranges[period_range] %} selected {% endif %}></option>
+                        <option value="{{period_ranges[period_range]}}" label="{{period_range}}" {% if
+                            request.args.get('filtro_periodo')==period_ranges[period_range] %} selected {% endif %}>
+                        </option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a data:</label>
-                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana_mes') }}" class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
+                    <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana_mes') }}"
+                        class="form-control input" id="filtro_semana_mes" name="filtro_semana_mes">
                         {% for week_range in week_ranges %}
-                            <option {% if request.args.get('filtro_semana_mes') == week_range or (not request.args.get('filtro_semana_mes') and default_week == week_range) %} selected {% endif %}>{{ week_range }}</option>
+                        <option {% if request.args.get('filtro_semana_mes')==week_range or (not
+                            request.args.get('filtro_semana_mes') and default_week==week_range) %} selected {% endif %}>
+                            {{ week_range }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12" style="padding-top: 25px">
-                    <a href="/pendencias_publicadas?{{current_date}}">
+                    <a href="/editor/pendencias_publicadas?{{current_date}}">
                         <button type="button" class="col-sm-5 btn btn-default">LIMPAR</button>
                         <button type="submit" class="col-sm-5 pull-right btn btn-success">FILTRAR</button>
                     </a>
@@ -237,47 +283,49 @@
             <div class="panel-heading">
                 <h2 class="panel-title">Cardápios Publicados</h2>
                 <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
-                              data-container="body">
-                            <i class="glyphicon glyphicon-filter"></i>
-                        </span>
+                    <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                        data-container="body">
+                        <i class="glyphicon glyphicon-filter"></i>
+                    </span>
                 </div>
             </div>
             <div class="panel-body">
                 <input type="text" class="form-control" id="task-table-filter" data-action="filter"
-                       data-filters="#task-table" placeholder="Filter Tasks"/>
+                    data-filters="#task-table" placeholder="Filter Tasks" />
             </div>
             <div class="panel panel-default">
                 <table class="table table-hover table-striped" id="task-table">
                     <thead>
-                    <tr>
+                        <tr>
 
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                            GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
-                            ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                            AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
-                            <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">
-                            INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA
-                            PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
-                            style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS <i class="fa fa-sort" aria-hidden="true"></i>
-                        </th>
-                    </tr>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                                GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">TIPO
+                                ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
+                                AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
+                                <i class="fa fa-sort" aria-hidden="true"></i>
+                            </th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">
+                                INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA
+                                PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS
+                                <i class="fa fa-sort" aria-hidden="true"></i>
+                            </th>
+                        </tr>
                     </thead>
 
                     <tbody>
-                    {% for published_menu in published_menus %}
+                        {% for published_menu in published_menus %}
                         <tr class="item" style="display: none;">
                             <td class="ids" style="display: none;">{{ published_menu[10] }}</td>
                             <td class="semana" style="display: none;">{{ published_menu[8] }}</td>
@@ -290,23 +338,25 @@
                             <td class="status" style="display: flex">
                                 <span style="padding-top: 10px">{{ published_menu[6] }}</span>
                                 <a title="Ver Cardápio" style="margin-left: 10px" class="btn btn-default"
-                                    href="/visualizador_cardapio?{{ published_menu[7] }}">
+                                    href="/editor/visualizador_cardapio?{{ published_menu[7] }}">
                                     <i class="fas fa-clipboard-list fa-lg" aria-hidden="true"></i>
                                 </a>
-                                <button title="Mover para Pendentes" style="margin-left: 10px" class="btn btn-default pendente" value="PENDENTE">
+                                <button title="Mover para Pendentes" style="margin-left: 10px"
+                                    class="btn btn-default pendente" value="PENDENTE">
                                     <i class="fas fa-paste fa-lg" aria-hidden="true"></i></a>
                                 </button>
                             </td>
-                            <td class="semana_inter" style="display: none;">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
+                            <td class="semana_inter" style="display: none;">{{ published_menu[4] }} - {{
+                                published_menu[5] }}</td>
                         </tr>
-                    {% endfor %}
-                    {% if published_menus | length == 0 %}
+                        {% endfor %}
+                        {% if published_menus | length == 0 %}
                         <tr>
                             <td colspan="10">
                                 Nenhum cardápio publicado no período.
                             </td>
                         </tr>
-                    {% endif %}
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -315,167 +365,169 @@
     <button onclick="topFunction()" id="btn-top" class="btn btn-info" title="Volte para o topo">⬆️</button>
     <footer class="container-fluid text-center">
         <br>
-        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+        <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
+                title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
         </p>
     </footer>
-</div>
+    </div>
 
-<!-- Script com a funcionalidade do filtro da tabela -->
-<script>
-    /**
-     *   I don't recommend using this plugin on large tables, I just wrote it to make the demo usable. It will work fine for smaller tables
-     *   but will likely encounter performance issues on larger tables.
-     *
-     *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
-     *       $(input-element).filterTable()
-     *
-     *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
-     */
-    (function () {
-        'use strict';
-        var $ = jQuery;
-        $.fn.extend({
-            filterTable: function () {
-                return this.each(function () {
-                    $(this).on('keyup', function (e) {
-                        $('.filterTable_no_results').remove();
-                        var $this = $(this),
-                            search = $this.val().toLowerCase(),
-                            target = $this.attr('data-filters'),
-                            $target = $(target),
-                            $rows = $target.find('tbody tr');
+    <!-- Script com a funcionalidade do filtro da tabela -->
+    <script>
+        /**
+         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo usable. It will work fine for smaller tables
+         *   but will likely encounter performance issues on larger tables.
+         *
+         *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+         *       $(input-element).filterTable()
+         *
+         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+         */
+        (function () {
+            'use strict';
+            var $ = jQuery;
+            $.fn.extend({
+                filterTable: function () {
+                    return this.each(function () {
+                        $(this).on('keyup', function (e) {
+                            $('.filterTable_no_results').remove();
+                            var $this = $(this),
+                                search = $this.val().toLowerCase(),
+                                target = $this.attr('data-filters'),
+                                $target = $(target),
+                                $rows = $target.find('tbody tr');
 
-                        if (search == '') {
-                            $rows.show();
-                        } else {
-                            $rows.each(function () {
-                                var $this = $(this);
-                                $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
-                            })
-                            if ($target.find('tbody tr:visible').size() === 0) {
-                                var col_count = $target.find('tr').first().find('td').size();
-                                var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
-                                $target.find('tbody').append(no_results);
+                            if (search == '') {
+                                $rows.show();
+                            } else {
+                                $rows.each(function () {
+                                    var $this = $(this);
+                                    $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+                                })
+                                if ($target.find('tbody tr:visible').size() === 0) {
+                                    var col_count = $target.find('tr').first().find('td').size();
+                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
+                                    $target.find('tbody').append(no_results);
+                                }
                             }
-                        }
+                        });
                     });
+                }
+            });
+            $('[data-action="filter"]').filterTable();
+        })(jQuery);
+
+        $(function () {
+            // attach table filter plugin to inputs
+            $('[data-action="filter"]').filterTable();
+
+            $('.container').on('click', '.panel-heading span.filter', function (e) {
+                var $this = $(this),
+                    $panel = $this.parents('.panel');
+
+                $panel.find('.panel-body').slideToggle();
+                if ($this.css('display') != 'none') {
+                    $panel.find('.panel-body input').focus();
+                }
+            });
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+
+    <!-- Botões de ordenação da tabela -->
+    <script src="static/js/w3.js"></script>
+
+    <!-- POSTAR linha da tabela -->
+    <script>
+        $(".pendente").click(function () {
+            var $row = $(this).closest("tr");    // Find the row
+            var $text = $row.find(".ids").text(); // Find the text
+            var lista_ids = $text.split(',');
+            var cardapios = []
+            console.log(lista_ids)
+            $.each(lista_ids, function (index, value) {
+
+                cardapios.push({
+                    "_id": { "$oid": value },
+                    "status": "PENDENTE"
                 });
-            }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: '/atualiza_cardapio',
+                data: JSON.stringify(cardapios),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+                    console.log("Cardapio publicado com sucesso");
+                    $row.hide();
+                }
+            });
+
         });
-        $('[data-action="filter"]').filterTable();
-    })(jQuery);
 
-    $(function () {
-        // attach table filter plugin to inputs
-        $('[data-action="filter"]').filterTable();
+    </script>
 
-        $('.container').on('click', '.panel-heading span.filter', function (e) {
-            var $this = $(this),
-                $panel = $this.parents('.panel');
+    <!-- DELETAR linha da tabela -->
+    <script>
+        $(".deletar").click(function () {
+            var $row = $(this).closest("tr");    // Find the row
+            var $text = $row.find(".ids").text(); // Find the text
+            var lista_ids = $text.split(',');
+            var cardapios = []
+            console.log(lista_ids)
+            $.each(lista_ids, function (index, value) {
 
-            $panel.find('.panel-body').slideToggle();
-            if ($this.css('display') != 'none') {
-                $panel.find('.panel-body input').focus();
-            }
+                cardapios.push({
+                    "_id": { "$oid": value },
+                    "status": "DELETADO"
+                });
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: '/atualiza_cardapio',
+                data: JSON.stringify(cardapios),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+                    console.log("Cardapio publicado com sucesso");
+                    $row.hide();
+                }
+            });
+
         });
-        $('[data-toggle="tooltip"]').tooltip();
-    })
-</script>
 
-<!-- Botões de ordenação da tabela -->
-<script src="static/js/w3.js"></script>
+    </script>
 
-<!-- POSTAR linha da tabela -->
-<script>
-    $(".pendente").click(function () {
-        var $row = $(this).closest("tr");    // Find the row
-        var $text = $row.find(".ids").text(); // Find the text
-        var lista_ids = $text.split(',');
-        var cardapios = []
-        console.log(lista_ids)
-        $.each(lista_ids, function (index, value) {
-
-            cardapios.push({
-                "_id": {"$oid": value},
-                "status": "PENDENTE"
+    <!-- Filtro da semana ao carregar a pagina -->
+    <script>
+        $(document).ready(function () {
+            var semana_filtro = $('#filtro_semana_mes').val()
+            $('#task-table tr').not(':first').each(function () {
+                var semana_linha = $($(this).children('td')[11]).text()
+                $(this).show();
             });
         });
+    </script>
 
-        $.ajax({
-            type: 'POST',
-            url: '/atualiza_cardapio',
-            data: JSON.stringify(cardapios),
-            contentType: 'application/json',
-            //dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-                console.log("Cardapio publicado com sucesso");
-                $row.hide();
+    <script>
+        window.onscroll = function () { scrollFunction() };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("btn-top").style.display = "block";
+            } else {
+                document.getElementById("btn-top").style.display = "none";
             }
-        });
+        }
 
-    });
-
-</script>
-
-<!-- DELETAR linha da tabela -->
-<script>
-    $(".deletar").click(function () {
-        var $row = $(this).closest("tr");    // Find the row
-        var $text = $row.find(".ids").text(); // Find the text
-        var lista_ids = $text.split(',');
-        var cardapios = []
-        console.log(lista_ids)
-        $.each(lista_ids, function (index, value) {
-
-            cardapios.push({
-                "_id": {"$oid": value},
-                "status": "DELETADO"
-            });
-        });
-
-        $.ajax({
-            type: 'POST',
-            url: '/atualiza_cardapio',
-            data: JSON.stringify(cardapios),
-            contentType: 'application/json',
-            //dataType: 'json',
-            success: function (data, textStatus, jqXHR) {
-                console.log("Cardapio publicado com sucesso");
-                $row.hide();
-            }
-        });
-
-    });
-
-</script>
-
-<!-- Filtro da semana ao carregar a pagina -->
-<script>
-    $(document).ready(function () {
-        var semana_filtro = $('#filtro_semana_mes').val()
-        $('#task-table tr').not(':first').each(function () {
-            var semana_linha = $($(this).children('td')[11]).text()
-            $(this).show();
-        });
-    });
-</script>
-
-<script>
-    window.onscroll = function() {scrollFunction()};
-
-    function scrollFunction() {
-      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-        document.getElementById("btn-top").style.display = "block";
-      } else {
-        document.getElementById("btn-top").style.display = "none";
-      }
-    }
-
-    function topFunction() {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-    }
-</script>
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
 
 </body>
+
 </html>
