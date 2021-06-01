@@ -608,9 +608,9 @@ def visualizador():
 
     ##### Optimation referrer #####
     if args.get('status') == 'PUBLICADO':
-        referrer = '/pendencias_publicadas'
+        referrer = '/editor/pendencias_publicadas'
     else:
-        referrer = '/pendencias_deletadas'
+        referrer = '/editor/pendencias_deletadas'
 
     # Monta json
     jdata = get_cardapio(args)
@@ -773,7 +773,7 @@ class MultiCheckboxField(SelectMultipleField):
 @app.route(f"/{raiz}/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
-    referrer = '/pendencias_publicacoes'
+    referrer = '/editor/pendencias_publicacoes'
 
     if 'session_referrer' in session:
         if '?' not in request.referrer and 'configuracoes_cardapio' not in request.referrer:
@@ -789,7 +789,7 @@ def config_cardapio():
 @app.route(f"/{raiz}/configuracoes_cardapio_unidades_especiais", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio_unidades_especiais():
-    referrer = '/pendencias_publicacoes'
+    referrer = '/editor/pendencias_publicacoes'
 
     if 'session_referrer' in session:
         if '?' not in request.referrer and 'configuracoes_cardapio_unidades_especiais' not in request.referrer:
