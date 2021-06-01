@@ -10,7 +10,17 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">,
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(function () {
+                $("#list ul").sortable();
+            });
+        });
+    </script>
+
     <style>
         /* Objetos da tabela */
         .row {
@@ -468,7 +478,8 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form method=post action="/adicionar_escola">
+
+                <form method=post action="/editor/adicionar_escola">
                     <dl>
                         <div>
                             <div class="row forms" style="padding-top: 40px">
@@ -535,7 +546,7 @@
                             <div class="row forms">
                                 <div class="col-xs-12">
                                     <label class="col-sm-3 col-xs-12">{{ form.meals.label }}</label>
-                                    <span class="checkbox-form col-sm-9 col-xs-12">{{ form.meals }}</span>
+                                    <span id="list" class="checkbox-form col-sm-9 col-xs-12">{{ form.meals }}</span>
                                 </div>
                             </div>
                             <hr />

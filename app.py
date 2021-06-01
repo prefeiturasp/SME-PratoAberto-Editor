@@ -960,7 +960,18 @@ def escolas(id_escola=None):
         form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
         form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
         form.ages.data = school['idades']
+
+        # Colocando as choices na ordem que foi escolhido a alimentação
+        choices = form.meals.choices
+        for ind, r in enumerate(school['refeicoes']):
+            ind_c = [i for i, ch in enumerate(choices) if ch[0] == r][0]
+            aux = choices[ind]
+            choices[ind] = choices[ind_c]
+            choices[ind_c] = aux
+
+        form.meals.choices = choices
         form.meals.data = school['refeicoes']
+
     if request.method == "GET":
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
@@ -978,7 +989,7 @@ def adicionar_escola():
     form = SchoolRegistrationForm(request.form)
     if not form.validate():
         flash('Ocorreu um erro ao salvar as informações')
-        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+        return redirect('editor/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
     new_school = dict()
     new_school['_id'] = form.cod_eol.data
     new_school['nome'] = form.school_name.data.upper()
@@ -1005,7 +1016,7 @@ def adicionar_escola():
         flash('Informações salvas com sucesso')
     else:
         flash('Ocorreu um erro ao salvar as informações')
-    return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+    return redirect('editor/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
 @app.route(f'/{raiz}/excluir_escola/<int:id_escola>', methods=['DELETE'])
