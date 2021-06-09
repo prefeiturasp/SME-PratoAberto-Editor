@@ -5,12 +5,13 @@ WORKDIR /code
 
 
 RUN apk update && apk add --no-cache \
-      --virtual=.build-dependencies \
-      gcc \
-      musl-dev \
-      postgresql-dev \
-      git \
-      python3-dev && \
-    python -m pip --no-cache install -U pip && \
-    python -m pip --no-cache install -r requirements.txt && \
-    apk del --purge .build-dependencies
+  --virtual=.build-dependencies \
+  gcc \
+  musl-dev \
+  postgresql-dev \
+  git \
+  python3-dev && \
+  python -m pip --no-cache install -U pip && \
+  python -m pip --no-cache install -r requirements.txt && \
+  python db_setup.py \
+  apk del --purge .build-dependencies
