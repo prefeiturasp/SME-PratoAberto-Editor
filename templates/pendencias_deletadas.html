@@ -83,7 +83,7 @@
     <!-- Upload form -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
         <div class="modal-dialog" role="document">
-            <form method="post" action="upload" enctype="multipart/form-data">
+            <form method="post" action="/editor/upload" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -307,7 +307,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
@@ -399,7 +399,7 @@
                     if (confirm('Deseja realmente remover o(s) cardápio(s) selecionado(s), os registros serão removidos permanentemente sem possibilidade de recuperação! Deseja continuar?')) {
 
                         jQuery.ajax({
-                            url: '/remove-cardapio',
+                            url: '/editor/remove-cardapio',
                             type: 'DELETE',
                             data: { data: JSON.stringify(ids) },
                             dataType: 'html',

@@ -91,7 +91,7 @@
     <!-- Upload form -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
         <div class="modal-dialog" role="document">
-            <form method="post" action="upload" enctype="multipart/form-data">
+            <form method="post" action="/editor/upload" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -132,7 +132,7 @@
         </div>
     </div>
     <div class="panel panel-default" style="margin-top: 30px;">
-        <form method="get" action="/pendencias_publicadas">
+        <form method="get" action="/editor/pendencias_publicadas">
             <div class="row" style="margin-top: 15px">
                 <div class="col-sm-3 col-xs-12">
                     <label for="tipo_atendimento">Tipo de gestão</label>
@@ -454,7 +454,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
@@ -486,7 +486,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',

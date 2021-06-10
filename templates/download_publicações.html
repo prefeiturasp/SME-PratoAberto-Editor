@@ -96,7 +96,7 @@
         <!-- Campos GERAÇAO TABELA -->
         <div class="panel panel-default">
             <div class="row">
-                <form method="post" action="/download_publicacao">
+                <form method="post" action="/editor/download_publicacao">
                     <div class="row">
                         <div class="col-sm-3">
                             <label for="data-inicial">Data Inicial:</label>
@@ -150,7 +150,7 @@
                     </div>
                 </form>
                 <div class="col-sm-3 pull-right" style="margin-top: -80px">
-                    <form method="post" action="/download_csv">
+                    <form method="post" action="/editor/download_csv">
                         <button style="margin-top: 25px;" type="submit" id="btn_download" class="btn col-sm-12"><i
                                 class="glyphicon glyphicon-download-alt"></i> DOWNLOAD</button>
                         <input type="hidden" id="download_input" name="datas" value="{{data_inicio_fim}}">
