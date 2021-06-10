@@ -1,6 +1,6 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="download-unidade-especial">
     <div class="modal-dialog" role="document">
-        <form method="post" action="/download-unidade-especial" class="form-horizontal">
+        <form method="post" action="/editor/download-unidade-especial" class="form-horizontal">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -13,7 +13,7 @@
                         <div class="col-sm-6">
                             <select name="unit_special" class="form-control">
                                 {% for ue in ue_dict %}
-                                    <option value="{{ ue.id }}">{{ ue.label }} ({{ ue.range }})</option>
+                                <option value="{{ ue.id }}">{{ ue.label }} ({{ ue.range }})</option>
                                 {% endfor %}
                             </select>
                         </div>

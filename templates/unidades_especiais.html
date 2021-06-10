@@ -160,7 +160,8 @@
         <!-- Edição da escola -->
         <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
             <div class="modal-dialog" role="document" style="width: 70%">
-                <form method="post" id="post_json" action="/atualiza_historico_escolas" enctype="multipart/form-data">
+                <form method="post" id="post_json" action="/editor/atualiza_historico_escolas"
+                    enctype="multipart/form-data">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -309,9 +310,9 @@
                     </button>
                 </div>
                 {% if form.identifier.data %}
-                <form method="post" action="/unidades_especiais/{{ form.identifier.data }}?openModal=true">
+                <form method="post" action="/editor/unidades_especiais/{{ form.identifier.data }}?openModal=true">
                     {% else %}
-                    <form method="post" action="/unidades_especiais?openModal=true">
+                    <form method="post" action="/editor/unidades_especiais?openModal=true">
                         {% endif %}
                         <div class="row forms">
                             <div class="col-xs-12">
@@ -329,7 +330,7 @@
                         </div>
                     </form>
                     <hr />
-                    <form method=post action="/adicionar_unidade_especial">
+                    <form method=post action="/editor/adicionar_unidade_especial">
                         <dl>
                             <div>
                                 <div class="row forms">
@@ -470,7 +471,7 @@
         function deleteSpecialUnit(special_unit) {
             $.ajax({
                 type: 'DELETE',
-                url: '/excluir_unidade_especial/' + special_unit._id.$oid,
+                url: '/editor/excluir_unidade_especial/' + special_unit._id.$oid,
                 data: JSON.stringify(special_unit),
                 contentType: 'application/json',
                 //dataType: 'json',

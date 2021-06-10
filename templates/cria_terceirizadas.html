@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Prato aberto</title>
@@ -11,11 +12,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
 
     <style>
-
         .row.tbl {
             padding-top: 40px;
         }
@@ -26,12 +28,12 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:20px;
+            margin-top: 20px;
             margin-bottom: 20px;
             padding: 0 10px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -40,22 +42,22 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
         .table-responsive {
-            height:500px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 500px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
-        .table > tbody > tr > td,
-        .table > tfoot > tr > td {
+        .table>tbody>tr>td,
+        .table>tfoot>tr>td {
             vertical-align: inherit;
         }
 
@@ -81,14 +83,15 @@
             width: 30%;
             padding-right: 0px;
         }
+
         .col-sm-8 {
             width: 70%;
             padding-left: 0px;
 
         }
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- NAVBAR -->
@@ -99,10 +102,11 @@
                     <div class="navbar-header">
                         <a class="navbar-brand" href="#">Prato Aberto - Cardápios Terceirizadas</a>
                     </div>
-                    <form method="post" id="post_json" action="/upload_terceirizada">
+                    <form method="post" id="post_json" action="/editor/upload_terceirizada">
                         <div class="collapse navbar-collapse">
                             <ul class="nav navbar-nav navbar-right">
-                                <button type="submit" class="btn btn-success" onclick="return confirm('Todas as informações estão corretas, deseja salvar?')">
+                                <button type="submit" class="btn btn-success"
+                                    onclick="return confirm('Todas as informações estão corretas, deseja salvar?')">
                                     <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML</button>
                                 <input type="hidden" name="json_dump" id="json_dump">
                                 <a type="button" class="btn btn-default " href="{{ referrer }}">
@@ -115,10 +119,12 @@
             </nav>
         </div>
 
-         <!-- Campos GERAÇAO TABELA -->
+        <!-- Campos GERAÇAO TABELA -->
         <div class="row">
             <div class="col-sm-1">
-                <button class="btn btn-primary" data-toggle="collapse" data-target="#demo" style="width: 38px !important"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+                <button class="btn btn-primary" data-toggle="collapse" data-target="#demo"
+                    style="width: 38px !important"><span class="glyphicon glyphicon-plus"
+                        aria-hidden="true"></span></button>
             </div>
             <div class="col-sm-3">
 
@@ -130,7 +136,7 @@
         {% include 'messages.html' %}
 
 
-        <div id="demo" class ="panel panel-default collapse">
+        <div id="demo" class="panel panel-default collapse">
             <div class="row">
                 <div class="col-sm-4">
                     <div class="form-inline" style="width: 100%">
@@ -161,7 +167,8 @@
                 <div class="col-sm-8">
                     <div id="lista-editais" style="text-align: left">
                         {% for edital in editais: %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ edital }}">{{ edital }} &times;</span>
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
+                            id="{{ edital }}">{{ edital }} &times;</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -173,7 +180,8 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <label class="sr-only" for="TIPO_ESCOLA">TIPO_ESCOLA</label>
-                            <input type="text" class="form-control" id="TIPO_ESCOLA" placeholder="Ex: CEI, CIEJA, EMEI, EMEF e etc...">
+                            <input type="text" class="form-control" id="TIPO_ESCOLA"
+                                placeholder="Ex: CEI, CIEJA, EMEI, EMEF e etc...">
                             <button onclick="adicionaEscola()" class="btn btn-primary">+ TIPO ESCOLA</button>
                         </div>
                     </div>
@@ -181,7 +189,8 @@
                 <div class="col-sm-8">
                     <div id="lista-escolas" style="text-align: left">
                         {% for unidade in tipo_unidade %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ unidade }}">{{ unidade }} &times;</span>
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
+                            id="{{ unidade }}">{{ unidade }} &times;</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -193,7 +202,8 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <label class="sr-only" for="IDADE">IDADE</label>
-                            <input type="text" class="form-control" id="IDADE" placeholder="Ex: C - 4 A 5 MESES, D - 6 A 7 MESES e etc...">
+                            <input type="text" class="form-control" id="IDADE"
+                                placeholder="Ex: C - 4 A 5 MESES, D - 6 A 7 MESES e etc...">
                             <button onclick="adicionaIdade()" class="btn btn-primary">+ IDADE</button>
                         </div>
                     </div>
@@ -201,7 +211,8 @@
                 <div class="col-sm-8">
                     <div id="lista-idade" style="text-align: left">
                         {% for idade in idades %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px;cursor: pointer;" id="{{ idade }}">{{ idade }} &times;</span>
+                        <span type="button" class="btn btn-default" onclick="deletar(this)"
+                            style="margin-right: 8px;cursor: pointer;" id="{{ idade }}">{{ idade }} &times;</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -213,7 +224,8 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <label class="sr-only" for="REFEICAO">IDADE</label>
-                            <input type="text" class="form-control" id="REFEICAO" placeholder="Ex: A - ALMOCO, L - LANCHE e etc...">
+                            <input type="text" class="form-control" id="REFEICAO"
+                                placeholder="Ex: A - ALMOCO, L - LANCHE e etc...">
                             <button onclick="adicionaRefeicao()" class="btn btn-primary">+ REFEIÇÃO</button>
                         </div>
                     </div>
@@ -221,7 +233,8 @@
                 <div class="col-sm-8">
                     <div id="lista-refeicao" style="text-align: left">
                         {% for refeicao in refeicoes %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px" id="{{ refeicao }}">{{ refeicao }} &times;</span>
+                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
+                            id="{{ refeicao }}">{{ refeicao }} &times;</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -240,13 +253,15 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Cardápios Pendentes</h3>
                     <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                            data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
+                    <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                        data-filters="#task-table" placeholder="Filter Tasks" />
                 </div>
                 <div class="table-responsive">
                     <div class="panel panel-default">
@@ -272,7 +287,8 @@
         </div>
         <footer class="container-fluid text-center">
             <br>
-            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
+                    title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
         </footer>
     </div>
 
@@ -287,13 +303,13 @@
         *
         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
         */
-        (function(){
+        (function () {
             'use strict';
             var $ = jQuery;
             $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
+                filterTable: function () {
+                    return this.each(function () {
+                        $(this).on('keyup', function (e) {
                             $('.filterTable_no_results').remove();
                             var $this = $(this),
                                 search = $this.val().toLowerCase(),
@@ -301,16 +317,16 @@
                                 $target = $(target),
                                 $rows = $target.find('tbody tr');
 
-                            if(search == '') {
+                            if (search == '') {
                                 $rows.show();
                             } else {
-                                $rows.each(function(){
+                                $rows.each(function () {
                                     var $this = $(this);
                                     $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
                                 })
-                                if($target.find('tbody tr:visible').size() === 0) {
+                                if ($target.find('tbody tr:visible').size() === 0) {
                                     var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
+                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
                                     $target.find('tbody').append(no_results);
                                 }
                             }
@@ -321,16 +337,16 @@
             $('[data-action="filter"]').filterTable();
         })(jQuery);
 
-        $(function(){
+        $(function () {
             // attach table filter plugin to inputs
             $('[data-action="filter"]').filterTable();
 
-            $('.container').on('click', '.panel-heading span.filter', function(e){
+            $('.container').on('click', '.panel-heading span.filter', function (e) {
                 var $this = $(this),
                     $panel = $this.parents('.panel');
 
                 $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
+                if ($this.css('display') != 'none') {
                     $panel.find('.panel-body input').focus();
                 }
             });
@@ -344,7 +360,7 @@
     <!-- Deleta linha da tabela -->
     <script>
         function deleteRow(r) {
-            if(confirm('Deseja realmente remover esta edição?')){
+            if (confirm('Deseja realmente remover esta edição?')) {
                 var i = r.parentNode.parentNode.rowIndex;
                 document.getElementById("task-table").deleteRow(i);
             }
@@ -356,7 +372,7 @@
         function adicionaEdital() {
             var EDITAL = document.getElementById("EDITAL").value;
             $('#lista-editais').append(
-                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='"+EDITAL+"'>"+EDITAL+" &times;</span>"
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + EDITAL + "'>" + EDITAL + " &times;</span>"
             );
         };
     </script>
@@ -366,7 +382,7 @@
         function adicionaEscola() {
             var TIPO_ESCOLA = document.getElementById("TIPO_ESCOLA").value;
             $('#lista-escolas').append(
-                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='"+TIPO_ESCOLA+"'>"+TIPO_ESCOLA+" &times;</span>"
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + TIPO_ESCOLA + "'>" + TIPO_ESCOLA + " &times;</span>"
             );
         };
     </script>
@@ -376,7 +392,7 @@
         function adicionaIdade() {
             var IDADE = document.getElementById("IDADE").value;
             $('#lista-idade').append(
-                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='"+IDADE+"'>"+IDADE+" &times;</span>"
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + IDADE + "'>" + IDADE + " &times;</span>"
             );
         };
     </script>
@@ -389,7 +405,7 @@
                 alert("Selecione uma data")
             else
                 $('#lista-datas').append(
-                    "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='"+DATA+"'>"+DATA+" &times;</span>"
+                    "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
                 );
         };
     </script>
@@ -398,7 +414,7 @@
     <script>
         function adicionaRefeicao() {
             var REFEICAO = document.getElementById("REFEICAO").value;
-            var ROW = "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='"+REFEICAO+"'>"+REFEICAO+" &times;</span>"
+            var ROW = "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + REFEICAO + "'>" + REFEICAO + " &times;</span>"
             $('#lista-refeicao').append(
                 ROW
             );
@@ -438,11 +454,11 @@
 
     <!-- Cria json da tabela -->
     <script>
-        $('#post_json').submit(function() {
+        $('#post_json').submit(function () {
             var json_dump = [];
             var cardapio = {};
 
-            $('#task-table tr.item').each(function() {
+            $('#task-table tr.item').each(function () {
                 cardapio = {
                     'status': 'PENDENTE',
                     'tipo_atendimento': 'TERCEIRIZADA',
@@ -451,8 +467,9 @@
                     'data': $($(this).children('td')[4]).text(),
                     'idade': $($(this).children('td')[3]).text(),
                     'tipo_refeicao': $($(this).children('td')[5]).text()
-                    };
-                json_dump.push(cardapio);});
+                };
+                json_dump.push(cardapio);
+            });
             $('#json_dump').attr('value', JSON.stringify(json_dump));
             return true; // return false to cancel form action
         });
@@ -475,4 +492,5 @@
 
 
 </body>
+
 </html>

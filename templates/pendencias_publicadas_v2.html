@@ -132,7 +132,7 @@
         <!-- Upload form -->
         <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
             <div class="modal-dialog" role="document">
-                <form method="post" action="upload" enctype="multipart/form-data">
+                <form method="post" action="/editor/upload" enctype="multipart/form-data">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -166,7 +166,7 @@
                     Deletados</a>
             </div>
         </div>
-        <form method="get" action="/pendencias_publicadas">
+        <form method="get" action="/editor/pendencias_publicadas">
             <div class="row">
                 <div style="padding-left: 0px" class="col-lg-4 col-md-6 col-sm-6 col-xs-12 dropdown">
                     <label> Selecione a extensão das datas:</label>
@@ -373,7 +373,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
@@ -405,7 +405,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
