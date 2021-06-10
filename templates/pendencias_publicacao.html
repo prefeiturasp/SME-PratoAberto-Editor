@@ -244,7 +244,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <form method="post" action="/calendario_editor_grupo">
+            <form method="post" action="/editor/calendario_editor_grupo">
                 <button class="col-sm-offset-8 col-sm-3 btn btn-lg btn-info" type="submit"
                     style="margin-top: 20px; display: none" id="botao_edicao_grupo">EDITAR GRUPO
                 </button>
@@ -260,7 +260,7 @@
     <!-- Upload form -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
         <div class="modal-dialog" role="document">
-            <form method="post" action="upload" enctype="multipart/form-data">
+            <form method="post" action="/editor/upload" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -489,7 +489,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/atualiza_cardapio',
+                url: '/editor/atualiza_cardapio',
                 data: JSON.stringify(cardapios),
                 contentType: 'application/json',
                 //dataType: 'json',
@@ -522,7 +522,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/atualiza_cardapio',
+                    url: '/editor/atualiza_cardapio',
                     data: JSON.stringify(cardapios),
                     contentType: 'application/json',
                     //dataType: 'json',

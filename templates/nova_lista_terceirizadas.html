@@ -8,58 +8,58 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form method=post action="/atualiza_receitas">
-          <dl>
-              <div>
-                  <div class="row forms" style="padding-top: 40px">
-                      <div class="col-sm-6 col-xs-12">
-                          <label class="col-sm-6 col-xs-12">{{ form.menu_id.label }}</label>
-                          <span class="col-sm-4 col-xs-12">NOVO</span>
-                      </div>
-                      <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
-                          <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
-                          <span class="col-sm-4 col-xs-12">{{ form.management }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-sm-6 col-xs-12">
-                          <label class="col-sm-6 col-xs-12">{{ form.school_type.label }}</label>
-                          <span class="col-sm-4 col-xs-12">{{ form.school_type }}</span>
-                      </div>
-                      <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
-                          <label class="col-sm-6 col-xs-12">{{ form.edital.label }}</label>
-                          <span class="col-sm-4 col-xs-12">{{ form.edital }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-sm-6 col-xs-12">
-                          <label class="col-sm-6 col-xs-12">{{ form.weekday.label }} (YYYYMMDD)</label>
-                          <span class=" col-sm-4 col-xs-12">{{ form.weekday }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-xs-12">
-                        <label class="col-sm-3 col-xs-12">{{ form.meals.label }}</label>
-                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.meals }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-xs-12">
-                        <label class="col-sm-3 col-xs-12"{{ form.ages.label }}</label>
-                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.ages }}</span>
-                      </div>
-                  </div>
-                  <div class="row forms">
-                      <div class="col-xs-12">
-                        <label class="col-sm-3 col-xs-12"{{ form.menu.label }}</label>
-                        <span class="checkbox-form col-sm-9 col-xs-12">{{ form.menu }}</span>
-                      </div>
-                  </div>
+      <form method=post action="/editor/atualiza_receitas">
+        <dl>
+          <div>
+            <div class="row forms" style="padding-top: 40px">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.menu_id.label }}</label>
+                <span class="col-sm-4 col-xs-12">NOVO</span>
               </div>
-          </dl>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
-            <button type="submit" class="btn btn-primary">SALVAR</button>
+              <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form.management }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.school_type.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form.school_type }}</span>
+              </div>
+              <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                <label class="col-sm-6 col-xs-12">{{ form.edital.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form.edital }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.weekday.label }} (YYYYMMDD)</label>
+                <span class=" col-sm-4 col-xs-12">{{ form.weekday }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12">{{ form.meals.label }}</label>
+                <span class="checkbox-form col-sm-9 col-xs-12">{{ form.meals }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12" {{ form.ages.label }}</label>
+                  <span class="checkbox-form col-sm-9 col-xs-12">{{ form.ages }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12" {{ form.menu.label }}</label>
+                  <span class="checkbox-form col-sm-9 col-xs-12">{{ form.menu }}</span>
+              </div>
+            </div>
+          </div>
+        </dl>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+          <button type="submit" class="btn btn-primary">SALVAR</button>
         </div>
       </form>
     </div>
