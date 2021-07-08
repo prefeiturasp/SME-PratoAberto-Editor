@@ -32,7 +32,7 @@ class ReceitasTerceirizadas(Base):
 # Create an engine that stores data in the local directory'scardapio
 # sqlalchemy_example.db file.
 def set():
-    engine = create_engine('sqlite:///configuracoes_editor_merenda.db')
+    engine = create_engine('sqlite:///sqlite/configuracoes_editor_merenda.db')
 
     # Create all tables in the engine. This is equivalent to "Create Table"
     # statements in raw SQL.
