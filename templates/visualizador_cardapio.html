@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Calendário</title>
     <meta charset="utf-8">
@@ -13,9 +14,8 @@
 
 
     <style>
-
         .row {
-            margin-top:20px;
+            margin-top: 20px;
             margin-bottom: 20px;
             padding: 0 10px;
         }
@@ -44,7 +44,7 @@
             margin-top: 8px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -53,17 +53,16 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
-
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- NAVBAR -->
@@ -88,7 +87,8 @@
         <!-- Informações do agrupamento -->
         <div class="container">
             <div style="text-align: left">
-                <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ tipo_atendimento }}</span>
+                <span type="button" class="btn btn-lg btn-default disabled" id="tipo_atendimento">{{ tipo_atendimento
+                    }}</span>
                 <span type="button" class="btn btn-lg btn-default disabled" id="tipo_unidade">{{ tipo_unidade }}</span>
                 <span type="button" class="btn btn-lg btn-default disabled" id="idade">{{ idade }}</span>
                 <span type="button" class="btn btn-lg btn-default disabled" id="agrupamento">{{ agrupamento }}</span>
@@ -101,45 +101,56 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Editor de Cardápio</h3>
                     <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                            data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
+                    <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                        data-filters="#task-table" placeholder="Filter Tasks" />
                 </div>
                 <table class="table table-hover table-striped" id="task-table">
-                <thead>
-                    <tr>
-                        <th class="col-md-1" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer">DIA<i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th class="col-md-1" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer">SEMANA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th class="col-md-2" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer">TIPO REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th class="col-md-4" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer">LISTA DE ALIMENTOS <i class="fa fa-sort" aria-hidden="true"></i></th>
-                        <th class="col-md-4">RECEITA</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for cardapio in cardapios %}
-                    {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
-                    <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
-                        <td class="col-md-1"><p class="text-center">{{ cardapio['data'] }}</p></td>
-                        <td class="col-md-1"><p class="text-center">{{ cardapio['dia_semana'] }}</p></td>
-                        <td class="col-md-2">{{ tipo_refeicao }}</td>
-                        <td class="lista-alimentos col-md-4">
-                            {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
+                    <thead>
+                        <tr>
+                            <th class="col-md-1" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+                                style="cursor:pointer">DIA<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th class="col-md-1" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+                                style="cursor:pointer">SEMANA <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th class="col-md-2" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                                style="cursor:pointer">TIPO REFEIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th class="col-md-4" onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer">LISTA DE ALIMENTOS <i class="fa fa-sort" aria-hidden="true"></i>
+                            </th>
+                            <th class="col-md-4">RECEITA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cardapio in cardapios %}
+                        {% for tipo_refeicao, lista_alimentos in cardapio['cardapio'].items() %}
+                        <tr class="item" id="{{ cardapio['_id']['$oid'] }}">
+                            <td class="col-md-1">
+                                <p class="text-center">{{ cardapio['data'] }}</p>
+                            </td>
+                            <td class="col-md-1">
+                                <p class="text-center">{{ cardapio['dia_semana'] }}</p>
+                            </td>
+                            <td class="col-md-2">{{ tipo_refeicao }}</td>
+                            <td class="lista-alimentos col-md-4">
+                                {% for ingrediente in cardapio['cardapio_original'][tipo_refeicao] %}
                                 {{ ingrediente }},
-                            {% endfor %}
-                        </td>
-                        <td class="col-md-4">
-                            {% for ingrediente in lista_alimentos %}
+                                {% endfor %}
+                            </td>
+                            <td class="col-md-4">
+                                {% for ingrediente in lista_alimentos %}
                                 {{ ingrediente }},
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% endfor %}
-                </tbody>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -147,7 +158,7 @@
 
     <!-- Mantem a aba selecionada mesmo depois de mudar de data -->
     <script>
-        $(function() {
+        $(function () {
             // for bootstrap 3 use 'shown.bs.tab', for bootstrap 2 use 'shown' in the next line
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 // save the latest tab; use cookies if you like 'em better:
@@ -163,7 +174,7 @@
     </script>
 
     <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
+    <script src="/editor/static/js/w3.js"></script>
 
     <!-- Script com a funcionalidade do filtro da tabela -->
     <script>
@@ -176,13 +187,13 @@
         *
         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
         */
-        (function(){
+        (function () {
             'use strict';
             var $ = jQuery;
             $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
+                filterTable: function () {
+                    return this.each(function () {
+                        $(this).on('keyup', function (e) {
                             $('.filterTable_no_results').remove();
                             var $this = $(this),
                                 search = $this.val().toLowerCase(),
@@ -190,16 +201,16 @@
                                 $target = $(target),
                                 $rows = $target.find('tbody tr');
 
-                            if(search == '') {
+                            if (search == '') {
                                 $rows.show();
                             } else {
-                                $rows.each(function(){
+                                $rows.each(function () {
                                     var $this = $(this);
                                     $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
                                 })
-                                if($target.find('tbody tr:visible').size() === 0) {
+                                if ($target.find('tbody tr:visible').size() === 0) {
                                     var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
+                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
                                     $target.find('tbody').append(no_results);
                                 }
                             }
@@ -210,16 +221,16 @@
             $('[data-action="filter"]').filterTable();
         })(jQuery);
 
-        $(function(){
+        $(function () {
             // attach table filter plugin to inputs
             $('[data-action="filter"]').filterTable();
 
-            $('.container').on('click', '.panel-heading span.filter', function(e){
+            $('.container').on('click', '.panel-heading span.filter', function (e) {
                 var $this = $(this),
                     $panel = $this.parents('.panel');
 
                 $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
+                if ($this.css('display') != 'none') {
                     $panel.find('.panel-body input').focus();
                 }
             });
@@ -228,4 +239,5 @@
     </script>
 
 </body>
+
 </html>

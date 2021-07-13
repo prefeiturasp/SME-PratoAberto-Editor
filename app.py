@@ -47,7 +47,7 @@ if sentry_url:
         integrations=[FlaskIntegration()]
     )
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/editor/static')
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
