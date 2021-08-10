@@ -958,7 +958,7 @@ def escolas(id_escola=None):
         form.neighbourhood.data = school['bairro'].upper()
         form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
         form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
-        form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
+        form.edital.data = school.get('edital', '')
         form.ages.data = school['idades']
 
         # Colocando as choices na ordem que foi escolhido a alimentação
