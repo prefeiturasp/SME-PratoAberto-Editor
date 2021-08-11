@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pymongo
 from openpyxl import load_workbook
+from openpyxl.cell import Cell
 from openpyxl.styles import Border, Side
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -230,7 +231,7 @@ def gera_excel(parametros):
 
         # ..Arquivo xlsx de saída
         arq_nome = 'Cardapios_' + tipo_escola + '_' + dt + hr + '.xlsx'
-        xls = Path(os.path.abspath('tmp/')) / arq_nome
+        xls = Path(os.path.abspath('arquivos/')) / arq_nome
 
         # ..Datas do período e número de semanas
         dta_de = data_de[6:] + '-' + data_de[4:][:2] + '-' + data_de[:4]
@@ -273,14 +274,15 @@ def gera_excel(parametros):
 
                             for row in default_sheet.rows:
                                 for cell in row:
-                                    new_cell = new_wb.cell(row=cell.row, column=cell.col_idx, value=cell.value)
-                                    if cell.has_style:
-                                        new_cell.font = copy(cell.font)
-                                        new_cell.border = copy(cell.border)
-                                        new_cell.fill = copy(cell.fill)
-                                        new_cell.number_format = copy(cell.number_format)
-                                        new_cell.protection = copy(cell.protection)
-                                        new_cell.alignment = copy(cell.alignment)
+                                    if isinstance(cell, Cell):
+                                        new_cell = new_wb.cell(row=cell.row, column=cell.col_idx, value=cell.value)
+                                        if cell.has_style:
+                                            new_cell.font = copy(cell.font)
+                                            new_cell.border = copy(cell.border)
+                                            new_cell.fill = copy(cell.fill)
+                                            new_cell.number_format = copy(cell.number_format)
+                                            new_cell.protection = copy(cell.protection)
+                                            new_cell.alignment = copy(cell.alignment)
                     else:
                         default_sheet = wb['Semana 1']
 

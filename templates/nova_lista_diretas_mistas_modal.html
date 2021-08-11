@@ -1,0 +1,75 @@
+<div class="modal fade" id="modalAddDirectorAndMixerMenu" tabindex="-1" role="dialog" aria-labelledby="maria-hidden="
+  true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="width: 130%">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 pull-left font-weight-bold">Adicionar cardápio Mista e Diretas</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method=post action="/editor/atualiza_receitas">
+        <input type="hidden" name="is_direta_mista" value="1" />
+        <dl>
+          <div>
+            <div class="row forms" style="padding-top: 40px">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.menu_id.label }}</label>
+                <span class="col-sm-4 col-xs-12">NOVO</span>
+              </div>
+              <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
+                <span class="col-sm-4 col-xs-12">
+                  <select name="management">
+                    <option value="DIRETA">DIRETA</option>
+                    <option value="MISTA">MISTA</option>
+                  </select>
+                </span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.school_type.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form.school_type }}</span>
+              </div>
+              <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
+                <label class="col-sm-6 col-xs-12">{{ form.grouping.label }}</label>
+                <span class="col-sm-4 col-xs-12">{{ form.grouping }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-sm-6 col-xs-12">
+                <label class="col-sm-6 col-xs-12">{{ form.weekday.label }} (YYYYMMDD)</label>
+                <span class=" col-sm-4 col-xs-12">{{ form.weekday }}</span>
+              </div>
+            </div>
+            <div class="row forms has-error">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12">{{ form.meals.label }}</label>
+                <span class="checkbox-form col-sm-9 col-xs-12" aria-describedby="helpBlock2">{{ form.meals }}</span>
+                <span id="helpBlock2" class="help-block">Muito cuidado para não subescrever uma refeição já cadastrada
+                  pelo PAPA.</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12">{{ form.ages.label }}</label>
+                <span class="checkbox-form col-sm-9 col-xs-12">{{ form.ages }}</span>
+              </div>
+            </div>
+            <div class="row forms">
+              <div class="col-xs-12">
+                <label class="col-sm-3 col-xs-12">{{ form.menu.label }}</label>
+                <span class="checkbox-form col-sm-9 col-xs-12">{{ form.menu }}</span>
+              </div>
+            </div>
+          </div>
+        </dl>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+          <button type="submit" class="btn btn-primary">SALVAR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -100,14 +100,15 @@
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Cardápios Terceirizadas</a>
+                        <a class="navbar-brand" href="#">Prato Aberto - Cardápios Unidades Especial</a>
                     </div>
                     <form method="post" id="post_json" action="/editor/upload_terceirizada">
                         <div class="collapse navbar-collapse">
                             <ul class="nav navbar-nav navbar-right">
                                 <button type="submit" class="btn btn-success"
                                     onclick="return confirm('Todas as informações estão corretas, deseja salvar?')">
-                                    <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML</button>
+                                    <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML
+                                </button>
                                 <input type="hidden" name="json_dump" id="json_dump">
                                 <a type="button" class="btn btn-default " href="{{ referrer }}">
                                     <span class="glyphicon glyphicon-chevron-left"></span> VOLTAR PARA CARDÁPIOS
@@ -123,8 +124,8 @@
         <div class="row">
             <div class="col-sm-1">
                 <button class="btn btn-primary" data-toggle="collapse" data-target="#demo"
-                    style="width: 38px !important"><span class="glyphicon glyphicon-plus"
-                        aria-hidden="true"></span></button>
+                    style="width: 38px !important">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
             </div>
             <div class="col-sm-3">
 
@@ -160,15 +161,15 @@
                         <div class="form-group">
                             <label class="sr-only" for="EDITAL">EDITAL</label>
                             <input type="text" class="form-control" id="EDITAL" placeholder="EDITAL">
-                            <button onclick="adicionaEdital()" class="btn btn-primary">+ EDITAL</button>
+                            <button disabled onclick="adicionaEdital()" class="btn btn-primary">+ EDITAL</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-8">
                     <div id="lista-editais" style="text-align: left">
-                        {% for edital in editais: %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
-                            id="{{ edital }}">{{ edital }} &times;</span>
+                        {% for edital in editais %}
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" id="{{ edital }}">{{
+                            edital }} </span>
                         {% endfor %}
                     </div>
                 </div>
@@ -224,17 +225,40 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <label class="sr-only" for="REFEICAO">IDADE</label>
-                            <input type="text" class="form-control" id="REFEICAO"
+                            <input disabled type="text" class="form-control" id="REFEICAO"
                                 placeholder="Ex: A - ALMOCO, L - LANCHE e etc...">
-                            <button onclick="adicionaRefeicao()" class="btn btn-primary">+ REFEIÇÃO</button>
+                            <button disabled class="btn btn-primary">+ REFEIÇÃO</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-8">
                     <div id="lista-refeicao" style="text-align: left">
                         {% for refeicao in refeicoes %}
-                        <span type="button" class="btn btn-default" onclick="deletar(this)" style="margin-right: 8px"
-                            id="{{ refeicao }}">{{ refeicao }} &times;</span>
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" onclick="deletar(this)"
+                            id="{{ refeicao }}">{{ refeicao }} x</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Adiciona TIPO DE GESTÃO -->
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label class="sr-only" for="GESTAO">GESTÃO</label>
+                            <input disabled type="text" class="form-control" id="GESTAO"
+                                placeholder="Ex: DIRETA OU MISTA">
+                            <button disabled class="btn btn-primary">+ GESTÃO</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div id="lista-gestao" style="text-align: left">
+                        {% for gestao in gestoes %}
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" id="{{ gestao }}">{{
+                            gestao }}</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -268,13 +292,13 @@
                         <table class="table table-hover table-striped" id="task-table">
                             <thead>
                                 <tr>
-                                    <th style="cursor:pointer">tipo_atendimento </th>
-                                    <th style="cursor:pointer">tipo_unidade </th>
-                                    <th style="cursor:pointer">agrupamento </th>
-                                    <th style="cursor:pointer">idade </th>
-                                    <th style="cursor:pointer">data </th>
-                                    <th style="cursor:pointer">tipo_refeicao </th>
-                                    <th style="cursor:pointer">cardapio </th>
+                                    <th style="cursor:pointer">tipo_atendimento</th>
+                                    <th style="cursor:pointer">tipo_unidade</th>
+                                    <th style="cursor:pointer">agrupamento</th>
+                                    <th style="cursor:pointer">idade</th>
+                                    <th style="cursor:pointer">data</th>
+                                    <th style="cursor:pointer">tipo_refeicao</th>
+                                    <th style="cursor:pointer">cardapio</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -288,21 +312,22 @@
         <footer class="container-fluid text-center">
             <br>
             <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
-                    title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+                    title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
+            </p>
         </footer>
     </div>
 
     <!-- Script com a funcionalidade do filtro da tabela -->
     <script>
         /**
-        *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
-        *   but will likely encounter performance issues on larger tables.
-        *
-        *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
-        *       $(input-element).filterTable()
-        *
-        *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
-        */
+         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+         *   but will likely encounter performance issues on larger tables.
+         *
+         *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+         *       $(input-element).filterTable()
+         *
+         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+         */
         (function () {
             'use strict';
             var $ = jQuery;
@@ -401,12 +426,9 @@
     <script>
         function adicionaData() {
             var DATA = document.getElementById("data").value;
-            if (DATA === 'Data')
-                alert("Selecione uma data")
-            else
-                $('#lista-datas').append(
-                    "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
-                );
+            $('#lista-datas').append(
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id='" + DATA + "'>" + DATA + " &times;</span>"
+            );
         };
     </script>
 
@@ -441,9 +463,12 @@
                             var Data = $(this).attr('id')
                             $('#lista-refeicao > span').each(function () {
                                 var Refeicao = $(this).attr('id')
-                                $('#task-table').append(
-                                    "<tr class='item'><td>TERCEIRIZADA</td><td>" + Escola + "</td><td>" + Edital + "</td><td>" + Idade + "</td><td>" + Data + "</td><td>" + Refeicao + "</td><td></td><td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor : pointer;' class='fa'></i></a></td></tr>"
-                                );
+                                $('#lista-gestao > span').each(function () {
+                                    var gestao = $(this).attr('id')
+                                    $('#task-table').append(
+                                        "<tr class='item'><td>" + gestao + "</td><td>" + Escola + "</td><td>" + Edital + "</td><td>" + Idade + "</td><td>" + Data + "</td><td>" + Refeicao + "</td><td></td><td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor : pointer;' class='fa'></i></a></td></tr>"
+                                    );
+                                });
                             });
                         });
                     });
@@ -461,7 +486,7 @@
             $('#task-table tr.item').each(function () {
                 cardapio = {
                     'status': 'PENDENTE',
-                    'tipo_atendimento': 'TERCEIRIZADA',
+                    'tipo_atendimento': $($(this).children('td')[0]).text(),
                     'tipo_unidade': $($(this).children('td')[1]).text(),
                     'agrupamento': $($(this).children('td')[2]).text(),
                     'data': $($(this).children('td')[4]).text(),

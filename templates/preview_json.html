@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Prato Aberto - Editor Cardapio</title>
     <meta charset="utf-8">
@@ -17,11 +18,11 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:40px;
+            margin-top: 40px;
             padding: 0 10px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -30,16 +31,16 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
-        .table > tbody > tr > td,
-        .table > tfoot > tr > td {
+        .table>tbody>tr>td,
+        .table>tfoot>tr>td {
             vertical-align: inherit;
         }
 
@@ -50,9 +51,9 @@
         .item-DUPLICADO {
             background-color: #ff00001a !important;
         }
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- NAVBAR -->
@@ -63,17 +64,18 @@
                     <div class="navbar-header">
                         <a class="navbar-brand" href="#">Prato Aberto - Preview XML</a>
                     </div>
-                    <form method="post" action="/atualiza_cardapio">
+                    <form method="post" action="/editor/atualiza_cardapio">
                         <div class="collapse navbar-collapse">
                             <ul class="nav navbar-nav navbar-right">
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML</button>
-                                    <input type="hidden" name="json_dump" value="{{json_dump}}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-upload" aria-hidden="true"></i> SALVAR XML</button>
+                                <input type="hidden" name="json_dump" value="{{json_dump}}">
 
                                 <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#xml_form">
                                     <i class="glyphicon glyphicon-remove"></i> ESCOLHER OUTRO XML
                                 </a>
-                                <a href="/pendencias_publicacoes" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Voltar</a>
+                                <a href="/editor/pendencias_publicacoes" class="btn btn-primary"><i
+                                        class="fa fa-arrow-left"></i> Voltar</a>
 
                             </ul>
                         </div>
@@ -95,7 +97,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for cardapio in cardapios_preview %}
+                {% for cardapio in cardapios_preview %}
                 {% for tipo_refeicao, lista_alimentos in cardapio.cardapio.items() %}
                 <tr class="item-{{ cardapio.status }}">
                     <td> {{ cardapio.tipo_atendimento }} </td>
@@ -108,15 +110,15 @@
                     <td> {{ lista_alimentos|join(', ') }} </td>
                 </tr>
                 {% endfor %}
-            {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
     </div>
 
-<!-- Upload form -->
+    <!-- Upload form -->
     <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
         <div class="modal-dialog" role="document">
-            <form method="post" action="upload" enctype="multipart/form-data">
+            <form method="post" action="/editor/upload" enctype="multipart/form-data">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -125,7 +127,8 @@
                     </div>
                     <div class="modal-body">
                         <p>
-                            <input type="file" name="file" class="form-control-file"></p>
+                            <input type="file" name="file" class="form-control-file">
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
@@ -137,4 +140,5 @@
     </div>
 
 </body>
+
 </html>

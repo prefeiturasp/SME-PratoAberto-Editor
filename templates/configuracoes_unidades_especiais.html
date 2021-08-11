@@ -114,7 +114,7 @@
                 <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="#">Prato Aberto - Lista Cardápios Terceirizadas</a>
+                        <a class="navbar-brand" href="#">Prato Aberto - Lista Cardápios Unidades Especiais</a>
                     </div>
                     <form method="post" action="/editor/atualiza_receitas">
                         <div class="collapse navbar-collapse">
@@ -131,19 +131,15 @@
         </div>
         <div class="row">
             <button data-toggle="modal" data-target="#modalAddOutSourcedMenu"
-                title="Adicionar nova lista de cardápio de terceirizada." class="btn btn-primary btn-lg"
-                style="float: right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                Terceirizadas</button>&nbsp;&nbsp;
-            <button data-toggle="modal" data-target="#modalAddDirectorAndMixerMenu"
-                title="Adicionar nova lista de cardápio de mistas e diretas." class="btn btn-warning btn-lg pull-left"
-                style="float: right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Mistas e
-                Diretas</button>
+                title="Adicionar nova lista de cardápio de unidade especial." class="btn btn-primary btn-lg"
+                style="float: right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Cardápio Unidade
+                Especial</button>&nbsp;&nbsp;
         </div>
 
         <div class="row">
             <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h2 class="panel-title">Cardápios Teceirizadas</h2>
+                    <h2 class="panel-title">Cardápios Unidades Especiais</h2>
                     <div class="pull-right">
                         <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
                             data-container="body">
@@ -216,8 +212,7 @@
         </footer>
     </div>
 
-    {% include 'nova_lista_terceirizadas.html' %}
-    {% include 'nova_lista_diretas_mistas_modal.html' %}
+    {% include 'nova_lista_unidades_especiais.html' %}
 
     <!-- Script com a funcionalidade do filtro da tabela -->
     <script>

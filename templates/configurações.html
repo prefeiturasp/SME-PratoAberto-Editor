@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Prato Aberto - Editor Cardapio</title>
@@ -10,10 +11,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<style>
-
 		/* Objetos da tabela */
 		.row {
-			margin-top:40px;
+			margin-top: 40px;
 			padding: 0 10px;
 		}
 
@@ -21,7 +21,7 @@
 			width: 80%;
 		}
 
-		.clickable{
+		.clickable {
 			cursor: pointer;
 		}
 
@@ -30,40 +30,40 @@
 			font-size: 15px;
 		}
 
-		.panel-heading div span{
-			margin-left:5px;
+		.panel-heading div span {
+			margin-left: 5px;
 		}
 
-		.panel-body{
+		.panel-body {
 			display: none;
 		}
 
 		.table-responsive {
-			height:500px;
-			overflow-y:auto;
-			overflow-x:auto;
+			height: 500px;
+			overflow-y: auto;
+			overflow-x: auto;
 		}
 
-		.table > tbody > tr > th,
-		.table > tfoot > tr > th {
+		.table>tbody>tr>th,
+		.table>tfoot>tr>th {
 			font-size: 10px;
 		}
 
-		.table > tbody > tr > td,
-		.table > tfoot > tr > td {
+		.table>tbody>tr>td,
+		.table>tfoot>tr>td {
 			vertical-align: inherit;
 		}
 
 		.navbar-nav {
 			margin-top: 8px;
-			padding-left:10px;
+			padding-left: 10px;
 		}
-
 	</style>
 </head>
+
 <body>
 
-    {% include 'messages.html' %}
+	{% include 'messages.html' %}
 
 	<div class="container">
 		<!-- NAVBAR -->
@@ -74,7 +74,7 @@
 					<div class="navbar-header">
 						<a class="navbar-brand" href="#">Prato Aberto - DE-PARA Geral dos Alimentos</a>
 					</div>
-					<form method="post" id="form_from_to" action="/atualiza_configuracoes">
+					<form method="post" id="form_from_to" action="/editor/atualiza_configuracoes">
 						<div class="collapse navbar-collapse">
 							<ul class="nav navbar-nav navbar-right">
 								<button onclick="geraTabela()" type="submit" class="btn btn-success">
@@ -93,7 +93,10 @@
 		</div>
 
 		<div class="row">
-			<button onclick="addRow()" title="Adicionar novo DE-PARA de ingredientes para configuração geral de alimentos" class="btn btn-primary" style="float: right"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Adicionar Novo</button>
+			<button onclick="addRow()"
+				title="Adicionar novo DE-PARA de ingredientes para configuração geral de alimentos"
+				class="btn btn-primary" style="float: right"><span class="glyphicon glyphicon-plus"
+					aria-hidden="true"></span> Adicionar Novo</button>
 		</div>
 
 		<div class="row">
@@ -101,25 +104,37 @@
 				<div class="panel-heading">
 					<h2 class="panel-title">DE-PARA</h2>
 					<div class="pull-right">
-						<span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+						<span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+							data-container="body">
 							<i class="glyphicon glyphicon-filter"></i>
 						</span>
 					</div>
 				</div>
 				<div class="panel-body">
-					<input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
+					<input type="text" class="form-control" id="task-table-filter" data-action="filter"
+						data-filters="#task-table" placeholder="Filter Tasks" />
 				</div>
 				<div class="table-responsive">
 					<div class="panel panel-default">
 						<table class="table table-hover table-striped" id="task-table">
 							<thead>
 								<tr>
-									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">ID <i class="fa fa-sort" aria-hidden="true"></i></th>
-									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px; display:none">GRUPO SUBSTITUIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOPO <i class="fa fa-sort" aria-hidden="true"></i></th>
-									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">DE <i class="fa fa-sort" aria-hidden="true"></i></th>
-									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')" style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">PARA <i class="fa fa-sort" aria-hidden="true"></i></th>
-									<th ></th>
+									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+										style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
+										ID <i class="fa fa-sort" aria-hidden="true"></i></th>
+									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+										style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px; display:none">
+										GRUPO SUBSTITUIÇÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
+									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+										style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
+										ESCOPO <i class="fa fa-sort" aria-hidden="true"></i></th>
+									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+										style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
+										DE <i class="fa fa-sort" aria-hidden="true"></i></th>
+									<th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
+										style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
+										PARA <i class="fa fa-sort" aria-hidden="true"></i></th>
+									<th></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -130,7 +145,9 @@
 									<td class="substitution_scope" contenteditable="true">{{ linha[2] }}</td>
 									<td class="from_word" contenteditable="true">{{ linha[3] }}</td>
 									<td class="to_word" contenteditable="true">{{ linha[4] }}</td>
-									<td><a value='Delete' onclick='deleteRow(this)'><i style='color:#D9534F;font-size:30px;text-align: center; cursor:pointer' class='fa'></i></a></td>
+									<td><a value='Delete' onclick='deleteRow(this)'><i
+												style='color:#D9534F;font-size:30px;text-align: center; cursor:pointer'
+												class='fa'></i></a></td>
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -141,93 +158,94 @@
 		</div>
 		<footer class="container-fluid text-center">
 			<br>
-			<p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+			<p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
+					title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
 		</footer>
 	</div>
 
 	<!-- Script com a funcionalidade do filtro da tabela -->
 	<script>
-	/**
-	*   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
-	*   but will likely encounter performance issues on larger tables.
-	*
-	*		<input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
-	*		$(input-element).filterTable()
-	*
-	*	The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
-	*/
-	(function(){
-		'use strict';
-		var $ = jQuery;
-		$.fn.extend({
-			filterTable: function(){
-				return this.each(function(){
-					$(this).on('keyup', function(e){
-						$('.filterTable_no_results').remove();
-						var $this = $(this),
-							search = $this.val().toLowerCase(),
-							target = $this.attr('data-filters'),
-							$target = $(target),
-							$rows = $target.find('tbody tr');
+		/**
+		*   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+		*   but will likely encounter performance issues on larger tables.
+		*
+		*		<input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
+		*		$(input-element).filterTable()
+		*
+		*	The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
+		*/
+		(function () {
+			'use strict';
+			var $ = jQuery;
+			$.fn.extend({
+				filterTable: function () {
+					return this.each(function () {
+						$(this).on('keyup', function (e) {
+							$('.filterTable_no_results').remove();
+							var $this = $(this),
+								search = $this.val().toLowerCase(),
+								target = $this.attr('data-filters'),
+								$target = $(target),
+								$rows = $target.find('tbody tr');
 
-						if(search == '') {
-							$rows.show();
-						} else {
-							$rows.each(function(){
-								var $this = $(this);
-								$this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
-							})
-							if($target.find('tbody tr:visible').size() === 0) {
-								var col_count = $target.find('tr').first().find('td').size();
-								var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
-								$target.find('tbody').append(no_results);
+							if (search == '') {
+								$rows.show();
+							} else {
+								$rows.each(function () {
+									var $this = $(this);
+									$this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
+								})
+								if ($target.find('tbody tr:visible').size() === 0) {
+									var col_count = $target.find('tr').first().find('td').size();
+									var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
+									$target.find('tbody').append(no_results);
+								}
 							}
-						}
+						});
 					});
-				});
-			}
-		});
-		$('[data-action="filter"]').filterTable();
-	})(jQuery);
+				}
+			});
+			$('[data-action="filter"]').filterTable();
+		})(jQuery);
 
-	$(function(){
-		// attach table filter plugin to inputs
-		$('[data-action="filter"]').filterTable();
+		$(function () {
+			// attach table filter plugin to inputs
+			$('[data-action="filter"]').filterTable();
 
-		$('.container').on('click', '.panel-heading span.filter', function(e){
-			var $this = $(this),
-				$panel = $this.parents('.panel');
+			$('.container').on('click', '.panel-heading span.filter', function (e) {
+				var $this = $(this),
+					$panel = $this.parents('.panel');
 
-			$panel.find('.panel-body').slideToggle();
-			if($this.css('display') != 'none') {
-				$panel.find('.panel-body input').focus();
-			}
-		});
-		$('[data-toggle="tooltip"]').tooltip();
-	})
-</script>
+				$panel.find('.panel-body').slideToggle();
+				if ($this.css('display') != 'none') {
+					$panel.find('.panel-body input').focus();
+				}
+			});
+			$('[data-toggle="tooltip"]').tooltip();
+		})
+	</script>
 
 	<!-- Botões de ordenação da tabela -->
-	<script src="static/js/w3.js"></script>
+	<script src="/editor/static/js/w3.js"></script>
 
 	<!-- Substitui o texto do dropdown -->
 	<script>
 		$('.dropdown-toggle').dropdown();
-		$(".dropdown-menu > li").click(function(){
-			 var $toggle = $(this).parent().siblings('.dropdown-toggle');
-				$toggle.html("<i class=\"icon icon-envelope icon-white\"></i> " + $(this).text() + "<span class=\"caret\"></span>")
-			});
+		$(".dropdown-menu > li").click(function () {
+			var $toggle = $(this).parent().siblings('.dropdown-toggle');
+			$toggle.html("<i class=\"icon icon-envelope icon-white\"></i> " + $(this).text() + "<span class=\"caret\"></span>")
+		});
 	</script>
 
 	<!-- Deleta linha da tabela -->
-    <script>
-        function deleteRow(r) {
-            if(confirm('Deseja remover esta linha?')){
-                var i = r.parentNode.parentNode.rowIndex;
-                document.getElementById("task-table").deleteRow(i);
-            }
-        }
-    </script>
+	<script>
+		function deleteRow(r) {
+			if (confirm('Deseja remover esta linha?')) {
+				var i = r.parentNode.parentNode.rowIndex;
+				document.getElementById("task-table").deleteRow(i);
+			}
+		}
+	</script>
 
 	<!-- Adiciona linhas na tabela -->
 	<script>
@@ -246,14 +264,14 @@
 
 	</script>
 
-    <script>
-        function strip_tag(value){
-            r =  value.replace(/(<([^>]+)>)/ig,"");
-            r = r.replace(/(&nbsp;)/ig,"");
-            r = r.replace(/(&amp;)/ig,"");
-            return r;
-        }
-    </script>
+	<script>
+		function strip_tag(value) {
+			r = value.replace(/(<([^>]+)>)/ig, "");
+			r = r.replace(/(&nbsp;)/ig, "");
+			r = r.replace(/(&amp;)/ig, "");
+			return r;
+		}
+	</script>
 
 	<!-- Monta tabela -->
 	<script>
@@ -270,11 +288,12 @@
 				json_dump.push(Tabela);
 			});
 
-            $('#json_dump').attr('value', JSON.stringify(json_dump));
+			$('#json_dump').attr('value', JSON.stringify(json_dump));
 		}
 	</script>
 
 
 
 </body>
+
 </html>

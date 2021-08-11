@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Prato aberto</title>
@@ -11,14 +12,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
     <style>
-
         .row.tbl {
             padding-top: 40px;
         }
@@ -29,12 +31,12 @@
 
         /* Objetos da tabela */
         .row {
-            margin-top:20px;
+            margin-top: 20px;
             margin-bottom: 20px;
             padding: 0 10px;
         }
 
-        .clickable{
+        .clickable {
             cursor: pointer;
         }
 
@@ -43,22 +45,22 @@
             font-size: 15px;
         }
 
-        .panel-heading div span{
-            margin-left:5px;
+        .panel-heading div span {
+            margin-left: 5px;
         }
 
-        .panel-body{
+        .panel-body {
             display: none;
         }
 
         .table-responsive {
-            height:450px;
-            overflow-y:auto;
-            overflow-x:auto;
+            height: 450px;
+            overflow-y: auto;
+            overflow-x: auto;
         }
 
-        .table > tbody > tr > td,
-        .table > tfoot > tr > td {
+        .table>tbody>tr>td,
+        .table>tfoot>tr>td {
             vertical-align: inherit;
         }
 
@@ -70,9 +72,9 @@
             padding-top: 6px;
             padding-left: 0px;
         }
-
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- NAVBAR -->
@@ -94,10 +96,10 @@
             </nav>
         </div>
 
-         <!-- Campos GERAÇAO TABELA -->
-        <div class ="panel panel-default">
+        <!-- Campos GERAÇAO TABELA -->
+        <div class="panel panel-default">
             <div class="row">
-                <form method="post" action="/mapa_pendencias">
+                <form method="post" action="/editor/mapa_pendencias">
                     <div class="col-sm-3" style="width: 9%; padding-top: 13px; padding-left: 20px;">
                         <label for="data-inicial">Data Inicial:</label>
                     </div>
@@ -111,7 +113,7 @@
                         <input type="text" id="data-final" name="data-final" value="Date" class="form-control">
                     </div>
                     <div class="col-sm-3 dropdown" style="width: 11%">
-                        <select class="form-control input"  id="filtro" name="filtro">
+                        <select class="form-control input" id="filtro" name="filtro">
                             <option>STATUS</option>
                             <option>PUBLICADO</option>
                             <option>PENDENTE</option>
@@ -131,31 +133,46 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Mapa Pendências</h3>
                     <div class="pull-right">
-                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter" data-container="body">
+                        <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
+                            data-container="body">
                             <i class="glyphicon glyphicon-filter"></i>
                         </span>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <input type="text" class="form-control" id="task-table-filter" data-action="filter" data-filters="#task-table" placeholder="Filter Tasks" />
+                    <input type="text" class="form-control" id="task-table-filter" data-action="filter"
+                        data-filters="#task-table" placeholder="Filter Tasks" />
                 </div>
                 <div class="table-responsive">
                     <div class="panel panel-default">
                         <table class="table table-hover table-striped" id="task-table">
                             <thead>
                                 <tr>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')" style="cursor:pointer">ATENDIMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')" style="cursor:pointer">UNIDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')" style="cursor:pointer">AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')" style="cursor:pointer">STATUS <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')" style="cursor:pointer">IDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')" style="cursor:pointer">DATA INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')" style="cursor:pointer">DATA FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')" style="cursor:pointer">STATUS <i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(1)')"
+                                        style="cursor:pointer">ATENDIMENTO <i class="fa fa-sort" aria-hidden="true"></i>
+                                    </th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(2)')"
+                                        style="cursor:pointer">UNIDADE <i class="fa fa-sort" aria-hidden="true"></i>
+                                    </th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(3)')"
+                                        style="cursor:pointer">AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i>
+                                    </th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                        style="cursor:pointer">STATUS <i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
+                                        style="cursor:pointer">IDADE <i class="fa fa-sort" aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
+                                        style="cursor:pointer">DATA INICIAL <i class="fa fa-sort"
+                                            aria-hidden="true"></i></th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
+                                        style="cursor:pointer">DATA FINAL <i class="fa fa-sort" aria-hidden="true"></i>
+                                    </th>
+                                    <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
+                                        style="cursor:pointer">STATUS <i class="fa fa-sort" aria-hidden="true"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
-                            {% for linha in publicados: %}
+                                {% for linha in publicados: %}
                                 <tr class="item">
                                     <td class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
                                     <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
@@ -175,7 +192,8 @@
         </div>
         <footer class="container-fluid text-center">
             <br>
-            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/" title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
+            <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
+                    title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a></p>
         </footer>
     </div>
 
@@ -190,13 +208,13 @@
         *
         *   The important attributes are 'data-action="filter"' and 'data-filters="#table-selector"'
         */
-        (function(){
+        (function () {
             'use strict';
             var $ = jQuery;
             $.fn.extend({
-                filterTable: function(){
-                    return this.each(function(){
-                        $(this).on('keyup', function(e){
+                filterTable: function () {
+                    return this.each(function () {
+                        $(this).on('keyup', function (e) {
                             $('.filterTable_no_results').remove();
                             var $this = $(this),
                                 search = $this.val().toLowerCase(),
@@ -204,16 +222,16 @@
                                 $target = $(target),
                                 $rows = $target.find('tbody tr');
 
-                            if(search == '') {
+                            if (search == '') {
                                 $rows.show();
                             } else {
-                                $rows.each(function(){
+                                $rows.each(function () {
                                     var $this = $(this);
                                     $this.text().toLowerCase().indexOf(search) === -1 ? $this.hide() : $this.show();
                                 })
-                                if($target.find('tbody tr:visible').size() === 0) {
+                                if ($target.find('tbody tr:visible').size() === 0) {
                                     var col_count = $target.find('tr').first().find('td').size();
-                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="'+col_count+'">No results found</td></tr>')
+                                    var no_results = $('<tr class="filterTable_no_results"><td colspan="' + col_count + '">No results found</td></tr>')
                                     $target.find('tbody').append(no_results);
                                 }
                             }
@@ -224,16 +242,16 @@
             $('[data-action="filter"]').filterTable();
         })(jQuery);
 
-        $(function(){
+        $(function () {
             // attach table filter plugin to inputs
             $('[data-action="filter"]').filterTable();
 
-            $('.container').on('click', '.panel-heading span.filter', function(e){
+            $('.container').on('click', '.panel-heading span.filter', function (e) {
                 var $this = $(this),
                     $panel = $this.parents('.panel');
 
                 $panel.find('.panel-body').slideToggle();
-                if($this.css('display') != 'none') {
+                if ($this.css('display') != 'none') {
                     $panel.find('.panel-body input').focus();
                 }
             });
@@ -242,7 +260,7 @@
     </script>
 
     <!-- Botões de ordenação da tabela -->
-    <script src="static/js/w3.js"></script>
+    <script src="/editor/static/js/w3.js"></script>
 
     <!-- Deleta linha da tabela -->
     <script>
@@ -284,7 +302,7 @@
         function adicionaRefeicao() {
             var REFEICAO = document.getElementById("REFEICAO").value;
             $('#lista-refeicao').append(
-                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id="+REFEICAO+">"+REFEICAO+" &times;</span>"
+                "<span type='button' class='btn btn-default' onclick='deletar(this)' style='margin-right: 8px' id=" + REFEICAO + ">" + REFEICAO + " &times;</span>"
             );
         };
     </script>
@@ -298,11 +316,12 @@
 
     <!-- Atualiza dropdown -->
     <script>
-        $("#dropdown-status li a").click(function(){
-            $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
-            $("#dropdown-name").html($(this).text()+' <span class="caret"></span>');
+        $("#dropdown-status li a").click(function () {
+            $("#dropdown-name").html($(this).text() + ' <span class="caret"></span>');
+            $("#dropdown-name").html($(this).text() + ' <span class="caret"></span>');
         });
     </script>
 
 </body>
+
 </html>

@@ -1,33 +1,59 @@
 import collections
 import datetime
-import dateutil.parser
+import itertools
 import json
 import os
 from operator import itemgetter
 
+import dateutil.parser
 import flask_login
-import itertools
 import requests
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
 from wtforms import (Form, StringField, validators, SelectField,
-                     SelectMultipleField, FloatField, IntegerField)
+                     SelectMultipleField, FloatField, IntegerField, TextAreaField)
+from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
+
 import cardapio_xml_para_dict
 import cardapios_terceirizadas
+import constants
 import db_functions
 import db_setup
+from helpers import download_spreadsheet
+from helpers.gerador_excel_cardapio_ue import GeradorExcelCardapioUE
+from ue_mongodb import get_unidade
 from utils import (sort_array_date_br, remove_duplicates_array, generate_csv_str,
                    sort_array_by_date_and_index, fix_date_mapa_final, generate_ranges,
-                   format_datetime_array)
+                   format_datetime_array, yyyymmdd_to_date_time, convert_datetime_format)
 from helpers import download_spreadsheet
+from ue_mongodb import get_unidade
+from helpers.download_special_unit_menu import gera_excel
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+load_dotenv()
+
+sentry_url = os.environ.get('SENTRY_URL')
+if sentry_url:
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    
+    sentry_environment = os.environ.get('SENTRY_ENVIRONMENT')
+
+    sentry_sdk.init(
+        dsn=sentry_url,
+        environment=sentry_environment,
+        integrations=[FlaskIntegration()]
+    )
+
+app = Flask(__name__, static_url_path='/editor/static')
 app.config['UPLOAD_FOLDER'] = './tmp'
 
 # BLOCO GET ENDPOINT E KEYS
 api = os.environ.get('PRATOABERTO_API')
+raiz = os.environ.get('RAIZ', 'editor')
+# api = 'http://127.0.0.1:8000'
 _user = os.environ.get('PRATO_USER')
 _password = os.environ.get('PASSWORD')
 app.secret_key = os.environ.get('APPLICATION_KEY')
@@ -71,7 +97,7 @@ def request_loader(request):
     return user
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -86,9 +112,14 @@ def login():
 
     flash('Senha ou usuario nao identificados')
     return render_template('login.html')
+    
+
+@app.route('/debug-sentry')
+def trigger_error():
+    division_by_zero = 1 / 0    
 
 
-@app.route('/logout')
+@app.route(f'/{raiz}/logout')
 @flask_login.login_required
 def logout():
     flask_login.logout_user()
@@ -101,20 +132,25 @@ def unauthorized_handler():
 
 
 # BLOCO DE QUEBRA CARDÁPIOS
-@app.route("/pendencias_publicacoes", methods=["GET", "POST"])
+@app.route(f"/{raiz}/pendencias_publicacoes", methods=["GET", "POST"])
 @flask_login.login_required
 def backlog():
     semanas_pendentes = sorted(get_semanas_pendentes(), reverse=True)
     semanas = format_datetime_array(semanas_pendentes)
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
     pendentes = get_pendencias(request_obj=request,
                                semana_default=semanas_pendentes[0] if len(semanas_pendentes) else current_week())
     pendentes = sort_array_date_br(pendentes)
     return render_template("pendencias_publicacao.html",
                            pendentes=pendentes,
-                           semanas=semanas)
+                           semanas=semanas,
+                           unidades_especiais=ue_dict)
 
 
-@app.route("/pendencias_deletadas", methods=["GET", "POST"])
+@app.route(f"/{raiz}/pendencias_deletadas", methods=["GET", "POST"])
 @flask_login.login_required
 def deletados():
     if request.method == "GET":
@@ -132,12 +168,16 @@ def deletados():
                                semanas=semanas)
 
 
-@app.route("/pendencias_publicadas", methods=["GET"])
+@app.route(f"/{raiz}/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
     weeks = reversed(generate_ranges())
     default_week = list(weeks)[2]
     published_menus = sort_array_date_br(get_publicados(request_obj=request, default_week=default_week))
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
     period = request.args.get('filtro_periodo', '30')
     if period not in [None, 'all']:
         date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
@@ -163,10 +203,30 @@ def publicados():
                            published_menus=published_menus,
                            week_ranges=list(periods),
                            period_ranges=period_ranges,
-                           default_week=default_week)
+                           default_week=default_week,
+                           unidades_especiais=ue_dict)
 
 
-@app.route("/edicao_de_notas", methods=["GET", "POST"])
+@app.route(f"/{raiz}/pendencias_unidades_especiais", methods=["GET"])
+@flask_login.login_required
+def cardapios_unidades_especiais():
+    semanas_unidades_especiais = sorted(get_semanas_unidades_especiais(), reverse=True)
+    semanas = format_datetime_array(semanas_unidades_especiais)
+    default_week = semanas[0] if len(semanas) else current_week()
+    published_menus = sort_array_date_br(get_cardapios_unidades_especiais(request_obj=request,
+                                                                          semana_default=default_week))
+    unidades_especiais = get_unidades_especiais()
+    ue_dict = ['NENHUMA']
+    if len(unidades_especiais):
+        ue_dict += set(x['nome'] for x in unidades_especiais)
+    return render_template("pendencias_unidades_especiais.html",
+                           published_menus=published_menus,
+                           week_ranges=semanas,
+                           default_week=default_week,
+                           unidades_especiais=ue_dict)
+
+
+@app.route(f"/{raiz}/edicao_de_notas", methods=["GET", "POST"])
 @flask_login.login_required
 def edicao_de_notas():
     if request.method == 'GET':
@@ -182,7 +242,7 @@ def edicao_de_notas():
 
 
 # BLOCO DE UPLOAD DE XML E CRIAÇÃO DAS TERCEIRIZADAS
-@app.route('/upload', methods=['POST'])
+@app.route(f'/{raiz}/upload', methods=['POST'])
 @flask_login.login_required
 def upload_file():
     if 'file' not in request.files:
@@ -251,25 +311,7 @@ def upload_file():
                                json_dump=json_dump)
 
 
-@app.route('/cria_terceirizada', methods=['GET'])
-@flask_login.login_required
-def cria_terceirizada():
-    if request.method == "GET":
-        quebras = db_functions.select_quebras_terceirizadas()
-        editais = set([x[1] for x in quebras])
-        tipo_unidade = set([x[0] for x in quebras])
-        idade = set([x[2] for x in quebras])
-        refeicao = set([x[3] for x in quebras])
-
-        return render_template("cria_terceirizadas.html",
-                               editais=editais,
-                               tipo_unidade=tipo_unidade,
-                               idades=idade,
-                               refeicoes=refeicao,
-                               referrer=request.referrer)
-
-
-@app.route('/upload_terceirizada', methods=['POST'])
+@app.route(f'/{raiz}/upload_terceirizada', methods=['POST'])
 @flask_login.login_required
 def upload_terceirizadas():
     headers = {'Content-type': 'application/json'}
@@ -343,15 +385,13 @@ def upload_terceirizadas():
         return ('', 200)
 
 
-# BLOCO DE EDIÇÃO DOS CARDÁPIOS
-@app.route('/atualiza_cardapio', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_cardapio', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio():
     """Colocar o campode ultima modificação aqui..."""
     headers = {'Content-type': 'application/json'}
     data = request.form.get('json_dump', request.data)
     # post de dados nos cardapios atualiza cardapio
-
     r = requests.post(api + '/editor/cardapios', data=data, headers=headers)
 
     if request.form:
@@ -361,7 +401,8 @@ def atualiza_cardapio():
         return ('', 200)
 
 
-@app.route('/atualiza_cardapio2', methods=['POST'])
+# BLOCO DE EDIÇÃO DOS CARDÁPIOS
+@app.route(f'/{raiz}/atualiza_cardapio2', methods=['POST'])
 @flask_login.login_required
 def atualiza_cardapio2():
     """Usado somente para alterar os status dos cardapios"""
@@ -377,8 +418,7 @@ def atualiza_cardapio2():
         return ('', 200)
 
 
-# comments = []
-@app.route("/calendario", methods=["GET"])
+@app.route(f"/{raiz}/calendario", methods=["GET"])
 @flask_login.login_required
 def calendario():
     """
@@ -420,7 +460,10 @@ def calendario():
         cardapio_atual['dia_semana'] = dia_semana(dia)  # troca um int por uma str de dia de semana
         # cardapio atual>
         # {'_id': {'$oid': '5c2de6c354e6257eebc8a2c3'}, 'tipo_unidade': 'CCI', 'tipo_atendimento': 'TERCEIRIZADA', 'data_publicacao': '2019-02-08T17:13:51.100Z', 'data': '20190118', 'idade': 'D - 0 A 5 MESES', 'cardapio': {'J - JANTAR': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'D - DESJEJUM': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'A - ALMOCO': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)'], 'L - LANCHE': ['Leite Materno ou Fórmula Láctea Infantil (1º semestre)']}, 'status': 'PENDENTE', 'agrupamento': 'EDITAL 78/2016', 'cardapio_original': {'J - JANTAR': [], 'D - DESJEJUM': [], 'A - ALMOCO': [], 'L - LANCHE': []}, 'dia_semana': 'Sex'}
-        jdata_aux.append(cardapio_atual)
+        if not next((True for item in jdata_aux if item['dia_semana'] == cardapio_atual['dia_semana']), False):
+            jdata_aux.append(cardapio_atual)
+
+    jdata = jdata_aux
     # jdata_aux é um array maluco cheio de dicionarios
     # mesma coisa da maluquice acima, so que para semana anterior...
     jdata_anterior_aux = []
@@ -457,8 +500,6 @@ def calendario():
             cardapio_atual['cardapio_semana_anterior'] = cardapio_anterior['cardapio']
 
             cardapios.append(cardapio_atual)
-
-
         else:
             if cardapio_atual:
                 # faz uma limpa no campo do dicionario, mas por que?
@@ -494,16 +535,82 @@ def calendario():
                                referrer=request.referrer)
 
 
-@app.route("/visualizador_cardapio", methods=["GET"])
+# comments = []
+@app.route(f'/{raiz}/cria_terceirizada', methods=['GET'])
+@flask_login.login_required
+def cria_terceirizada():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_terceirizadas()
+        editais = set([x[1] for x in quebras])
+        tipo_unidade = set([x[0] for x in quebras])
+        idade = set([x[2] for x in quebras])
+        refeicao = set([x[3] for x in quebras])
+
+        return render_template("cria_terceirizadas.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               referrer=request.referrer)
+
+
+@app.route(f'/{raiz}/criar-direta-mista-sem-refeicao')
+@flask_login.login_required
+def cria_direta_mista_sem_refeicao():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_terceirizadas()
+
+        editais = set([x[1] for x in quebras])
+        tipo_unidade = set([x[0] for x in quebras])
+        idade = set([x[2] for x in quebras])
+        # refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        refeicao = set([x[3] for x in quebras])
+        gestoes = set([x[-1] for x in quebras if x[-1] != 'TERCEIRIZADA'])
+
+        return render_template("cria_direta_mista_sem_refeicao.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               gestoes=gestoes,
+                               referrer=request.referrer)
+
+
+@app.route(f'/{raiz}/criar-unidade-especial')
+@flask_login.login_required
+def cria_unidade_especial():
+    if request.method == "GET":
+        quebras = db_functions.select_quebras_unidades_especiais()
+
+        ue_dict = [x['nome'] for x in get_unidades_especiais()]
+
+        # editais = set([x[1] for x in quebras if x[1] == 'UE'])
+        editais = ['UE']
+        tipo_unidade = set(ue_dict)
+        idade = set([x[2] for x in quebras])
+        # refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' in x[3]])
+        refeicao = set([x[3] for x in quebras if 'SR - SEM REFEICAO' not in x[3]])
+        gestoes = set([x[-1] for x in quebras if x[-1] == 'UE'])
+
+        return render_template("criar_unidade_especial.html",
+                               editais=editais,
+                               tipo_unidade=tipo_unidade,
+                               idades=idade,
+                               refeicoes=refeicao,
+                               gestoes=gestoes,
+                               referrer=request.referrer)
+
+
+@app.route(f"/{raiz}/visualizador_cardapio", methods=["GET"])
 @flask_login.login_required
 def visualizador():
     args = request.args
 
     ##### Optimation referrer #####
     if args.get('status') == 'PUBLICADO':
-        referrer = '/pendencias_publicadas'
+        referrer = '/editor/pendencias_publicadas'
     else:
-        referrer = '/pendencias_deletadas'
+        referrer = '/editor/pendencias_deletadas'
 
     # Monta json
     jdata = get_cardapio(args)
@@ -533,7 +640,7 @@ def visualizador():
                            referrer=referrer)
 
 
-@app.route("/calendario_editor_grupo", methods=["POST"])
+@app.route(f"/{raiz}/calendario_editor_grupo", methods=["POST"])
 @flask_login.login_required
 def calendario_grupo_cardapio():
     data = request.form.get('json_dump', request.data)
@@ -633,7 +740,7 @@ def calendario_grupo_cardapio():
 
 
 # BLOCO DE CONFIGURAÇÕES
-@app.route("/configuracoes_gerais", methods=['GET', 'POST'])
+@app.route(f"/{raiz}/configuracoes_gerais", methods=['GET', 'POST'])
 @flask_login.login_required
 def config():
     if request.method == "GET":
@@ -641,7 +748,7 @@ def config():
         return render_template("configurações.html", config=config_editor, referrer=request.referrer)
 
 
-@app.route('/atualiza_configuracoes', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_configuracoes', methods=['POST'])
 @flask_login.login_required
 def atualiza_configuracoes():
     headers = {'Content-type': 'application/json'}
@@ -658,31 +765,185 @@ def atualiza_configuracoes():
         return ('', 200)
 
 
-@app.route("/configuracoes_cardapio", methods=['GET', 'POST'])
+class MultiCheckboxField(SelectMultipleField):
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
+
+
+@app.route(f"/{raiz}/configuracoes_cardapio", methods=['GET', 'POST'])
 @flask_login.login_required
 def config_cardapio():
+    referrer = '/editor/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
     if request.method == "GET":
+        form = OutSourcedMenuForm(request.form)
         config_editor = db_functions.select_all_receitas_terceirizadas()
-        return render_template("configurações_receitas.html", config=config_editor, referrer=request.referrer)
+        return render_template("configurações_receitas.html", config=config_editor, referrer=referrer, form=form)
 
 
-@app.route('/atualiza_receitas', methods=['POST'])
+@app.route(f"/{raiz}/configuracoes_cardapio_unidades_especiais", methods=['GET', 'POST'])
+@flask_login.login_required
+def config_cardapio_unidades_especiais():
+    referrer = '/editor/pendencias_publicacoes'
+
+    if 'session_referrer' in session:
+        if '?' not in request.referrer and 'configuracoes_cardapio_unidades_especiais' not in request.referrer:
+            session['session_referrer'] = request.referrer
+            referrer = session['session_referrer']
+
+    if request.method == "GET":
+        form = OutSourcedMenuForm(request.form)
+        form.special_unit.choices = get_unidades_especiais_dict()
+        config_editor = db_functions.select_all_receitas_unidades_especiais()
+        return render_template("configuracoes_unidades_especiais.html", config=config_editor, referrer=referrer,
+                               form=form)
+
+
+@app.route(f'/{raiz}/remove-lista-terceirizada/<id>')
+def remove_menu_list(id):
+    removed = db_functions.del_receitas_terceirizadas(id)
+    return app.response_class(
+        response=json.dumps({'message': 'Cardápio removido com sucesso.', 'id': id}),
+        status=200,
+        mimetype='application/json'
+    )
+
+
+@app.route(f'/{raiz}/atualiza_receitas', methods=['POST'])
 @flask_login.login_required
 def atualiza_config_cardapio():
-    data = request.form.get('json_dump', request.data)
+    form = OutSourcedMenuForm(request.form)
+    new_menu = list()
+    if 'is_unidade_especial' in request.form:
+        new_menu.append('UE')
+        new_menu.append(form.special_unit.data)
+    else:
+        new_menu.append(form.management.data)
+        new_menu.append(form.school_type.data)
 
-    db_functions.truncate_receitas_terceirizadas()
-    db_functions.add_bulk_cardapio(json.loads(data))
+    if 'is_direta_mista' in request.form:
+        new_menu.append(request.form['grouping'])
+    elif 'is_unidade_especial' not in request.form:
+        new_menu.append(form.edital.data)
+    else:
+        new_menu.append('UE')
+
+    if form.weekday.data:
+        new_menu.append(form.weekday.data.strftime('%Y%m%d'))
+    else:
+        new_menu.append('')
+
+    new_menu.append(form.ages.data)
+    new_menu.append(form.meals.data)
+    new_menu.append(form.menu.data)
+    db_functions.add_bulk_cardapio([new_menu])
 
     if request.form:
         flash('Cardápio terceirizado adicionado com sucesso.', 'success')
-        return (redirect(url_for('config_cardapio')))
+        if 'is_unidade_especial' not in request.form:
+            return redirect(url_for('config_cardapio'))
+        else:
+            return redirect(url_for('config_cardapio_unidades_especiais'))
     else:
-        return ('', 200)
+        return '', 200
 
 
-@app.route('/escolas/<int:id_escola>', methods=['GET', 'POST'])
-@app.route('/escolas', methods=['GET', 'POST'])
+class SchoolRegistrationForm(Form):
+    cod_eol = IntegerField('Código EOL', [validators.required()])
+    management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
+    edital = SelectField('Edital', choices=constants.EDITOR_DICT)
+    school_name = StringField('Nome da Escola', [validators.required()])
+    address = StringField('Endereço', [validators.required()])
+    neighbourhood = StringField('Bairro', [validators.required()])
+    latitude = FloatField('Latitude', [validators.optional()])
+    longitude = FloatField('Longitude', [validators.optional()])
+    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
+    ages = MultiCheckboxField('Idades', choices=constants.AGES_DICT)
+
+
+@app.route(f'/{raiz}/autocomplete', methods=['GET'])
+def autocomplete():
+    schools, _ = get_escolas(limit='4000')
+    schools_array = []
+    for s in schools:
+        schools_array.append(str(s['_id']) + ' - ' + s['nome'])
+    return Response(json.dumps(schools_array), mimetype='application/json')
+
+
+@app.route(f'/{raiz}/unidades_especiais/<id_unidade_especial>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/unidades_especiais', methods=['GET', 'POST'])
+@flask_login.login_required
+def unidades_especiais(id_unidade_especial=None):
+    form = SpecialUnitForm(request.form)
+    form_filter = FilterTypeSchoolForm(request.form)
+    by_type = form_filter.school_types.data
+    if id_unidade_especial:
+        special_unit = get_unidade(id_unidade_especial)
+        form.identifier.data = id_unidade_especial
+        form.special_unit.data = special_unit[0]
+        form.creation_date.data = yyyymmdd_to_date_time(special_unit[1])
+        form.initial_date.data = yyyymmdd_to_date_time(special_unit[2])
+        form.end_date.data = yyyymmdd_to_date_time(special_unit[3])
+        form.schools.data = special_unit[4]
+    if by_type:
+        form.schools.data += get_escolas_dict(params=request.args, by_type=by_type, limit='4000') + \
+                             [cod_eol.split(' - ')[0].strip() for cod_eol in
+                              form_filter.school_autocomplete.data.split(', ')]
+    else:
+        form.schools.data += [cod_eol.split(' - ')[0].strip() for cod_eol
+                              in form_filter.school_autocomplete.data.split(', ')]
+    if request.method in ["GET", "POST"]:
+        if 'refer' in session:
+            if request.referrer and '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
+        escolas, pagination = get_escolas(params=request.args)
+    return render_template("unidades_especiais.html", form_filter=form_filter,
+                           referrer=session['refer'], form=form, special_units=get_unidades_especiais())
+
+
+@app.route(f'/{raiz}/adicionar_unidade_especial', methods=['POST'])
+@flask_login.login_required
+def adicionar_unidade_especial():
+    form = SpecialUnitForm(request.form)
+    new_special_unit = dict()
+    new_special_unit['_id'] = form.identifier.data
+    new_special_unit['nome'] = form.special_unit.data
+    if not form.identifier.data:
+        new_special_unit['data_criacao'] = datetime.datetime.utcnow().strftime('%Y%m%d')
+    new_special_unit['data_inicio'] = form.initial_date.data.strftime('%Y%m%d')
+    new_special_unit['data_fim'] = form.end_date.data.strftime('%Y%m%d')
+    new_special_unit['escolas'] = form.schools.data
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(api + '/editor/unidade_especial/{}'.format(str(new_special_unit['_id'])),
+                      data=json.dumps(new_special_unit),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('unidades_especiais', code=302)
+
+
+@app.route(f'/{raiz}/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
+@flask_login.login_required
+def excluir_unidade_especial(id_unidade_especial):
+    headers = {'Content-type': 'application/json'}
+    requests.delete(api + '/editor/unidade_especial/{}'.format(str(id_unidade_especial), headers=headers))
+    flash('Escola excluída com sucesso')
+    return ('', 200)
+
+
+@app.route(f'/{raiz}/escolas/<int:id_escola>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
 def escolas(id_escola=None):
     form = SchoolRegistrationForm(request.form)
@@ -697,9 +958,20 @@ def escolas(id_escola=None):
         form.neighbourhood.data = school['bairro'].upper()
         form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
         form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
-        form.edital.data = school['edital'] if school['edital'] not in [None, ''] else ''
+        form.edital.data = school.get('edital', '')
         form.ages.data = school['idades']
+
+        # Colocando as choices na ordem que foi escolhido a alimentação
+        choices = form.meals.choices
+        for ind, r in enumerate(school['refeicoes']):
+            ind_c = [i for i, ch in enumerate(choices) if ch[0] == r][0]
+            aux = choices[ind]
+            choices[ind] = choices[ind_c]
+            choices[ind_c] = aux
+
+        form.meals.choices = choices
         form.meals.data = school['refeicoes']
+
     if request.method == "GET":
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
@@ -711,93 +983,13 @@ def escolas(id_escola=None):
                            pagination=pagination, referrer=session['refer'], form=form)
 
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = ListWidget(prefix_label=False)
-    option_widget = CheckboxInput()
-
-
-class SchoolRegistrationForm(Form):
-    cod_eol = IntegerField('Código EOL', [validators.required()])
-    management = SelectField('Gestão', choices=[('DIRETA', 'DIRETA'),
-                                                ('MISTA', 'MISTA'),
-                                                ('TERCEIRIZADA', 'TERCEIRIZADA')
-                                                ])
-    school_type = SelectField('Tipo de Escola', choices=[('CCI', 'CCI'),
-                                                         ('CEI_CONVENIADO', 'CEI_CONVENIADO'),
-                                                         ('CEI_MUNICIPAL', 'CEI_MUNICIPAL'),
-                                                         ('CEI_PARCEIRO_(RP)', 'CEI_PARCEIRO_(RP)'),
-                                                         ('CEMEI', 'CEMEI'),
-                                                         ('CEU_GESTÃO', 'CEU_GESTÃO'),
-                                                         ('CIEJA', 'CIEJA'),
-                                                         ('EMEBS', 'EMEBS'),
-                                                         ('EMEF', 'EMEF'),
-                                                         ('EMEFM', 'EMEFM'),
-                                                         ('EMEI', 'EMEI'),
-                                                         ('PROJETO_CECI', 'PROJETO_CECI'),
-                                                         ('SME_CONVÊNIO', 'SME_CONVÊNIO')
-                                                         ])
-    grouping = SelectField('Agrupamento', choices=[('1', '1'),
-                                                   ('2', '2'),
-                                                   ('3', '3'),
-                                                   ('4', '4'),
-                                                   ('EDITAL 78/2016', 'EDITAL 78/2016')
-                                                   ])
-    edital = SelectField('Edital', choices=[('Nenhum', 'Nenhum'),
-                                            ('EDITAL 78/2016', 'EDITAL 78/2016')
-                                            ])
-    school_name = StringField('Nome da Escola', [validators.required()])
-    address = StringField('Endereço', [validators.required()])
-    neighbourhood = StringField('Bairro', [validators.required()])
-    latitude = FloatField('Latitude', [validators.optional()])
-    longitude = FloatField('Longitude', [validators.optional()])
-    meals = MultiCheckboxField('Refeições',
-                                choices=[('A - ALMOCO', 'A - ALMOCO'),
-                                         ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
-                                         ('C - COLACAO', 'C - COLACAO'),
-                                         ('D - DESJEJUM', 'D - DESJEJUM'),
-                                         ('FPJ - FILHOS PRO JOVEM', 'FPJ - FILHOS PRO JOVEM'),
-                                         ('J - JANTAR', 'J - JANTAR'),
-                                         ('L - LANCHE', 'L - LANCHE'),
-                                         ('L4 - LANCHE 4 HORAS', 'L4 - LANCHE 4 HORAS'),
-                                         ('L5 - LANCHE 5 HORAS', 'L5 - LANCHE 5 HORAS'),
-                                         ('L5 - LANCHE 5 OU 6 HORAS', 'L5 - LANCHE 5 OU 6 HORAS'),
-                                         ('MI - MERENDA INICIAL', 'MI - MERENDA INICIAL'),
-                                         ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
-                                         ('R1 - REFEICAO 1', 'R1 - REFEICAO 1')
-                                         ])
-    ages = MultiCheckboxField('Idades',
-                               choices=[('A - 0 A 1 MES', 'A - 0 A 1 MES'),
-                                        ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
-                                        ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
-                                        ('D - 0 A 5 MESES', 'D - 0 A 5 MESES'),
-                                        ('D - 6 A 7 MESES', 'D - 6 A 7 MESES'),
-                                        ('D - 6 MESES', 'D - 6 MESES'),
-                                        ('D - 7 MESES', 'D - 7 MESES'),
-                                        ('E - 8 A 11 MESES', 'E - 8 A 11 MESES'),
-                                        ('X - 1A -1A E 11MES', 'X - 1A -1A E 11MES'),
-                                        ('F - 2 A 3 ANOS', 'F - 2 A 3 ANOS'),
-                                        ('G - 4 A 6 ANOS', 'G - 4 A 6 ANOS'),
-                                        ('I - 2 A 6 ANOS', 'I - 2 A 6 ANOS'),
-                                        ('W - EMEI DA CEMEI', 'W - EMEI DA CEMEI'),
-                                        ('N - 6 A 7 MESES PARCIAL', 'N - 6 A 7 MESES PARCIAL'),
-                                        ('O - 8 A 11 MESES PARCIAL', 'O - 8 A 11 MESES PARCIAL'),
-                                        ('Y - 1A -1A E 11MES PARCIAL', 'Y - 1A -1A E 11MES PARCIAL'),
-                                        ('P - 2 A 3 ANOS PARCIAL', 'P - 2 A 3 ANOS PARCIAL'),
-                                        ('Q - 4 A 6 ANOS PARCIAL', 'Q - 4 A 6 ANOS PARCIAL'),
-                                        ('H - ADULTO', 'H - ADULTO'),
-                                        ('Z - UNIDADES SEM FAIXA', 'Z - UNIDADES SEM FAIXA'),
-                                        ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
-                                        ('V - PROFESSOR', 'V - PROFESSOR'),
-                                        ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI'),
-                                        ])
-
-@app.route('/adicionar_escola', methods=['POST'])
+@app.route(f'/{raiz}/adicionar_escola', methods=['POST'])
 @flask_login.login_required
 def adicionar_escola():
     form = SchoolRegistrationForm(request.form)
     if not form.validate():
         flash('Ocorreu um erro ao salvar as informações')
-        return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+        return redirect('editor/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
     new_school = dict()
     new_school['_id'] = form.cod_eol.data
     new_school['nome'] = form.school_name.data.upper()
@@ -815,6 +1007,7 @@ def adicionar_escola():
     new_school['data_inicio_vigencia'] = ''
     new_school['historico'] = []
     new_school['status'] = 'ativo'
+
     headers = {'Content-type': 'application/json'}
     r = requests.post(api + '/editor/escola/{}'.format(str(new_school['_id'])),
                       data=json.dumps(new_school),
@@ -823,10 +1016,10 @@ def adicionar_escola():
         flash('Informações salvas com sucesso')
     else:
         flash('Ocorreu um erro ao salvar as informações')
-    return redirect('escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
+    return redirect('editor/escolas?nome=&tipo_unidade=&limit=100&agrupamento=TODOS&tipo_atendimento=TODOS', code=302)
 
 
-@app.route('/excluir_escola/<int:id_escola>', methods=['DELETE'])
+@app.route(f'/{raiz}/excluir_escola/<int:id_escola>', methods=['DELETE'])
 @flask_login.login_required
 def excluir_escola(id_escola):
     headers = {'Content-type': 'application/json'}
@@ -837,7 +1030,7 @@ def excluir_escola(id_escola):
     return ('', 200)
 
 
-@app.route('/atualiza_historico_escolas', methods=['POST'])
+@app.route(f'/{raiz}/atualiza_historico_escolas', methods=['POST'])
 @flask_login.login_required
 def atualiza_historico_escolas():
     data = request.form.get('json_dump', request.data)
@@ -974,7 +1167,7 @@ def atualiza_historico_escolas():
 
 
 # BLOCO DE DOWNLOAD DAS PUBLICAÇÕES
-@app.route("/download_publicacao", methods=["GET", "POST"])
+@app.route(f"/{raiz}/download_publicacao", methods=["GET", "POST"])
 @flask_login.login_required
 def publicacao():
     opt_status = ('STATUS', 'PUBLICADO', 'PENDENTE', 'SALVO', 'DELETADO')
@@ -1039,12 +1232,12 @@ def publicacao():
                                    inicio=data_inicial, fim=data_final, status=opt_status, selected=filtro)
 
 
-@app.route('/download_csv', methods=['POST'])
+@app.route(f'/{raiz}/download_csv', methods=['POST'])
 @flask_login.login_required
 def download_csv():
     data_inicio_fim_str = request.form.get('datas', request.data)
-    data_inicial = data_inicio_fim_str.split('-')[0]
-    data_final = data_inicio_fim_str.split('-')[1]
+    data_inicial = convert_datetime_format(data_inicio_fim_str.split('-')[0], '%d/%m/%Y', '%Y%m%d')
+    data_final = convert_datetime_format(data_inicio_fim_str.split('-')[1], '%d/%m/%Y', '%Y%m%d')
     filtro = request.form.get('filtro_selected', request.data)
 
     if filtro == 'STATUS':
@@ -1052,7 +1245,7 @@ def download_csv():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
     else:
         cardapio_aux = []
-        for cardapio in get_grupo_publicacoes(filtro):
+        for cardapio in get_grupo_publicacoes(filtro, data_inicial, data_final):
             try:
                 # transforma as datas em formato br para o formato que ta no bd...
                 data_inicial = datetime.datetime.strptime(data_inicial, '%d/%m/%Y').strftime('%Y%m%d')
@@ -1086,7 +1279,7 @@ def download_csv():
 
 
 # BLOCO MAPA DE PENDENCIAS
-@app.route('/mapa_pendencias', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/mapa_pendencias', methods=['GET', 'POST'])
 @flask_login.login_required
 def mapa_pendencias():
     if request.method == "GET":
@@ -1154,7 +1347,7 @@ def mapa_pendencias():
                                data_inicio_fim=str(data_inicial + '-' + data_final))
 
 
-@app.route('/remove-cardapio', methods=['DELETE'])
+@app.route(f'/{raiz}/remove-cardapio', methods=['DELETE'])
 @flask_login.login_required
 def remove_menus():
     if request.method == 'DELETE':
@@ -1164,7 +1357,7 @@ def remove_menus():
         return Response(resp, 200, mimetype='text/json')
 
 
-@app.route('/download-planilha', methods=['POST'])
+@app.route(f'/{raiz}/download-planilha', methods=['POST'])
 @flask_login.login_required
 def download_speadsheet():
     if request.method == 'POST':
@@ -1174,12 +1367,43 @@ def download_speadsheet():
         type_school = request.form['type_school']
         xlsx_file = download_spreadsheet.gera_excel(_from + ',' + _to + ',' + management + ',' + type_school)
 
-        xlsx_filename = str(xlsx_file).split('/')[-1]
-
         if xlsx_file:
-             return send_file(str(xlsx_file), attachment_filename=xlsx_filename, as_attachment=True)
+
+            return send_file(str(xlsx_file), attachment_filename=str(xlsx_file).split('/')[-1], as_attachment=True)
         else:
             return redirect(request.referrer)
+
+
+@app.route(f'/{raiz}/download-unidade-especial', methods=['POST'])
+@flask_login.login_required
+def dowload_special_unit():
+    if request.method == 'POST':
+        try:
+            ue_id = request.form['unit_special']
+
+            xlsx_file = GeradorExcelCardapioUE(ue_id).produzir_excel()
+            if xlsx_file:
+                return send_file(xlsx_file, attachment_filename=xlsx_file.split('/')[-1], as_attachment=True)
+            else:
+                flash('Nenhum cardápio encontrado!', 'danger')
+                return redirect(request.referrer)
+        except UnicodeEncodeError('Erro no unicode do arquivo!'):
+            flash('Error no unicode do arquivo!', 'danger')
+            return redirect(request.referrer)
+        except IOError('Error ao tentar escrever no arquivo!'):
+            flash('Error ao tentar escrever no arquivo!', 'danger')
+            return redirect(request.referrer)
+
+
+@app.context_processor
+def get_all_special_unit():
+    ue_dict = [{'id': ue['_id']['$oid'],
+                'label': ue['nome'],
+                'range': convert_datetime_format(ue['data_inicio'], '%Y%m%d', '%d/%m/%Y') +
+                         ' - ' +
+                         convert_datetime_format(ue['data_fim'], '%Y%m%d', '%d/%m/%Y')}
+               for ue in get_unidades_especiais()]
+    return dict(ue_dict=ue_dict)
 
 
 # FUNÇÕES AUXILIARES
@@ -1194,6 +1418,13 @@ def get_cardapio(args):
     refeicoes = r.json()
 
     return refeicoes
+
+
+def get_cardapio_unidade_especial_by_api(unidade, inicio, fim):
+    url = api + '/editor/cardapios-unidade-especial/?unidade={}&inicio={}&fim={}'.format(unidade, inicio, fim)
+    r = requests.get(url)
+
+    return r.json()
 
 
 def get_pendencias(request_obj, semana_default=None):
@@ -1276,6 +1507,24 @@ def get_semanas_pendentes():
     return [min(s) + ' - ' + max(s) for s in semanas.values()]
 
 
+def get_semanas_unidades_especiais():
+    url = api + '/editor/cardapios?status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO' + \
+          '&agrupamento=UE'
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    # Formatar as chaves
+    semanas = {}
+    for refeicao in refeicoes:
+        _key_semana = data_semana_format(refeicao['data'])
+        if _key_semana in semanas.keys():
+            semanas[_key_semana].append(refeicao['data'])
+        else:
+            semanas[_key_semana] = [refeicao['data']]
+
+    return [min(s) + ' - ' + max(s) for s in semanas.values()]
+
+
 def get_deletados():
     url = api + '/editor/cardapios?status=DELETADO'
     r = requests.get(url)
@@ -1332,7 +1581,7 @@ def get_deletados():
 
 def get_publicados(request_obj, default_week):
     params = request_obj.query_string.decode('utf-8')
-    
+
     if 'filtro_semana_mes' in params:
         week_filter = request_obj.args.get('filtro_semana_mes')
     else:
@@ -1343,7 +1592,6 @@ def get_publicados(request_obj, default_week):
     url = api + '/editor/cardapios?status=PUBLICADO&' + params
     r = requests.get(url)
     refeicoes = r.json()
-
     # Formatar as chaves
     semanas = {}
     for refeicao in refeicoes:
@@ -1394,6 +1642,89 @@ def get_publicados(request_obj, default_week):
     return pendentes
 
 
+def get_cardapios_unidades_especiais(request_obj, semana_default=None):
+    params = request_obj.query_string.decode('utf-8')
+    if 'filtro_semana' in params:
+        week_filter = request_obj.args.get('filtro_semana')
+        initial_date = datetime.datetime.strptime(week_filter.split(' - ')[0], '%d/%m/%Y').strftime('%Y%m%d')
+        end_date = datetime.datetime.strptime(week_filter.split(' - ')[1], '%d/%m/%Y').strftime('%Y%m%d')
+        dates_str = '&data_inicial=' + initial_date + '&data_final=' + end_date
+        params += dates_str
+    else:
+        params += '&data_inicial=' + semana_default.split(' - ')[0] + '&data_final=' + semana_default.split(' - ')[1]
+    if 'status' not in params:
+        params += '&status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO'
+    elif 'status=TODOS' in params:
+        params = params.replace('status=TODOS',
+                                'status=PENDENTE&status=SALVO&status=A_CONFERIR&status=CONFERIDO&status=PUBLICADO')
+    url = api + '/editor/cardapios-unidades-especiais?' + params
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    unidades_especiais = get_unidades_especiais()
+
+    # Formatar as chaves
+    semanas = {}
+    for refeicao in refeicoes:
+        _key_semana = data_semana_format(refeicao['data'])
+        if _key_semana in semanas.keys():
+            semanas[_key_semana].append(refeicao['data'])
+        else:
+            semanas[_key_semana] = [refeicao['data']]
+
+    pendentes = []
+    _ids = collections.defaultdict(list)
+    for refeicao in refeicoes:
+        escolas = []
+        params_escola = {'limit': 4000}
+        agrupamento = request.args.get('agrupamento', None)
+        if agrupamento and agrupamento != 'TODOS':
+            params_escola.update({'agrupamento': agrupamento})
+        tipo_atendimento = request.args.get('tipo_atendimento', None)
+        if tipo_atendimento and tipo_atendimento != 'TODOS':
+            params_escola.update({'tipo_atendimento': tipo_atendimento})
+        tipo_unidade = request.args.get('tipo_unidade', None)
+        if tipo_unidade and tipo_unidade != 'TODOS':
+            params_escola.update({'tipo_unidade': tipo_unidade})
+        for unidade_especial in unidades_especiais:
+            if refeicao['tipo_unidade'] == unidade_especial['nome']:
+                escolas_api = get_escolas(params_escola)[0]
+                ids = [_id['_id'] for _id in escolas_api]
+                escolas = ', '.join(escola for escola in unidade_especial['escolas'] if int(escola) in ids)
+        agrupamento = str(refeicao['agrupamento'])
+        tipo_unidade = refeicao['tipo_unidade']
+        tipo_atendimento = refeicao['tipo_atendimento']
+        status = refeicao['status']
+        idade = refeicao['idade']
+        _key_semana = data_semana_format(refeicao['data'])
+        _key = frozenset([agrupamento, tipo_unidade, tipo_atendimento, status, idade, _key_semana])
+        _ids[_key].append(refeicao['_id']['$oid'])
+        data_inicial = min(semanas[_key_semana])
+        data_final = max(semanas[_key_semana])
+
+        _args = (tipo_atendimento, tipo_unidade, agrupamento, idade, status, data_inicial, data_final)
+        query_str = 'tipo_atendimento={}&tipo_unidade={}&agrupamento={}&idade={}&status={}&data_inicial={}&data_final={}'
+        href = query_str.format(*_args)
+
+        pendentes.append(
+            # [tipo_atendimento, tipo_unidade, agrupamento, idade, data_inicial, data_final, status, href, _key_semana])
+            [tipo_unidade, escolas, '', idade, data_inicial, data_final, status, href, _key_semana])
+
+    pendentes.sort()
+    pendentes = list(pendentes for pendentes, _ in itertools.groupby(pendentes))
+
+    for pendente in pendentes:
+        _key = frozenset([pendente[2],
+                          pendente[1],
+                          pendente[0],
+                          pendente[6],
+                          pendente[3],
+                          pendente[8]])
+        pendente.append(','.join(_ids[_key]))
+
+    return pendentes
+
+
 def _set_datetime(str_date):
     try:
         ndate = dateutil.parser.parse(str_date)
@@ -1402,11 +1733,16 @@ def _set_datetime(str_date):
         pass
 
 
-def get_escolas(params=None):
+def get_escolas(params=None, limit=None):
     url = api + '/v2/editor/escolas'
     if params:
         extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
         url += extra
+    if limit:
+        if '?' in url:
+            url += '&limit=' + limit
+        else:
+            url += '?limit=' + limit
     r = requests.get(url)
     if 'erro' in r.json():
         return r.json()
@@ -1426,8 +1762,51 @@ def get_escola(cod_eol, raw=False):
     return escola
 
 
-def get_grupo_publicacoes(status):
-    url = api + '/editor/cardapios?status=' + status
+def get_escolas_dict(params=None, by_type=None, limit=None):
+    schools, _ = get_escolas(params=params, limit=limit)
+    schools_dict = []
+    if by_type and len(by_type):
+        if 'TODOS' in by_type:
+            for s in schools:
+                schools_dict.append(str(s['_id']))
+            return schools_dict
+        elif 'NENHUMA' in by_type:
+            return schools_dict
+        else:
+            for s in schools:
+                if s['tipo_unidade'] in by_type:
+                    schools_dict.append(str(s['_id']))
+            return schools_dict
+    else:
+        for s in schools:
+            schools_dict.append((str(s['_id']), str(s['_id']) + ' - ' + s['nome']))
+        return schools_dict
+
+
+def get_unidades_especiais():
+    url = api + '/editor/unidades_especiais'
+    r = requests.get(url)
+    return r.json()
+
+
+def get_unidades_especiais_by_id(id):
+    url = api + '/editor/unidades_especiais/' + id
+    r = requests.get(url)
+    return r.json()
+
+
+def get_unidades_especiais_dict():
+    url = api + '/editor/unidades_especiais'
+    r = requests.get(url)
+    special_unities = r.json()
+    special_unities_dict = []
+    for special_unit in special_unities:
+        special_unities_dict.append((special_unit['nome'], special_unit['nome']))
+    return special_unities_dict
+
+
+def get_grupo_publicacoes(status, data_inicial, data_final):
+    url = api + '/editor/cardapios?status=' + status + '&data_inicial=' + data_inicial + '&data_final=' + data_final
     r = requests.get(url)
     refeicoes = r.json()
 
@@ -1601,7 +1980,8 @@ def get_quebras_escolas():
 def current_week():
     d = datetime.datetime.utcnow()
     days_gap = 4 - d.weekday()
-    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
+    return (d - datetime.timedelta(days=d.weekday())).strftime('%Y%m%d') + ' - ' + (
+            d + datetime.timedelta(days=days_gap)).strftime('%Y%m%d')
 
 
 def normaliza_str(lista_str):
@@ -1616,6 +1996,33 @@ def normaliza_str(lista_str):
     for palavra in lista_str:
         lf.append(' '.join(palavra.split()))
     return lf
+
+
+class OutSourcedMenuForm(Form):
+    menu_id = IntegerField('ID')
+    management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
+    school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
+    special_unit = SelectField('Unidade Especial', choices=get_unidades_especiais_dict())
+    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016')])
+    weekday = DateField('Dia Semana', format='%Y%m%d')
+    ages = SelectField('Idades', choices=constants.AGES_DICT)
+    meals = SelectField('Refeições', choices=constants.MEALS_DICT)
+    menu = TextAreaField('Cardápio')
+    grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
+
+
+class SpecialUnitForm(Form):
+    identifier = StringField('Identificador')
+    special_unit = StringField('Unidade Especial')
+    creation_date = DateField('Data Criacao', format='%Y-%m-%d')
+    initial_date = DateField('Data Inicial', format='%Y-%m-%d')
+    end_date = DateField('Data Final', format='%Y-%m-%d')
+    schools = MultiCheckboxField('Escolas', choices=get_escolas_dict(limit='4000'))
+
+
+class FilterTypeSchoolForm(Form):
+    school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_FILTER_DICT)
+    school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
 
 
 if __name__ == "__main__":

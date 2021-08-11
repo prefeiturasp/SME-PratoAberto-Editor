@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -7,11 +7,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/v4-shims.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
     <style>
         /* Objetos da tabela */
         .row {
@@ -36,15 +35,14 @@
             margin-left: 5px;
         }
 
-        .panel-body {
-            display: none;
-        }
-
-
         .table-responsive {
             height: 500px;
             overflow-y: auto;
             overflow-x: auto;
+        }
+
+        .panel-body {
+            display: none;
         }
 
         .table>tbody>tr>th,
@@ -69,6 +67,18 @@
             background: white;
             z-index: 10;
         }
+
+        #btn-top {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 99;
+            outline: none;
+            padding: 5px;
+            border-radius: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -78,26 +88,51 @@
     {% include 'top_header.html' %}
 
 
+    <!-- Upload form -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
+        <div class="modal-dialog" role="document">
+            <form method="post" action="/editor/upload" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Upload XML</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <input type="file" name="file" class="form-control-file">
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Informações do agrupamento -->
     <div class="row">
         <div class="col-12" style="text-align: left">
-            <a href="/editor/pendencias_unidades_especiais" class="col-md-4 btn btn-lg btn-info">Histórico de Cardápios
-                Unidades Especiais</a>
+            <a href="/editor/pendencias_unidades_especiais" class="col-md-4 btn btn-lg btn-default disabled">Histórico
+                de Cardápios Unidades Especiais</a>
         </div>
     </div>
     <div class="row">
-        <div class="col-12" style="text-align: left">
-            <a href="/editor/pendencias_publicacoes" class="col-md-3 btn btn-lg btn-default disabled">Cardápios
+        <div class="col-12">
+            <a href="/editor/pendencias_publicacoes" class="col-md-3 col-xs-12 btn btn-lg btn-primary">Cardápios
                 Pendentes</a>
-            <a href="/editor/pendencias_publicadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-success">Cardápios
+            <a href="/editor/pendencias_publicadas"
+                class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-success">Cardápios
                 Publicados</a>
-            <a href="/editor/pendencias_deletadas" class="col-md-offset-1 col-md-3 btn btn-lg btn-danger">Cardápios
+            <a href="/editor/pendencias_deletadas"
+                class="col-md-offset-1 col-md-3 col-xs-12 btn btn-lg btn-danger">Cardápios
                 Deletados</a>
         </div>
     </div>
-    <!-- Campos GERAÇAO TABELA -->
     <div class="panel panel-default" style="margin-top: 30px;">
-        <form method="get" action="/editor/pendencias_publicacoes">
+        <form method="get" action="/editor/pendencias_unidades_especiais">
             <div class="row" style="margin-top: 15px">
                 <div class="col-sm-3 col-xs-12">
                     <label for="tipo_atendimento">Tipo de gestão</label>
@@ -120,8 +155,8 @@
                         <option {% if request.args.get('tipo_unidade')=='CCI' %} selected {% endif %}>CCI</option>
                         <option {% if request.args.get('tipo_unidade')=='CEI_MUNICIPAL' %} selected {% endif %}>
                             CEI_MUNICIPAL</option>
-                        <option {% if request.args.get('tipo_unidade')=='CEI_PARCEIRO_(RP)' %} selected {% endif %}>
-                            CEI_PARCEIRO_(RP)</option>
+                        <option {% if request.args.get('tipo_unidade')=='CEI_PARCEIRO' %} selected {% endif %}>
+                            CEI_PARCEIRO</option>
                         <option {% if request.args.get('tipo_unidade')=='CEMEI' %} selected {% endif %}>CEMEI</option>
                         <option {% if request.args.get('tipo_unidade')=='CEU_GESTÃO' %} selected {% endif %}>CEU_GESTÃO
                         </option>
@@ -221,13 +256,14 @@
                         <option {% if request.args.get('status')=='A_CONFERIR' %} selected {% endif %}>A_CONFERIR
                         </option>
                         <option {% if request.args.get('status')=='CONFERIDO' %} selected {% endif %}>CONFERIDO</option>
+                        <option {% if request.args.get('status')=='PUBLICADO' %} selected {% endif %}>PUBLICADO</option>
                     </select>
                 </div>
                 <div class="col-sm-3 col-xs-12 dropdown">
                     <label> Selecione a semana:</label>
                     <select onchange="this.form.submit()" value="{{ request.args.get('filtro_semana') }}"
                         class="form-control input" id="filtro_semana" name="filtro_semana">
-                        {% for semana in semanas: %}
+                        {% for semana in week_ranges: %}
                         <option {% if request.args.get('filtro_semana')==semana %} selected {% endif %}>{{ semana }}
                         </option>
                         {% endfor %}
@@ -243,52 +279,9 @@
         </form>
     </div>
     <div class="row">
-        <div class="col-12">
-            <form method="post" action="/editor/calendario_editor_grupo">
-                <button class="col-sm-offset-8 col-sm-3 btn btn-lg btn-info" type="submit"
-                    style="margin-top: 20px; display: none" id="botao_edicao_grupo">EDITAR GRUPO
-                </button>
-                <input type="hidden" name="json_dump" id="json_dump" value="json_dump">
-            </form>
-        </div>
-    </div>
-
-
-    {% include 'messages.html' %}
-
-
-    <!-- Upload form -->
-    <div class="modal fade" tabindex="-1" role="dialog" id="xml_form">
-        <div class="modal-dialog" role="document">
-            <form method="post" action="/editor/upload" enctype="multipart/form-data">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title">Upload XML</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>
-                            <input type="file" name="file" class="form-control-file">
-                        </p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Enviar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    {% include 'messages.html' %}
-
-
-    <!-- Inicia o corpo da pagina -->
-    <div class="row">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <h2 class="panel-title">Cardápios Pendentes</h2>
+                <h2 class="panel-title">Cardápios Publicados</h2>
                 <div class="pull-right">
                     <span class="clickable filter" data-toggle="tooltip" title="Toggle table filter"
                         data-container="body">
@@ -300,110 +293,78 @@
                 <input type="text" class="form-control" id="task-table-filter" data-action="filter"
                     data-filters="#task-table" placeholder="Filter Tasks" />
             </div>
-            <div class="table-responsive">
-                <div class="panel panel-default">
-                    <table class="table table-hover table-striped" id="task-table">
-                        <thead>
-                            <tr>
-                                <th style="display: none;"></th>
-                                <th style="display: none;"></th>
-                                <th style="min-width: 20px;max-width: 20px"></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
-                                    TIPO
-                                    GESTÃO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(5)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">
-                                    TIPO
-                                    ESCOLA <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                                    AGRUPAMENTO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">
-                                    IDADE
-                                    <i class="fa fa-sort" aria-hidden="true"></i>
-                                </th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">
-                                    DATA
-                                    INICIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 120px;max-width: 120px;">
-                                    DATA
-                                    FINAL <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(10)')"
-                                    style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">
-                                    STATUS
-                                    CARDÁPIO <i class="fa fa-sort" aria-hidden="true"></i></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th style="display: none;"></th>
-                                <th style="display: none;"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for linha in pendentes %}
-                            <tr class="item" style="display: none;">
-                                <td class="ids" style="display: none;">{{ linha[9] }}</td>
-                                <td class="semana" style="display: none;">{{ linha[8] }}</td>
-                                <td class="box"><input class="box_grupo" style="width: 20px; height: 20px;"
-                                        type="checkbox" value=""></td>
-                                <td class="tipo_gestao">{{ linha[0] }}</td>
-                                <td class="tipo_escola">{{ linha[1] }}</td>
-                                <td class="agrupamento">{{ linha[2] }}</td>
-                                <td class="idade">{{ linha[3] }}</td>
-                                <td class="data_inicial">{{ linha[4] }}</td>
-                                <td class="data_final">{{ linha[5] }}</td>
-                                <td class="status">{{ linha[6] }}</td>
-                                <!--linha [7] vem de pendentes-->
-                                <!--['TERCEIRIZADA', 'CCI', 'EDITAL 78/2016', 'D - 0 A 5 MESES', '14/01/2019', '18/01/2019', 'PENDENTE', 'tipo_atendimento=TERCEIRIZADA&tipo_unidade=CCI&agrupamento=EDITAL 78/2016&idade=D - 0 A 5 MESES&status=PENDENTE&data_inicial=20190114&data_final=20190118', '2019-3', '5c2de6c354e6257eebc8a2c3,5c2de6c354e6257eebc8a2c2,5c2de6c354e6257eebc8a2c1,5c2de6c354e6257eebc8a2c0,5c2de6c354e6257eebc8a2bf']-->
-                                <!--o conteudo eh o mesmo do acima, indice 7 vem argumentos e o ultimo inice vem uma lista de ids do mongo...-->
-                                <!--quando se clica aqui ta fazendo uma requisição maluca que vem la de tras metodo backlog()-->
-                                <td><a class="btn btn-info" href="/editor/calendario?{{ linha[7] }}">EDITAR</a></td>
-                                <td>
-                                    <button {{ '' if linha[6]=='CONFERIDO' else 'disabled' }}
-                                        class="btn btn-success publicar {{ '' if linha[6] == 'CONFERIDO' else 'disabled' }}"
-                                        value="PUBLICAR">PUBLICAR
-                                    </button>
-                                </td>
-                                <td><a value="DELETAR" class="deletar"><i
-                                            style="color:#D9534F;font-size:30px;text-align: center;cursor: pointer"
-                                            class="fa">&#xf2d3;</i></a></td>
-                                <td class="url" style="display: none;">/cardapios?{{ linha[7] }}</td>
-                                <td class="semana_inter" style="display: none;">{{ linha[4] }} - {{ linha[5] }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="panel panel-default">
+                <table class="table table-hover table-striped" id="task-table">
+                    <thead>
+                        <tr>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(4)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">UNIDADE
+                                ESPECIAL <i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th style="cursor:pointer; word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLAS
+                            </th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(6)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 160px;max-width: 160px;">IDADE
+                                <i class="fa fa-sort" aria-hidden="true"></i>
+                            </th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(7)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">
+                                INTERVALO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(8)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 140px;max-width: 140px;">DATA
+                                PUBLICAÇÃO<i class="fa fa-sort" aria-hidden="true"></i></th>
+                            <th onclick="w3.sortHTML('#task-table', '.item', 'td:nth-child(9)')"
+                                style="cursor:pointer; word-wrap: break-word;min-width: 180px;max-width: 180px;">STATUS
+                                <i class="fa fa-sort" aria-hidden="true"></i>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for published_menu in published_menus %}
+                        <tr class="item" style="display: none;">
+                            <td class="ids" style="display: none;">{{ published_menu[10] }}</td>
+                            <td class="semana" style="display: none;">{{ published_menu[8] }}</td>
+                            <td class="tipo_escola">{{ published_menu[0] }}</td>
+                            <td class="escolas">{{ published_menu[1] }}</td>
+                            <td class="idade">{{ published_menu[3] }}</td>
+                            <td class="data_inicial">{{ published_menu[4] }} - {{ published_menu[5] }}</td>
+                            <td class="data_final">{{ published_menu[9] }}</td>
+                            <td class="status" style="display: flex">
+                                <span style="padding-top: 10px">{{ published_menu[6] }}</span>
+                                <a title="Ver Cardápio" style="margin-left: 10px" class="btn btn-default"
+                                    href="/visualizador_cardapio?{{ published_menu[7] }}">
+                                    <i class="fas fa-clipboard-list fa-lg" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                            <td class="semana_inter" style="display: none;">{{ published_menu[4] }} - {{
+                                published_menu[5] }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if published_menus | length == 0 %}
+                        <tr>
+                            <td colspan="10">
+                                Nenhum cardápio publicado no período.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-
+    <button onclick="topFunction()" id="btn-top" class="btn btn-info" title="Volte para o topo">⬆️</button>
     <footer class="container-fluid text-center">
         <br>
         <p><a href="http://pratoaberto.sme.prefeitura.sp.gov.br/"
                 title="Projeto Prato Aberto">http://pratoaberto.sme.prefeitura.sp.gov.br/</a>
         </p>
     </footer>
-    {# {% with messages = get_flashed_messages(with_categories=true) %}#}
-    {# {% if messages %}#}
-    {# <ul class=flashes>#}
-        {# {% for category, message in messages %}#}
-        {# <li id="mensagem" class="{{ category }} hidden">{{ message }}</li>#}
-        {# {% endfor %}#}
-        {# </ul>#}
-    {# {% endif %}#}
-    {# {% endwith %}#}
-
     </div>
 
     <!-- Script com a funcionalidade do filtro da tabela -->
     <script>
         /**
-         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo useable. It will work fine for smaller tables
+         *   I don't recommend using this plugin on large tables, I just wrote it to make the demo usable. It will work fine for smaller tables
          *   but will likely encounter performance issues on larger tables.
          *
          *       <input type="text" class="form-control" id="dev-table-filter" data-action="filter" data-filters="#dev-table" placeholder="Filter Developers" />
@@ -467,12 +428,7 @@
 
     <!-- POSTAR linha da tabela -->
     <script>
-        function yyyymmdd() {
-            var x = new Date();
-            return x.toISOString();
-        }
-
-        $(".publicar").click(function () {
+        $(".pendente").click(function () {
             var $row = $(this).closest("tr");    // Find the row
             var $text = $row.find(".ids").text(); // Find the text
             var lista_ids = $text.split(',');
@@ -482,8 +438,7 @@
 
                 cardapios.push({
                     "_id": { "$oid": value },
-                    "status": "PUBLICADO",
-                    "data_publicacao": yyyymmdd()
+                    "status": "PENDENTE"
                 });
             });
 
@@ -506,78 +461,61 @@
     <!-- DELETAR linha da tabela -->
     <script>
         $(".deletar").click(function () {
-            if (confirm('Deseja mover este cardápio para deletados?')) {
+            var $row = $(this).closest("tr");    // Find the row
+            var $text = $row.find(".ids").text(); // Find the text
+            var lista_ids = $text.split(',');
+            var cardapios = []
+            console.log(lista_ids)
+            $.each(lista_ids, function (index, value) {
 
-                var $row = $(this).closest("tr");    // Find the row
-                var $text = $row.find(".ids").text(); // Find the text
-                var lista_ids = $text.split(',');
-                var cardapios = [];
-                $.each(lista_ids, function (index, value) {
-
-                    cardapios.push({
-                        "_id": { "$oid": value },
-                        "status": "DELETADO"
-                    });
+                cardapios.push({
+                    "_id": { "$oid": value },
+                    "status": "DELETADO"
                 });
+            });
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/editor/atualiza_cardapio',
-                    data: JSON.stringify(cardapios),
-                    contentType: 'application/json',
-                    //dataType: 'json',
-                    success: function (data, textStatus, jqXHR) {
-                        alert('Cardápio removido com sucesso.');
-                        $row.hide();
-                    }
-                });
-            }
-        });
-    </script>
-
-    <!-- Lista Edição Grupo -->
-    <script>
-        $(".box_grupo").on("click", function () {
-            var numberNotChecked = $('input:checkbox:checked').length;
-            if (numberNotChecked > 1) {
-                document.getElementById('botao_edicao_grupo').style.display = "block";
-            } else {
-                document.getElementById('botao_edicao_grupo').style.display = "none";
-            }
-
-            $(document).ready(function () {
-                var tableControl = document.getElementById('task-table');
-                var lista_ids = []
-                arrayOfValues = $('input:checkbox:checked', tableControl).map(function () {
-                    var row = jQuery(this).closest('tr');
-                    var id = $(row.children('td')[0]).text();
-                    var url = $(row.children('td')[13]).text();
-                    lista_ids.push(url)
-                });
-                /*window.alert(lista_ids)*/
-                $('#json_dump').attr('value', JSON.stringify(lista_ids))
+            $.ajax({
+                type: 'POST',
+                url: '/editor/atualiza_cardapio',
+                data: JSON.stringify(cardapios),
+                contentType: 'application/json',
+                //dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+                    console.log("Cardapio publicado com sucesso");
+                    $row.hide();
+                }
             });
 
         });
-    </script>
 
-    <!-- Pop erro -->
-    {#
-    <script>#}
-        {#        if ($('#mensagem').length) {# }
-            {#            window.alert($('#mensagem').text())# }
-            {# }#
-        }
-        {#</script>#}
+    </script>
 
     <!-- Filtro da semana ao carregar a pagina -->
     <script>
-            $(document).ready(function () {
-                var semana_filtro = $('#filtro_semana').val()
-                $('#task-table tr').not(':first').each(function () {
-                    $(this).show();
-                });
+        $(document).ready(function () {
+            var semana_filtro = $('#filtro_semana_mes').val()
+            $('#task-table tr').not(':first').each(function () {
+                var semana_linha = $($(this).children('td')[11]).text()
+                $(this).show();
             });
+        });
+    </script>
+
+    <script>
+        window.onscroll = function () { scrollFunction() };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("btn-top").style.display = "block";
+            } else {
+                document.getElementById("btn-top").style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
     </script>
 
 </body>
