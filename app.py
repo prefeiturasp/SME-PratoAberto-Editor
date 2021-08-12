@@ -964,10 +964,13 @@ def escolas(id_escola=None):
         # Colocando as choices na ordem que foi escolhido a alimentação
         choices = form.meals.choices
         for ind, r in enumerate(school['refeicoes']):
-            ind_c = [i for i, ch in enumerate(choices) if ch[0] == r][0]
-            aux = choices[ind]
-            choices[ind] = choices[ind_c]
-            choices[ind_c] = aux
+            try:
+                ind_c = [i for i, ch in enumerate(choices) if ch[0] == r][0]
+                aux = choices[ind]
+                choices[ind] = choices[ind_c]
+                choices[ind_c] = aux
+            except IndexError as e:
+                pass
 
         form.meals.choices = choices
         form.meals.data = school['refeicoes']
