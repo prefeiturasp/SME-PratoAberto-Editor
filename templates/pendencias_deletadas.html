@@ -297,7 +297,6 @@
             var $text = $row.find(".ids").text(); // Find the text
             var lista_ids = $text.split(',');
             var cardapios = []
-            {#console.log(lista_ids)# }
             $.each(lista_ids, function (index, value) {
                 cardapios.push({
                     "_id": { "$oid": value },
