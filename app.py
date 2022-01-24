@@ -38,7 +38,7 @@ sentry_url = os.environ.get('SENTRY_URL')
 if sentry_url:
     import sentry_sdk
     from sentry_sdk.integrations.flask import FlaskIntegration
-    
+
     sentry_environment = os.environ.get('SENTRY_ENVIRONMENT')
 
     sentry_sdk.init(
@@ -112,11 +112,11 @@ def login():
 
     flash('Senha ou usuario nao identificados')
     return render_template('login.html')
-    
+
 
 @app.route('/debug-sentry')
 def trigger_error():
-    division_by_zero = 1 / 0    
+    division_by_zero = 1 / 0
 
 
 @app.route(f'/{raiz}/logout')
@@ -923,14 +923,14 @@ def adicionar_unidade_especial():
     new_special_unit['data_fim'] = form.end_date.data.strftime('%Y%m%d')
     new_special_unit['escolas'] = form.schools.data
     headers = {'Content-type': 'application/json'}
-    r = requests.post(api + '/editor/unidade_especial/{}'.format(str(new_special_unit['_id'])),
+    r = requests.post(f'{api}/editor/unidade_especial/{str(new_special_unit["_id"])}',
                       data=json.dumps(new_special_unit),
                       headers=headers)
     if '200' in str(r):
         flash('Informações salvas com sucesso')
     else:
         flash('Ocorreu um erro ao salvar as informações')
-    return redirect('unidades_especiais', code=302)
+    return redirect('/editor/unidades_especiais', code=302)
 
 
 @app.route(f'/{raiz}/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
