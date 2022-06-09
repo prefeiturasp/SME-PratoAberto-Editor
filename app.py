@@ -1208,24 +1208,14 @@ def publicacao():
                                    filtro_selected=filtro, status=opt_status)
 
         else:
-            cardapio_aux = []
-            url = api + '/editor/cardapios?data_inicial={}&data_final={}'.format(data_inicial, data_final)
-            # filtro de  tipo de unidade e tipo de atendimento.
-            if tipo_unidade != 'TODOS':
-                url += '&tipo_unidade={}'.format(tipo_unidade)
-            if tipo_atendimento != 'TODOS':
-                url += '&tipo_atendimento={}'.format(tipo_atendimento)
-            if filtro != 'STATUS':
-                url += '&status={}'.format(filtro)
-            r = requests.get(url)
-            refeicoes = r.json()
-
-            for refeicoes_dia in refeicoes:
-                _keys = ['tipo_atendimento', 'tipo_unidade', 'agrupamento', 'idade', 'data', 'status']
-                refeicao_dia_aux = [refeicoes_dia[_key] for _key in _keys]
-                for refeicao in refeicoes_dia['cardapio'].keys():
-                    cardapio_aux.append(
-                        refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
+            params_dict = {
+                'data_inicial': data_inicial,
+                'data_final': data_final,
+                'tipo_unidade': tipo_unidade,
+                'tipo_atendimento': tipo_atendimento,
+                'filtro': filtro
+            }
+            cardapio_aux = filtrar_cardapios(params_dict)
             data_inicial = datetime.datetime.strptime(data_inicial, '%Y%m%d').strftime('%d/%m/%Y')
             data_final = datetime.datetime.strptime(data_final, '%Y%m%d').strftime('%d/%m/%Y')
             return render_template("download_publicações.html", referrer=session['refer'],
@@ -1242,33 +1232,21 @@ def download_csv():
     data_inicial = convert_datetime_format(data_inicio_fim_str.split('-')[0], '%d/%m/%Y', '%Y%m%d')
     data_final = convert_datetime_format(data_inicio_fim_str.split('-')[1], '%d/%m/%Y', '%Y%m%d')
     filtro = request.form.get('filtro_selected', request.data)
+    tipo_unidade = request.form.get('tipo_unidade_download', request.data)
+    tipo_atendimento = request.form.get('tipo_atendimento_download', request.data)
 
     if filtro == 'STATUS':
         return render_template("download_publicações.html",
                                data_inicio_fim=str(data_inicial + '-' + data_final))
     else:
-        cardapio_aux = []
-        for cardapio in get_grupo_publicacoes(filtro, data_inicial, data_final):
-            try:
-                # transforma as datas em formato br para o formato que ta no bd...
-                data_inicial = datetime.datetime.strptime(data_inicial, '%d/%m/%Y').strftime('%Y%m%d')
-                data_final = datetime.datetime.strptime(data_final, '%d/%m/%Y').strftime('%Y%m%d')
-            except Exception as e:
-                pass  # XXX
-                # print(data_final, data_inicial)
-            if (data_inicial <= cardapio[4]) or (data_inicial <= cardapio[5]):
-                if (cardapio[4] <= data_final) or (cardapio[5] <= data_final):
-                    url = api + '/editor/cardapios?' + '&' + cardapio[7]
-                    r = requests.get(url)
-                    refeicoes = r.json()
-
-                    for refeicoes_dia in refeicoes:
-                        _keys = ['tipo_atendimento', 'tipo_unidade', 'agrupamento', 'idade', 'data', 'status']
-                        refeicao_dia_aux = [refeicoes_dia[_key] for _key in _keys]
-                        for refeicao in refeicoes_dia['cardapio'].keys():
-                            cardapio_aux.append(
-                                refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
-
+        params_dict = {
+            'data_inicial': data_inicial,
+            'data_final': data_final,
+            'tipo_unidade': tipo_unidade,
+            'tipo_atendimento': tipo_atendimento,
+            'filtro': filtro
+        }
+        cardapio_aux = filtrar_cardapios(params_dict)
         csvlist = generate_csv_str(cardapio_aux)
         output = make_response(csvlist)
         output.headers["Content-Disposition"] = "attachment; filename=agrupamento_publicacoes" + str(
@@ -1410,6 +1388,29 @@ def get_all_special_unit():
 
 
 # FUNÇÕES AUXILIARES
+def filtrar_cardapios(params_dict):
+    cardapio_aux = []
+    url = api + '/editor/cardapios?data_inicial={}&data_final={}'.format(params_dict['data_inicial'], params_dict['data_final'])
+    # filtro de  tipo de unidade e tipo de atendimento.
+    if params_dict['tipo_unidade'] != 'TODOS':
+        url += '&tipo_unidade={}'.format(params_dict['tipo_unidade'])
+    if params_dict['tipo_atendimento'] != 'TODOS':
+        url += '&tipo_atendimento={}'.format(params_dict['tipo_atendimento'])
+    if params_dict['filtro'] != 'STATUS':
+        url += '&status={}'.format(params_dict['filtro'])
+
+    r = requests.get(url)
+    refeicoes = r.json()
+
+    for refeicoes_dia in refeicoes:
+        _keys = ['tipo_atendimento', 'tipo_unidade', 'agrupamento', 'idade', 'data', 'status']
+        refeicao_dia_aux = [refeicoes_dia[_key] for _key in _keys]
+        for refeicao in refeicoes_dia['cardapio'].keys():
+            cardapio_aux.append(
+                refeicao_dia_aux + [refeicao] + [', '.join(refeicoes_dia['cardapio'][refeicao])])
+    return cardapio_aux
+
+
 def data_semana_format(text):
     date = datetime.datetime.strptime(text, "%Y%m%d").isocalendar()
     return str(date[0]) + "-" + str(date[1])
