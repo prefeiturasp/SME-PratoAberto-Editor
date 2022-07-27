@@ -545,7 +545,6 @@ def cria_terceirizada():
         tipo_unidade = set([x[0] for x in quebras])
         idade = set([x[2] for x in quebras])
         refeicao = set([x[3] for x in quebras])
-
         return render_template("cria_terceirizadas.html",
                                editais=editais,
                                tipo_unidade=tipo_unidade,
@@ -2007,7 +2006,7 @@ class OutSourcedMenuForm(Form):
     management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
     school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
     special_unit = SelectField('Unidade Especial', choices=get_unidades_especiais_dict())
-    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016')])
+    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016'), ('Novo Edital', 'Novo Edital')])
     weekday = DateField('Dia Semana', format='%Y%m%d')
     ages = SelectField('Idades', choices=constants.AGES_DICT)
     meals = SelectField('Refeições', choices=constants.MEALS_DICT)
