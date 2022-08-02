@@ -11,7 +11,7 @@ import requests
 from flask import (Flask, flash, redirect, render_template,
                    request, url_for, make_response, Response, send_file, session)
 from werkzeug.utils import secure_filename
-from wtforms import (Form, StringField, validators, SelectField,
+from wtforms import (Form, StringField, validators, SelectField, FieldList, FormField,
                      SelectMultipleField, FloatField, IntegerField, TextAreaField)
 from wtforms.fields.html5 import DateField
 from wtforms.widgets import ListWidget, CheckboxInput
@@ -852,12 +852,24 @@ def atualiza_config_cardapio():
         return '', 200
 
 
+class EditalForm(Form):
+    edital = StringField('edital')
+    escola = IntegerField('escola')
+    data_inicio = DateField('data_inicio')
+    data_fim = DateField('data_fim')
+
+
 class SchoolRegistrationForm(Form):
     cod_eol = IntegerField('Código EOL', [validators.required()])
     management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
     school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
     grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
-    edital = SelectField('Edital', choices=constants.EDITOR_DICT)
+    edital = SelectField('Edital', choices=constants.GROUPING_DICT)
+    edital_data_inicio = DateField('Data início', [validators.required()])
+    edital_data_fim = DateField('Data fim', [validators.optional()])
+    edital_2 = SelectField('Edital', choices=constants.GROUPING_DICT)
+    edital_data_inicio_2 = DateField('Data início', [validators.optional()])
+    edital_data_fim_2 = DateField('Data fim', [validators.optional()])
     school_name = StringField('Nome da Escola', [validators.required()])
     address = StringField('Endereço', [validators.required()])
     neighbourhood = StringField('Bairro', [validators.required()])
@@ -953,11 +965,24 @@ def escolas(id_escola=None):
         form.school_type.data = school['tipo_unidade']
         form.management.data = school['tipo_atendimento']
         form.grouping.data = school['agrupamento']
+        if len(school['editais']) > 0:
+            form.edital.data = school['editais'][0]['edital']
+            form.edital_data_inicio.data = datetime.datetime.strptime(
+                school['editais'][0]['data_inicio'], '%Y%m%d').date()
+            if school['editais'][0]['data_fim']:
+                form.edital_data_fim.data = datetime.datetime.strptime(
+                    school['editais'][0]['data_fim'], '%Y%m%d').date()
+        if len(school['editais']) > 1:
+            form.edital_2.data = school['editais'][1]['edital']
+            form.edital_data_inicio_2.data = datetime.datetime.strptime(
+                school['editais'][1]['data_inicio'], '%Y%m%d').date()
+            if school['editais'][1]['data_fim']:
+                form.edital_data_fim_2.data = datetime.datetime.strptime(
+                    school['editais'][1]['data_fim'], '%Y%m%d').date()
         form.address.data = school['endereco'].upper()
         form.neighbourhood.data = school['bairro'].upper()
         form.latitude.data = school['lat'] if school['lat'] not in [None, ''] else ''
         form.longitude.data = school['lon'] if school['lon'] not in [None, ''] else ''
-        form.edital.data = school.get('edital', '')
         form.ages.data = school['idades']
 
         # Colocando as choices na ordem que foi escolhido a alimentação
@@ -1003,7 +1028,18 @@ def adicionar_escola():
     new_school['lat'] = form.latitude.data if form.latitude.data is not None else ''
     new_school['lon'] = form.longitude.data if form.longitude.data is not None else ''
     new_school['telefone'] = ' '
-    new_school['edital'] = form.edital.data if form.edital.data != 'Nenhum' else ''
+    if form.edital.data and form.edital_data_inicio.data:
+        edital_1 = {'edital': form.edital.data,
+                    'escola': int(form.cod_eol.data),
+                    'data_inicio': str(form.edital_data_inicio.data).replace('-', ''),
+                    'data_fim': str(form.edital_data_fim.data).replace('-', '') if form.edital_data_fim.data else None}
+        new_school['edital_1'] = edital_1
+    if form.edital_2.data and form.edital_data_inicio_2.data:
+        edital_2 = {'edital': form.edital_2.data,
+                    'escola': int(form.cod_eol.data),
+                    'data_inicio': str(form.edital_data_inicio_2.data).replace('-', ''),
+                    'data_fim': str(form.edital_data_fim_2.data).replace('-', '') if form.edital_data_fim_2.data else None}
+        new_school['edital_2'] = edital_2
     new_school['idades'] = form.ages.data
     new_school['refeicoes'] = form.meals.data
     new_school['data_inicio_vigencia'] = ''

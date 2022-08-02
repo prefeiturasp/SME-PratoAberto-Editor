@@ -482,7 +482,7 @@
                     </button>
                 </div>
 
-                <form method=post action="/editor/adicionar_escola">
+                <form name='escola-form' method=post action="/editor/adicionar_escola">
                     <dl>
                         <div>
                             <div class="row forms" style="padding-top: 40px">
@@ -502,13 +502,35 @@
                                 </div>
                                 <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
                                     <label class="col-sm-6 col-xs-12">{{ form.grouping.label }}</label>
-                                    <span class="col-sm-4 col-xs-12">{{ form.grouping }}</span>
+                                    <span class=" col-sm-4 col-xs-12">{{ form.grouping }}</span>
                                 </div>
                             </div>
                             <div class="row forms">
-                                <div class="col-sm-6 col-sm-offset-5 col-xs-12">
-                                    <label class="col-sm-6 col-xs-12">{{ form.edital.label }}</label>
-                                    <span class=" col-sm-4 col-xs-12">{{ form.edital }}</span>
+                                <div class="col-sm-4 col-xs-12 text-right">
+                                    <label>{{ form.edital.label }}</label>
+                                    <span>{{ form.edital }}</span>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <label>{{ form.edital_data_inicio.label }}</label>
+                                    <span>{{ form.edital_data_inicio }}</span>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <label>{{ form.edital_data_fim.label }}</label>
+                                    <span>{{ form.edital_data_fim }}</span>
+                                </div>
+                            </div>
+                            <div class="row forms">
+                                <div class="col-sm-4 col-xs-12 text-right">
+                                    <label>{{ form.edital_2.label }}</label>
+                                    <span>{{ form.edital_2 }}</span>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <label>{{ form.edital_data_inicio_2.label }}</label>
+                                    <span>{{ form.edital_data_inicio_2 }}</span>
+                                </div>
+                                <div class="col-sm-4 col-xs-12">
+                                    <label>{{ form.edital_data_fim_2.label }}</label>
+                                    <span>{{ form.edital_data_fim_2 }}</span>
                                 </div>
                             </div>
                             <div class="row forms">
