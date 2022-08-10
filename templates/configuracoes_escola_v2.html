@@ -303,7 +303,6 @@
                                     <th title="AGRUPAMENTO" style="word-wrap: break-word;">AGRUP.</th>
                                     <th style="display: none;word-wrap: break-word;min-width: 150px;max-width: 150px;">
                                         EDITAL</th>
-                                    <th style="word-wrap: break-word;">DATA</th>
                                     <th style="word-wrap: break-word;min-width: 400px;max-width: 400px;">NOME</th>
                                     <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">REFEIÇÕES</th>
                                     <th style="word-wrap: break-word;min-width: 300px;max-width: 300px;">IDADES</th>
@@ -323,12 +322,13 @@
                                             data-toggle="modal" data-target="#modalAddSchoolForm{{ linha['_id'] }}"><i
                                                 class="fas fa-edit"></i></a></td>
                                     <td class="cod_eol">{{ linha['_id'] }}</td>
-                                    <td class="warning" class="tipo_atendimento">{{ linha['tipo_atendimento'] }}</td>
+                                    <td class="warning" class="tipo_atendimento">
+                                        {{ editais[loop.index0]['tipo_atendimento'] }}
+                                    </td>
                                     <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
                                     <td class="agrupamento">{{ linha['agrupamento'] }}</td>
-                                    <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">{{
-                                        linha['edital'] }}</td>
-                                    <td class="data">{{ linha['data_inicio_vigencia'] }}</td>
+                                    <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">
+                                        {{ linha['edital'] }}</td>
                                     <td class="info" class="nome">{{ linha['nome'] }}</td>
                                     <td class="default" class="refeicoes">
                                         {% for itens in linha['refeicoes'] %}
@@ -469,7 +469,7 @@
     <div class="modal fade" id="modalAddSchoolForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <div class="modal-content" style="width: 130%">
+            <div class="modal-content" style="width: 160%">
                 <div class="modal-header text-center">
                     {% if form.cod_eol.data %}
                     <h4 class="modal-title w-100 pull-left font-weight-bold">Editar escola</h4>
@@ -490,10 +490,6 @@
                                     <label class="col-sm-6 col-xs-12">{{ form.cod_eol.label }}</label>
                                     <span class="col-sm-4 col-xs-12">{{ form.cod_eol }}</span>
                                 </div>
-                                <div class="col-sm-6 col-xs-12" style="margin-left: -68px;">
-                                    <label class="col-sm-6 col-xs-12">{{ form.management.label }}</label>
-                                    <span class="col-sm-4 col-xs-12">{{ form.management }}</span>
-                                </div>
                             </div>
                             <div class="row forms">
                                 <div class="col-sm-6 col-xs-12">
@@ -506,29 +502,37 @@
                                 </div>
                             </div>
                             <div class="row forms">
-                                <div class="col-sm-4 col-xs-12 text-right">
+                                <div class="col-sm-3 col-xs-12 text-right">
                                     <label>{{ form.edital.label }}</label>
                                     <span>{{ form.edital }}</span>
                                 </div>
-                                <div class="col-sm-4 col-xs-12">
+                                <div class="col-sm-3 col-xs-12">
+                                    <label>{{ form.edital_tipo_atendimento.label }}</label>
+                                    <span>{{ form.edital_tipo_atendimento }}</span>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
                                     <label>{{ form.edital_data_inicio.label }}</label>
                                     <span>{{ form.edital_data_inicio }}</span>
                                 </div>
-                                <div class="col-sm-4 col-xs-12">
+                                <div class="col-sm-3 col-xs-12">
                                     <label>{{ form.edital_data_fim.label }}</label>
                                     <span>{{ form.edital_data_fim }}</span>
                                 </div>
                             </div>
                             <div class="row forms">
-                                <div class="col-sm-4 col-xs-12 text-right">
+                                <div class="col-sm-3 col-xs-12 text-right">
                                     <label>{{ form.edital_2.label }}</label>
                                     <span>{{ form.edital_2 }}</span>
                                 </div>
-                                <div class="col-sm-4 col-xs-12">
+                                <div class="col-sm-3 col-xs-12">
+                                    <label>{{ form.edital_tipo_atendimento_2.label }}</label>
+                                    <span>{{ form.edital_tipo_atendimento_2 }}</span>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
                                     <label>{{ form.edital_data_inicio_2.label }}</label>
                                     <span>{{ form.edital_data_inicio_2 }}</span>
                                 </div>
-                                <div class="col-sm-4 col-xs-12">
+                                <div class="col-sm-3 col-xs-12">
                                     <label>{{ form.edital_data_fim_2.label }}</label>
                                     <span>{{ form.edital_data_fim_2 }}</span>
                                 </div>
