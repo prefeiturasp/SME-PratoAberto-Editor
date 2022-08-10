@@ -327,8 +327,8 @@
                                     </td>
                                     <td class="tipo_unidade">{{ linha['tipo_unidade'] }}</td>
                                     <td class="agrupamento">{{ linha['agrupamento'] }}</td>
-                                    <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">a {{ loop.index0 }}{{
-                                        linha['edital'] }}</td>
+                                    <td data-edital="{{ linha['edital'] }}" style="display: none;" class="edital">
+                                        {{ linha['edital'] }}</td>
                                     <td class="info" class="nome">{{ linha['nome'] }}</td>
                                     <td class="default" class="refeicoes">
                                         {% for itens in linha['refeicoes'] %}
