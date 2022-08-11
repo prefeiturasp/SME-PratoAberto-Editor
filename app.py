@@ -857,19 +857,21 @@ class EditalForm(Form):
     escola = IntegerField('escola')
     data_inicio = DateField('data_inicio')
     data_fim = DateField('data_fim')
+    tipo_atendimento = StringField('tipo_atendimento')
 
 
 class SchoolRegistrationForm(Form):
     cod_eol = IntegerField('Código EOL', [validators.required()])
-    management = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
     school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
     grouping = SelectField('Agrupamento', choices=constants.GROUPING_DICT)
     edital = SelectField('Edital', choices=constants.GROUPING_DICT)
     edital_data_inicio = DateField('Data início', [validators.required()])
     edital_data_fim = DateField('Data fim', [validators.optional()])
+    edital_tipo_atendimento = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
     edital_2 = SelectField('Edital', choices=constants.GROUPING_DICT)
     edital_data_inicio_2 = DateField('Data início', [validators.optional()])
     edital_data_fim_2 = DateField('Data fim', [validators.optional()])
+    edital_tipo_atendimento_2 = SelectField('Gestão', choices=constants.MANAGEMENT_DICT)
     school_name = StringField('Nome da Escola', [validators.required()])
     address = StringField('Endereço', [validators.required()])
     neighbourhood = StringField('Bairro', [validators.required()])
@@ -963,12 +965,12 @@ def escolas(id_escola=None):
         form.cod_eol.data = id_escola
         form.school_name.data = school['nome'].upper()
         form.school_type.data = school['tipo_unidade']
-        form.management.data = school['tipo_atendimento']
         form.grouping.data = school['agrupamento']
         if len(school['editais']) > 0:
             form.edital.data = school['editais'][0]['edital']
             form.edital_data_inicio.data = datetime.datetime.strptime(
                 school['editais'][0]['data_inicio'], '%Y%m%d').date()
+            form.edital_tipo_atendimento.data = school['editais'][0]['tipo_atendimento']
             if school['editais'][0]['data_fim']:
                 form.edital_data_fim.data = datetime.datetime.strptime(
                     school['editais'][0]['data_fim'], '%Y%m%d').date()
@@ -976,6 +978,7 @@ def escolas(id_escola=None):
             form.edital_2.data = school['editais'][1]['edital']
             form.edital_data_inicio_2.data = datetime.datetime.strptime(
                 school['editais'][1]['data_inicio'], '%Y%m%d').date()
+            form.edital_tipo_atendimento_2.data = school['editais'][1]['tipo_atendimento']
             if school['editais'][1]['data_fim']:
                 form.edital_data_fim_2.data = datetime.datetime.strptime(
                     school['editais'][1]['data_fim'], '%Y%m%d').date()
@@ -1006,7 +1009,9 @@ def escolas(id_escola=None):
         else:
             session['refer'] = request.referrer
         escolas, pagination = get_escolas(params=request.args)
-    return render_template("configuracoes_escola_v2.html", escolas=escolas,
+        escolas_ids = ','.join([str(escola['_id']) for escola in escolas])
+        editais = sorted(get_editais(escolas_ids), key=lambda e: e['escola'])
+    return render_template("configuracoes_escola_v2.html", escolas=escolas, editais=editais,
                            pagination=pagination, referrer=session['refer'], form=form)
 
 
@@ -1021,7 +1026,6 @@ def adicionar_escola():
     new_school['_id'] = form.cod_eol.data
     new_school['nome'] = form.school_name.data.upper()
     new_school['tipo_unidade'] = form.school_type.data
-    new_school['tipo_atendimento'] = form.management.data
     new_school['agrupamento'] = form.grouping.data
     new_school['endereco'] = form.address.data.upper()
     new_school['bairro'] = form.neighbourhood.data.upper()
@@ -1032,13 +1036,15 @@ def adicionar_escola():
         edital_1 = {'edital': form.edital.data,
                     'escola': int(form.cod_eol.data),
                     'data_inicio': str(form.edital_data_inicio.data).replace('-', ''),
-                    'data_fim': str(form.edital_data_fim.data).replace('-', '') if form.edital_data_fim.data else None}
+                    'data_fim': str(form.edital_data_fim.data).replace('-', '') if form.edital_data_fim.data else None,
+                    'tipo_atendimento': form.edital_tipo_atendimento.data}
         new_school['edital_1'] = edital_1
     if form.edital_2.data and form.edital_data_inicio_2.data:
         edital_2 = {'edital': form.edital_2.data,
                     'escola': int(form.cod_eol.data),
                     'data_inicio': str(form.edital_data_inicio_2.data).replace('-', ''),
-                    'data_fim': str(form.edital_data_fim_2.data).replace('-', '') if form.edital_data_fim_2.data else None}
+                    'data_fim': str(form.edital_data_fim_2.data).replace('-', '') if form.edital_data_fim_2.data else None,
+                    'tipo_atendimento': form.edital_tipo_atendimento_2.data}
         new_school['edital_2'] = edital_2
     new_school['idades'] = form.ages.data
     new_school['refeicoes'] = form.meals.data
@@ -1799,6 +1805,17 @@ def get_escola(cod_eol, raw=False):
         escola = {}
 
     return escola
+
+
+def get_editais(ids_escolas=None):
+    url = api + '/editor/escolas_editais'
+    if ids_escolas:
+        url += f'/{ids_escolas}'
+    r = requests.get(url)
+    editais = r.json()
+    if r.status_code != 200:
+        editais = {}
+    return editais
 
 
 def get_escolas_dict(params=None, by_type=None, limit=None):

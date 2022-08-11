@@ -72,7 +72,8 @@ AGES_DICT = [('A - 0 A 1 MES', 'A - 0 A 1 MES'),
              ('S - FILHOS PRO JOVEM', 'S - FILHOS PRO JOVEM'),
              ('V - PROFESSOR', 'V - PROFESSOR'),
              ('U - PROFESSOR JANTAR CEI', 'U - PROFESSOR JANTAR CEI')]
-MANAGEMENT_DICT = [('DIRETA', 'DIRETA'),
+MANAGEMENT_DICT = [('Selecione', ''),
+                   ('DIRETA', 'DIRETA'),
                    ('MISTA', 'MISTA'),
                    ('TERCEIRIZADA', 'TERCEIRIZADA')]
 SPECIAL_UNITS_DICT = [('POLO', 'POLO'),
