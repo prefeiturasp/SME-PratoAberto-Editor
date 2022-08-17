@@ -191,8 +191,12 @@
                         </option>
                         <option {% if request.args.get('idade')=='E - 8 MESES' %} selected {% endif %}>E - 8 A 11 MESES
                         </option>
+                        <option {% if request.args.get('idade')=='E - 7 A 11 MESES' %} selected {% endif %}>E - 7 A 11 MESES
+                        </option>
                         <option {% if request.args.get('idade')=='X - 1A -1A E 11MES MESES' %} selected {% endif %}>X -
                             1A -1A E 11MES</option>
+                        <option {% if request.args.get('idade')=='F - 1 A 3 ANOS' %} selected {% endif %}>F - 1 A 3 ANOS
+                        </option>
                         <option {% if request.args.get('idade')=='F - 2 A 3 ANOS' %} selected {% endif %}>F - 2 A 3 ANOS
                         </option>
                         <option {% if request.args.get('idade')=='G - 4 A 6 ANOS' %} selected {% endif %}>G - 4 A 6 ANOS
