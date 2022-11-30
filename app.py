@@ -1419,12 +1419,16 @@ def dowload_special_unit():
 
 @app.context_processor
 def get_all_special_unit():
-    ue_dict = [{'id': ue['_id']['$oid'],
-                'label': ue['nome'],
-                'range': convert_datetime_format(ue['data_inicio'], '%Y%m%d', '%d/%m/%Y') +
-                         ' - ' +
-                         convert_datetime_format(ue['data_fim'], '%Y%m%d', '%d/%m/%Y')}
-               for ue in get_unidades_especiais()]
+    ue_dict = []
+    for ue in get_unidades_especiais():
+        try:
+            ue_item = {'id': ue['_id']['$oid'],
+                       'label': ue['nome'],
+                       'range': convert_datetime_format(ue['data_inicio'], '%Y%m%d', '%d/%m/%Y') +
+                       ' - ' + convert_datetime_format(ue['data_fim'], '%Y%m%d', '%d/%m/%Y')}
+            ue_dict.append(ue_item)
+        except TypeError:
+            pass
     return dict(ue_dict=ue_dict)
 
 
