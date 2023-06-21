@@ -139,7 +139,7 @@ def last_monday(date):
 
 
 def generate_ranges():
-    start_date = datetime.datetime.utcnow() + datetime.timedelta(days=14)
+    start_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
     current_day = datetime.datetime(2018, 2, 5)
     dates = ['18/12/2017 - 22/12/2017']
     while current_day < start_date:
