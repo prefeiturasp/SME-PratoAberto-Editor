@@ -247,7 +247,8 @@
                 <div class="form-inline">
                     <div class="form-group">
                         <label class="sr-only" for="GESTAO">GESTÃO</label>
-                        <input disabled type="text" class="form-control" id="GESTAO" placeholder="Ex: DIRETA OU MISTA">
+                        <input disabled type="text" class="form-control" id="GESTAO"
+                               placeholder="Ex: DIRETA OU MISTA">
                         <button disabled class="btn btn-primary">+ GESTÃO</button>
                     </div>
                 </div>
@@ -255,7 +256,8 @@
             <div class="col-sm-8">
                 <div id="lista-gestao" style="text-align: left">
                     {% for gestao in gestoes %}
-                        <span type="button" class="btn btn-default" style="margin-right: 8px" id="{{ gestao }}">{{ gestao }}</span>
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" onclick="deletar(this)"
+                              id="{{ gestao }}">{{ gestao }} x</span>
                     {% endfor %}
                 </div>
             </div>
