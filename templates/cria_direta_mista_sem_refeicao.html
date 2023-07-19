@@ -257,8 +257,8 @@
                 <div class="col-sm-8">
                     <div id="lista-gestao" style="text-align: left">
                         {% for gestao in gestoes %}
-                        <span type="button" class="btn btn-default" style="margin-right: 8px" id="{{ gestao }}">{{
-                            gestao }}</span>
+                        <span type="button" class="btn btn-default" style="margin-right: 8px" onclick="deletar(this)"
+                            id="{{ gestao }}">{{ gestao }} x</span>
                         {% endfor %}
                     </div>
                 </div>
