@@ -128,8 +128,8 @@ def date_to_str(date):
     return datetime.datetime.strftime(date, '%d/%m/%Y')
 
 
-def monday_to_friday(date):
-    return date + datetime.timedelta(days=4)
+def monday_to_sunday(date):
+    return date + datetime.timedelta(days=6)
 
 
 def last_monday(date):
@@ -139,10 +139,10 @@ def last_monday(date):
 
 
 def generate_ranges():
-    start_date = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    start_date = datetime.datetime.utcnow() + datetime.timedelta(days=60)
     current_day = datetime.datetime(2018, 2, 5)
     dates = ['18/12/2017 - 22/12/2017']
     while current_day < start_date:
-        dates.append(date_to_str(current_day) + ' - ' + date_to_str(monday_to_friday(current_day)))
+        dates.append(date_to_str(current_day) + ' - ' + date_to_str(monday_to_sunday(current_day)))
         current_day += datetime.timedelta(days=7)
     return dates
