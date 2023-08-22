@@ -181,7 +181,8 @@ def post_idades_idades():
         'L5 - LANCHE 5 OU LANCHE 6 HORAS': 'L5 - LANCHE 5 HORAS',
         'MI - MERENDA INICIAL': 'MI - MERENDA INICIAL',
         'MS - MERENDA SECA': 'MS - MERENDA SECA',
-        'R1 - REFEICAO 1': 'R1 - REFEICAO 1'
+        'R1 - REFEICAO 1': 'R1 - REFEICAO 1',
+        'HE - HORARIO ESTENDIDO': 'HE - HORARIO ESTENDIDO'
     }
 
     for escola in escolas:
@@ -230,7 +231,8 @@ def post_ordenar_refeicoes():
                            'R1 - REFEICAO 1',
                            'MS - MERENDA SECA',
                            'FPJ - FILHOS PRO JOVEM',
-                           'J - JANTAR']
+                           'J - JANTAR',
+                           'HE - HORARIO ESTENDIDO']
 
     for escola in escolas:
         count += 1
