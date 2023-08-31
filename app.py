@@ -171,37 +171,30 @@ def deletados():
 @app.route(f"/{raiz}/pendencias_publicadas", methods=["GET"])
 @flask_login.login_required
 def publicados():
-    weeks = reversed(generate_ranges())
-    default_week = list(weeks)[2]
+    weeks = reversed(generate_ranges(10))
+    default_week = list(weeks)[0]
     published_menus = sort_array_date_br(get_publicados(request_obj=request, default_week=default_week))
     unidades_especiais = get_unidades_especiais()
     ue_dict = ['NENHUMA']
     if len(unidades_especiais):
         ue_dict += set(x['nome'] for x in unidades_especiais)
-    period = request.args.get('filtro_periodo', '30')
-    if period not in [None, 'all']:
-        date_range = datetime.datetime.utcnow() - datetime.timedelta(days=int(period))
-    else:
-        date_range = None
-    periods = []
-    weeks = reversed(generate_ranges())
-    for week in weeks:
-        if date_range:
-            if datetime.datetime.strptime(week.split(' ')[0], '%d/%m/%Y') > date_range:
-                periods.append(week)
-        else:
-            periods.append(week)
+    period = request.args.get('filtro_periodo', '365')
+    weeks = reversed(generate_ranges(period)) if period == 'all' or int(period) < 0 else generate_ranges(period)
     period_ranges = {
-        'último mês': '30',
-        'últimos 3 meses': '90',
-        'últimos 6 meses': '180',
-        'últimos 12 meses': '365',
+        'próximo ano': '365',
+        'próximos 6 meses': '180',
+        'próximos 3 meses': '90',
+        'próximo mês': '30',
+        'último mês': '-30',
+        'últimos 3 meses': '-90',
+        'últimos 6 meses': '-180',
+        'últimos 12 meses': '-365',
         'todos': 'all'
     }
 
     return render_template("pendencias_publicadas.html",
                            published_menus=published_menus,
-                           week_ranges=list(periods),
+                           week_ranges=list(weeks),
                            period_ranges=period_ranges,
                            default_week=default_week,
                            unidades_especiais=ue_dict)
