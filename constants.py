@@ -49,7 +49,8 @@ MEALS_DICT = [('A - ALMOCO', 'A - ALMOCO'),
               ('MS - MERENDA SECA', 'MS - MERENDA SECA'),
               ('SR - SEM REFEICAO', 'SR - SEM REFEICAO'),
               ('R1 - REFEICAO 1', 'R1 - REFEICAO 1'),
-              ('HE - HORARIO ESTENDIDO', 'HE - HORARIO ESTENDIDO')]
+              ('HE - HORARIO ESTENDIDO', 'HE - HORARIO ESTENDIDO'),
+              ('LP - LANCHE PASSEIO', 'LP - LANCHE PASSEIO')]
 AGES_DICT = [('A - 0 A 1 MES', 'A - 0 A 1 MES'),
              ('B - 1 A 3 MESES', 'B - 1 A 3 MESES'),
              ('C - 4 A 5 MESES', 'C - 4 A 5 MESES'),
