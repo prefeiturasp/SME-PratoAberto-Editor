@@ -29,10 +29,12 @@ GROUPING_DICT = [('Selecione', ''),
                  ('3', '3'),
                  ('4', '4'),
                  ('EDITAL 78/2016', 'EDITAL 78/2016'),
-                 ('Novo Edital', 'Novo Edital')]
+                 ('Novo Edital', 'Novo Edital'),
+                 ('Edital 2024', 'Edital 2024')]
 EDITOR_DICT = [('Nenhum', 'Nenhum'),
                ('EDITAL 78/2016', 'EDITAL 78/2016'),
-               ('Novo Edital', 'Novo Edital')]
+               ('Novo Edital', 'Novo Edital'),
+               ('Edital 2024', 'Edital 2024')]
 MEALS_DICT = [('A - ALMOCO', 'A - ALMOCO'),
               ('AA - ALMOCO ADULTO', 'AA - ALMOCO ADULTO'),
               ('C - COLACAO', 'C - COLACAO'),

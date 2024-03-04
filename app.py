@@ -1003,7 +1003,10 @@ def escolas(id_escola=None):
             session['refer'] = request.referrer
         escolas, pagination = get_escolas(params=request.args)
         escolas_ids = ','.join([str(escola['_id']) for escola in escolas])
-        editais = sorted(get_editais(escolas_ids), key=lambda e: e['escola'])
+        try:
+            editais = sorted(get_editais(escolas_ids), key=lambda e: e['escola'])
+        except KeyError:
+            editais = []
     return render_template("configuracoes_escola_v2.html", escolas=escolas, editais=editais,
                            pagination=pagination, referrer=session['refer'], form=form)
 
@@ -2056,7 +2059,11 @@ class OutSourcedMenuForm(Form):
     management = SelectField('Gestão', choices=[('TERCEIRIZADA', 'TERCEIRIZADA')])
     school_type = SelectField('Tipo de Escola', choices=constants.SCHOOL_TYPES_DICT)
     special_unit = SelectField('Unidade Especial', choices=get_unidades_especiais_dict())
-    edital = SelectField('Edital', choices=[('EDITAL 78/2016', 'EDITAL 78/2016'), ('Novo Edital', 'Novo Edital')])
+    edital = SelectField('Edital', choices=[
+        ('EDITAL 78/2016', 'EDITAL 78/2016'),
+        ('Novo Edital', 'Novo Edital'),
+        ('Edital 2024', 'Edital 2024')
+    ])
     weekday = DateField('Dia Semana', format='%Y%m%d')
     ages = SelectField('Idades', choices=constants.AGES_DICT)
     meals = SelectField('Refeições', choices=constants.MEALS_DICT)
