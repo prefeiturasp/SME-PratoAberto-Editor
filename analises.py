@@ -182,6 +182,7 @@ def post_idades_idades():
         'MI - MERENDA INICIAL': 'MI - MERENDA INICIAL',
         'MS - MERENDA SECA': 'MS - MERENDA SECA',
         'R1 - REFEICAO 1': 'R1 - REFEICAO 1',
+        'R2 - REFEICAO 2': 'R2 - REFEICAO 2',
         'HE - HORARIO ESTENDIDO': 'HE - HORARIO ESTENDIDO',
         'LP - LANCHE PASSEIO': 'LP - LANCHE PASSEIO'
     }
@@ -230,6 +231,7 @@ def post_ordenar_refeicoes():
                            'L4 - LANCHE 4 HORAS',
                            'L5 - LANCHE 5 HORAS',
                            'R1 - REFEICAO 1',
+                           'R2 - REFEICAO 2',
                            'MS - MERENDA SECA',
                            'FPJ - FILHOS PRO JOVEM',
                            'J - JANTAR',
