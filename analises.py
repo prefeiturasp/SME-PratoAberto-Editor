@@ -184,7 +184,9 @@ def post_idades_idades():
         'R1 - REFEICAO 1': 'R1 - REFEICAO 1',
         'R2 - REFEICAO 2': 'R2 - REFEICAO 2',
         'HE - HORARIO ESTENDIDO': 'HE - HORARIO ESTENDIDO',
-        'LP - LANCHE PASSEIO': 'LP - LANCHE PASSEIO'
+        'LP - LANCHE PASSEIO': 'LP - LANCHE PASSEIO',
+        'L - LANCHE CEMEI': 'L - LANCHE CEMEI',
+		'R - REFEICAO CEMEI':  'R - REFEICAO CEMEI'
     }
 
     for escola in escolas:
@@ -236,7 +238,9 @@ def post_ordenar_refeicoes():
                            'FPJ - FILHOS PRO JOVEM',
                            'J - JANTAR',
                            'HE - HORARIO ESTENDIDO'
-                           'LP - LANCHE PASSEIO']
+                           'LP - LANCHE PASSEIO',
+                           'L - LANCHE CEMEI',
+		                   'R - REFEICAO CEMEI']
 
     for escola in escolas:
         count += 1
