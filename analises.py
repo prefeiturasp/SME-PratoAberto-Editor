@@ -186,7 +186,11 @@ def post_idades_idades():
         'HE - HORARIO ESTENDIDO': 'HE - HORARIO ESTENDIDO',
         'LP - LANCHE PASSEIO': 'LP - LANCHE PASSEIO',
         'L - LANCHE CEMEI': 'L - LANCHE CEMEI',
-		'R - REFEICAO CEMEI':  'R - REFEICAO CEMEI'
+        'R - REFEICAO CEMEI': 'R - REFEICAO CEMEI',
+        'L4 - ESCOLA ABERTA': 'L4 - ESCOLA ABERTA',
+        'L5 - ESCOLA ABERTA': 'L5 - ESCOLA ABERTA',
+        'R - ESCOLA ABERTA': 'R - ESCOLA ABERTA',
+        'R - REFEICAO': 'R - REFEICAO'
     }
 
     for escola in escolas:
@@ -240,7 +244,11 @@ def post_ordenar_refeicoes():
                            'HE - HORARIO ESTENDIDO'
                            'LP - LANCHE PASSEIO',
                            'L - LANCHE CEMEI',
-		                   'R - REFEICAO CEMEI']
+                           'R - REFEICAO CEMEI',
+                           'L4 - ESCOLA ABERTA',
+                           'L5 - ESCOLA ABERTA'
+                           'R - ESCOLA ABERTA'
+                           'R - REFEICAO']
 
     for escola in escolas:
         count += 1
