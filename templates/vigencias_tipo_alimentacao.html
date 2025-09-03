@@ -229,7 +229,6 @@
                                             data-toggle="modal"
                                             data-target="#modalAddSchoolForm{{ vigencia['_id'] }}"><i
                                                 class="fas fa-edit"></i></a></td>
-                                    <td class="id">{{ vigencia['_id']['$oid'] }}</td>
                                     <td class="escola">{{ vigencia['escola_id'] }}</td>
                                     <td class="data_criacao">{{ vigencia['data_criacao'] }}</td>
                                     <td class="data_inicio">{{ vigencia['data_inicio'] }}</td>
@@ -262,8 +261,9 @@
                                                     <button type="button" class="btn btn-secondary"
                                                         id="{{vigencia['_id']['$oid']}}"
                                                         data-dismiss="modal">Fechar</button>
-                                                    <a href="#" onclick='deleteSpecialUnit({{vigencia}})'
-                                                        type="button" class="btn btn-danger">Excluir</a>
+                                                    <a href="#" onclick="deleteSpecialUnit('{{ vigencia['_id']['$oid'] }}')" type="button" class="btn btn-danger">
+                                                        Excluir
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -454,11 +454,10 @@
 
     </script>
     <script>
-        function deleteSpecialUnit(vigencia) {
+        function deleteSpecialUnit(vigenciaId) {
             $.ajax({
                 type: 'DELETE',
-                url: '/editor/excluir_vigencia_tipo_alimentacao/' + vigencia._id.$oid,
-                data: JSON.stringify(vigencia),
+                url: '/editor/excluir_vigencia_tipo_alimentacao/' + vigenciaId,
                 contentType: 'application/json',
                 //dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
