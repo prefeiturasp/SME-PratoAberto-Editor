@@ -206,7 +206,7 @@
         <div class="row main" style="padding-top: 30px;">
             <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h2 class="panel-title">Unidades Especiais</h2>
+                    <h2 class="panel-title">Vigências de tipo de alimentação</h2>
                 </div>
                 <div class="table-responsive">
                     <div>
@@ -214,11 +214,11 @@
                             <thead>
                                 <tr>
                                     <th style="word-wrap: break-word;"></th>
-                                    <th style="word-wrap: break-word;">NOME</th>
+                                    <th style="word-wrap: break-word;">ESCOLA</th>
                                     <th style="word-wrap: break-word;">DATA CRIACAO</th>
                                     <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">DATA INICIO</th>
                                     <th style="word-wrap: break-word;">DATA FIM</th>
-                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">ESCOLAS</th>
+                                    <th style="word-wrap: break-word;min-width: 150px;max-width: 150px;">REFEIÇÕES</th>
                                     <th style="word-wrap: break-word;"></th>
                                 </tr>
                             </thead>
@@ -229,7 +229,8 @@
                                             data-toggle="modal"
                                             data-target="#modalAddSchoolForm{{ vigencia['_id'] }}"><i
                                                 class="fas fa-edit"></i></a></td>
-                                    <td class="esccola">{{ vigencia['escola_id'] }}</td>
+                                    <td class="id">{{ vigencia['_id']['$oid'] }}</td>
+                                    <td class="escola">{{ vigencia['escola_id'] }}</td>
                                     <td class="data_criacao">{{ vigencia['data_criacao'] }}</td>
                                     <td class="data_inicio">{{ vigencia['data_inicio'] }}</td>
                                     <td class="data_fim">{{ vigencia['data_fim'] }}</td>
@@ -239,10 +240,10 @@
                                         {% endfor %}
                                     </td>
                                     <td><a class="btn btn-danger" data-toggle="modal"
-                                            data-target="#exampleModal{{special_unit['nome']}}" href="#"
+                                            data-target="#exampleModal{{vigencia['_id']['$oid']}}" href="#"
                                             data-target="#xml_form"><i class="fas fa-trash-alt"></i></a></td>
                                     <!-- Modal -->
-                                    <div class="modal fade" id="exampleModal{{vigencia['_id']}}" tabindex="-1"
+                                    <div class="modal fade" id="exampleModal{{vigencia['_id']['$oid']}}" tabindex="-1"
                                         role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
@@ -259,7 +260,7 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
-                                                        id="{{vigencia['_id']}}"
+                                                        id="{{vigencia['_id']['$oid']}}"
                                                         data-dismiss="modal">Fechar</button>
                                                     <a href="#" onclick='deleteSpecialUnit({{vigencia}})'
                                                         type="button" class="btn btn-danger">Excluir</a>
@@ -310,20 +311,12 @@
                     </button>
                 </div>
                 {% if form.identifier.data %}
-                <form method="post" action="/editor/unidades_especiais/{{ form.identifier.data }}?openModal=true">
+                <form method="post" action="/editor/vigencias_tipo_alimentacao/{{ form.identifier.data }}?openModal=true">
                     {% else %}
-                    <form method="post" action="/editor/unidades_especiais?openModal=true">
+                    <form method="post" action="/editor/vigencias_tipo_alimentacao?openModal=true">
                         {% endif %}
-                        <div class="row forms">
-                            <div class="col-xs-12">
-                                <label class="col-sm-4 col-xs-12">{{ form_filter.school_autocomplete.label }}</label>
-                                <span class="col-sm-4 col-xs-12">{{ form_filter.school_autocomplete }}</span>
-                                <button type="submit" class="btn btn-info col-sm-offset-1 col-sm-2">ADICIONAR</button>
-                            </div>
-                        </div>
                     </form>
-                    <hr />
-                    <form method=post action="/editor/adicionar_unidade_especial">
+                    <form method=post action="/editor/adicionar_vigencia_tipo_alimentacao">
                         <dl>
                             <div>
                                 <div class="row forms">
@@ -444,8 +437,8 @@
 
     <script>
         function addSchool() {
-            if (window.location.href.includes('unidades_especiais/')) {
-                window.location.href = '/unidades_especiais?openModal=true';
+            if (window.location.href.includes('vigencias_tipo_alimentacao/')) {
+                window.location.href = '/vigencias_tipo_alimentacao?openModal=true';
             } else {
                 $('#modalAddSchoolForm').modal('show');
             }
@@ -455,17 +448,17 @@
     <!-- Edita escola -->
     <script>
         function editRow(id) {
-            window.location.href = '/editor/unidades_especiais/' + id.$oid + '?openModal=true';
+            window.location.href = '/editor/vigencias_tipo_alimentacao/' + id.$oid + '?openModal=true';
         }
 
 
     </script>
     <script>
-        function deleteSpecialUnit(special_unit) {
+        function deleteSpecialUnit(vigencia) {
             $.ajax({
                 type: 'DELETE',
-                url: '/editor/excluir_unidade_especial/' + special_unit._id.$oid,
-                data: JSON.stringify(special_unit),
+                url: '/editor/excluir_vigencia_tipo_alimentacao/' + vigencia._id.$oid,
+                data: JSON.stringify(vigencia),
                 contentType: 'application/json',
                 //dataType: 'json',
                 success: function (data, textStatus, jqXHR) {
