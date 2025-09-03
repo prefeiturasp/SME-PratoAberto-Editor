@@ -948,6 +948,40 @@ def excluir_unidade_especial(id_unidade_especial):
     return ('', 200)
 
 
+@app.route(f'/{raiz}/vigencias_tipo_alimentacao/<id_vigencia>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/vigencias_tipo_alimentacao', methods=['GET', 'POST'])
+@flask_login.login_required
+def vigencias_tipo_alimentacao(id_vigencia=None):
+    form = MealsDurationForm(request.form)
+    form_filter = FilterSchoolForm(request.form)
+    if id_vigencia:
+        vigencia_tipo_alimentacao = get_vigencias_tipo_alimentacao(id_vigencia)
+        form.identifier.data = id_vigencia
+        form.creation_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao[0])
+        form.initial_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao[1])
+        form.end_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao[2])
+        form.meals.data = vigencia_tipo_alimentacao[3]
+        form.school_id = vigencia_tipo_alimentacao[4]
+    """
+    if by_type:
+        form.schools.data += get_escolas_dict(params=request.args, by_type=by_type, limit='4000') + \
+                             [cod_eol.split(' - ')[0].strip() for cod_eol in
+                              form_filter.school_autocomplete.data.split(', ')]
+    else:
+        form.schools.data += [cod_eol.split(' - ')[0].strip() for cod_eol
+                              in form_filter.school_autocomplete.data.split(', ')]
+    """
+    if request.method in ["GET", "POST"]:
+        if 'refer' in session:
+            if request.referrer and '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
+        escolas, pagination = get_escolas(params=request.args)
+    return render_template("vigencias_tipo_alimentacao.html", form_filter=form_filter,
+                           referrer=session['refer'], form=form, vigencias_tipo_alimentacao=get_vigencias_tipo_alimentacao())
+
+
 @app.route(f'/{raiz}/escolas/<int:id_escola>', methods=['GET', 'POST'])
 @app.route(f'/{raiz}/escolas', methods=['GET', 'POST'])
 @flask_login.login_required
@@ -1845,6 +1879,14 @@ def get_unidades_especiais():
     return r.json()
 
 
+def get_vigencias_tipo_alimentacao(id=None):
+    url = api + '/editor/vigencias_tipo_alimentacao'
+    if id:
+        url += '/' + id
+    r = requests.get(url)
+    return r.json()
+
+
 def get_unidades_especiais_by_id(id):
     url = api + '/editor/unidades_especiais/' + id
     r = requests.get(url)
@@ -2082,6 +2124,19 @@ class SpecialUnitForm(Form):
 
 class FilterTypeSchoolForm(Form):
     school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_FILTER_DICT)
+    school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
+
+
+class MealsDurationForm(Form):
+    identifier = StringField('Identificador')
+    creation_date = DateField('Data Criacao', format='%Y-%m-%d')
+    initial_date = DateField('Data Inicial', format='%Y-%m-%d', validators=[validators.optional()])
+    end_date = DateField('Data Final', format='%Y-%m-%d', validators=[validators.optional()])
+    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
+    school = SelectField('Escola', choices=get_escolas_dict(limit='4000'))
+
+
+class FilterSchoolForm(Form):
     school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
 
 

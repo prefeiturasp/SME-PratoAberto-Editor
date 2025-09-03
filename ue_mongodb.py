@@ -24,6 +24,10 @@ def connect(colecao=None):
         with client:
             if colecao == 'escolas':
                 db = client.pratoaberto.escolas
+            elif colecao == 'vigencias_tipo_alimentacao':
+                if 'vigencias_tipo_alimentacao' not in db.list_collection_names():
+                    db.createCollection('vigencias_tipo_alimentacao')
+                db = client.pratoaberto.vigencias_tipo_alimentacao
             else:
                 if 'unidades_especiais' not in db.list_collection_names():
                     db.createCollection('unidades_especiais')
@@ -108,8 +112,8 @@ def set_unidade(id_unidade, data_criacao=None, data_ini=None, data_fim=None, id_
 
 
 # ..EXTRAI TODOS OS DADOS DE UMA UNIDADE ESPECIAL
-def get_unidade(id_unidade):
-    db, client = connect()
+def get_unidade(id_unidade, db="unidades_especiais"):
+    db, client = connect(db)
     if db is not None:
         try:
             cursor = db.find({"_id": ObjectId(id_unidade)})
@@ -120,6 +124,8 @@ def get_unidade(id_unidade):
 
             doc = cursor.next()
             cursor.close()
+            if db == "vigencias_tipo_alimentacao":
+                return doc['data_criacao'], doc['data_inicio'], doc['data_fim']
             return (doc['nome'], doc['data_criacao'], doc['data_inicio'], doc['data_fim'], doc['escolas'])
 
         except OperationFailure as e:
