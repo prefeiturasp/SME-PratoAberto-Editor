@@ -985,7 +985,7 @@ def vigencias_tipo_alimentacao(id_vigencia=None):
         form.initial_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_inicio')) if vigencia_tipo_alimentacao.get('data_inicio') else None
         form.end_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_fim')) if vigencia_tipo_alimentacao.get('data_fim') else None
         form.meals.data = vigencia_tipo_alimentacao.get('refeicoes')
-        form.school_id = vigencia_tipo_alimentacao.get('escola_id')
+        form.school.data = vigencia_tipo_alimentacao.get('escola_id')
     if request.method in ["GET", "POST"]:
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
