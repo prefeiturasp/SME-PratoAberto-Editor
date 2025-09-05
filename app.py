@@ -945,7 +945,8 @@ def adicionar_vigencia_tipo_alimentacao():
     form = MealsDurationForm(request.form)
     nova_vigencia = dict()
     nova_vigencia['_id'] = form.identifier.data
-    nova_vigencia['escola_id'] = form.school.data
+    nova_vigencia['escola_id'] = form.school_id.data
+    nova_vigencia['escola'] = get_escola(form.school_id.data)['nome']
     if not form.identifier.data:
         nova_vigencia['data_criacao'] = datetime.datetime.utcnow().strftime('%Y%m%d')
     nova_vigencia['data_inicio'] = form.initial_date.data.strftime('%Y%m%d') if form.initial_date.data else None
@@ -985,7 +986,8 @@ def vigencias_tipo_alimentacao(id_vigencia=None):
         form.initial_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_inicio')) if vigencia_tipo_alimentacao.get('data_inicio') else None
         form.end_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_fim')) if vigencia_tipo_alimentacao.get('data_fim') else None
         form.meals.data = vigencia_tipo_alimentacao.get('refeicoes')
-        form.school.data = vigencia_tipo_alimentacao.get('escola_id')
+        form.school_id.data = vigencia_tipo_alimentacao.get('escola_id')
+        form.school_name.data = vigencia_tipo_alimentacao.get('escola')
     if request.method in ["GET", "POST"]:
         if 'refer' in session:
             if request.referrer and '?' not in request.referrer:
@@ -2162,7 +2164,8 @@ class MealsDurationForm(Form):
     initial_date = DateField('Data Inicial', format='%Y-%m-%d', validators=[validators.optional()])
     end_date = DateField('Data Final', format='%Y-%m-%d', validators=[validators.optional()])
     meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
-    school = SelectField('Escola', choices=get_escolas_dict(limit='4000'))
+    school_id = SelectField('Codigo EOL', choices=get_escolas_dict(limit='4000'))
+    school_name = StringField('Escola')
 
 
 class FilterSchoolForm(Form):

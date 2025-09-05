@@ -207,7 +207,7 @@
             <form method="get" action="/editor/vigencias_tipo_alimentacao">
                 <div class="row" style="margin-top: 15px">
                     <div class="col-sm-4 col-xs-12">
-                        <label for="nome">Código EOL</label>
+                        <label for="nome">Nome da Escola ou Código EOL</label>
                         <input value="{{request.args.get('nome') or ''}}" type="text" id="nome" name="nome"
                             class="form-control">
                     </div>
@@ -236,6 +236,7 @@
                             <thead>
                                 <tr>
                                     <th style="word-wrap: break-word;"></th>
+                                    <th style="word-wrap: break-word;">CODIGO EOL</th>
                                     <th style="word-wrap: break-word;">ESCOLA</th>
                                     <th style="word-wrap: break-word;">DATA CRIACAO</th>
                                     <th style="word-wrap: break-word;min-width: 90px;max-width: 150px;">DATA INICIO</th>
@@ -251,7 +252,8 @@
                                             data-toggle="modal"
                                             data-target="#modalAddSchoolForm{{ vigencia['_id'] }}"><i
                                                 class="fas fa-edit"></i></a></td>
-                                    <td class="escola">{{ vigencia['escola_id'] }}</td>
+                                    <td class="escola_id">{{ vigencia['escola_id'] }}</td>
+                                    <td class="escola">{{ vigencia['escola'] }}</td>
                                     <td class="data_criacao">{{ vigencia['data_criacao'] }}</td>
                                     <td class="data_inicio">{{ vigencia['data_inicio'] }}</td>
                                     <td class="data_fim">{{ vigencia['data_fim'] }}</td>
@@ -347,8 +349,8 @@
                                         <span>{{ form.identifier }}</span>
                                     </div>
                                     <div class="col-sm-offset-2 col-sm-8 col-xs-12">
-                                        {{ form.school.label }}
-                                        <div>{{ form.school }}</div>
+                                        {{ form.school_id.label }}
+                                        <div>{{ form.school_id }}</div>
                                     </div>
                                 </div>
                                 <div class="row forms">
