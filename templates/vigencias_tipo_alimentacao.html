@@ -203,6 +203,28 @@
                 </form>
             </div>
         </div>
+        <div class="panel panel-default">
+            <form method="get" action="/editor/vigencias_tipo_alimentacao">
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-sm-4 col-xs-12">
+                        <label for="nome">Código EOL</label>
+                        <input value="{{request.args.get('nome') or ''}}" type="text" id="nome" name="nome"
+                            class="form-control">
+                    </div>
+                </div>
+                <div class="row" style="padding-bottom: 15px; margin-top: 15px">
+                    <div class="col-12">
+                        <div class="col-sm-2 col-sm-offset-10">
+                            <a
+                                href="/editor/vigencias_tipo_alimentacao?nome=&tipo_unidade=">
+                                <button type="button" class="btn btn-default">LIMPAR</button>
+                                <button type="submit" class="pull-right btn btn-success">FILTRAR</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
         <div class="row main" style="padding-top: 30px;">
             <div class="panel panel-success">
                 <div class="panel-heading">

@@ -979,7 +979,7 @@ def vigencias_tipo_alimentacao(id_vigencia=None):
     form = MealsDurationForm(request.form)
     form_filter = FilterSchoolForm(request.form)
     if id_vigencia:
-        vigencia_tipo_alimentacao = get_vigencias_tipo_alimentacao(id_vigencia)
+        vigencia_tipo_alimentacao = get_vigencias_tipo_alimentacao(id=id_vigencia)
         form.identifier.data = id_vigencia
         form.creation_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_criacao'))
         form.initial_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_inicio')) if vigencia_tipo_alimentacao.get('data_inicio') else None
@@ -992,9 +992,11 @@ def vigencias_tipo_alimentacao(id_vigencia=None):
                 session['refer'] = request.referrer
         else:
             session['refer'] = request.referrer
-        escolas, pagination = get_escolas(params=request.args)
+        vigencias_tipo_alimentacao = get_vigencias_tipo_alimentacao(params=request.args)
+    else:
+        vigencias_tipo_alimentacao = get_vigencias_tipo_alimentacao()
     return render_template("vigencias_tipo_alimentacao.html", form_filter=form_filter,
-                           referrer=session['refer'], form=form, vigencias_tipo_alimentacao=get_vigencias_tipo_alimentacao())
+                           referrer=session['refer'], form=form, vigencias_tipo_alimentacao=vigencias_tipo_alimentacao)
 
 
 @app.route(f'/{raiz}/excluir_vigencia_tipo_alimentacao/<string:id_vigencia>', methods=['DELETE'])
@@ -1903,8 +1905,11 @@ def get_unidades_especiais():
     return r.json()
 
 
-def get_vigencias_tipo_alimentacao(id=None):
+def get_vigencias_tipo_alimentacao(params=None, id=None):
     url = api + '/editor/vigencias_tipo_alimentacao'
+    if params:
+        extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
+        url += extra
     if id:
         url += '/' + id
     r = requests.get(url)
