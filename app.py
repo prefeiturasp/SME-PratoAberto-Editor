@@ -939,6 +939,31 @@ def adicionar_unidade_especial():
     return redirect('/editor/unidades_especiais', code=302)
 
 
+@app.route(f'/{raiz}/adicionar_vigencia_tipo_alimentacao', methods=['POST'])
+@flask_login.login_required
+def adicionar_vigencia_tipo_alimentacao():
+    form = MealsDurationForm(request.form)
+    nova_vigencia = dict()
+    nova_vigencia['_id'] = form.identifier.data
+    nova_vigencia['escola_id'] = form.school_id.data
+    nova_vigencia['escola'] = get_escola(form.school_id.data)['nome']
+    if not form.identifier.data:
+        nova_vigencia['data_criacao'] = datetime.datetime.utcnow().strftime('%Y%m%d')
+    nova_vigencia['data_inicio'] = form.initial_date.data.strftime('%Y%m%d') if form.initial_date.data else None
+    nova_vigencia['data_fim'] = form.end_date.data.strftime('%Y%m%d') if form.end_date.data else None
+    nova_vigencia['refeicoes'] = form.meals.data
+    headers = {'Content-type': 'application/json'}
+    r = requests.post(f'{api}/editor/vigencia_tipo_alimentacao/{str(nova_vigencia["_id"])}',
+                      data=json.dumps(nova_vigencia),
+                      headers=headers)
+    if '200' in str(r):
+        flash('Informações salvas com sucesso')
+    else:
+        flash('Ocorreu um erro ao salvar as informações')
+    return redirect('/editor/vigencias_tipo_alimentacao', code=302)
+
+
+
 @app.route(f'/{raiz}/excluir_unidade_especial/<string:id_unidade_especial>', methods=['DELETE'])
 @flask_login.login_required
 def excluir_unidade_especial(id_unidade_especial):
@@ -946,6 +971,43 @@ def excluir_unidade_especial(id_unidade_especial):
     requests.delete(api + '/editor/unidade_especial/{}'.format(str(id_unidade_especial), headers=headers))
     flash('Escola excluída com sucesso')
     return ('', 200)
+
+
+@app.route(f'/{raiz}/vigencias_tipo_alimentacao/<id_vigencia>', methods=['GET', 'POST'])
+@app.route(f'/{raiz}/vigencias_tipo_alimentacao', methods=['GET', 'POST'])
+@flask_login.login_required
+def vigencias_tipo_alimentacao(id_vigencia=None):
+    form = MealsDurationForm(request.form)
+    form_filter = FilterSchoolForm(request.form)
+    if id_vigencia:
+        vigencia_tipo_alimentacao = get_vigencias_tipo_alimentacao(id=id_vigencia)
+        form.identifier.data = id_vigencia
+        form.creation_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_criacao'))
+        form.initial_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_inicio')) if vigencia_tipo_alimentacao.get('data_inicio') else None
+        form.end_date.data = yyyymmdd_to_date_time(vigencia_tipo_alimentacao.get('data_fim')) if vigencia_tipo_alimentacao.get('data_fim') else None
+        form.meals.data = vigencia_tipo_alimentacao.get('refeicoes')
+        form.school_id.data = vigencia_tipo_alimentacao.get('escola_id')
+        form.school_name.data = vigencia_tipo_alimentacao.get('escola')
+    if request.method in ["GET", "POST"]:
+        if 'refer' in session:
+            if request.referrer and '?' not in request.referrer:
+                session['refer'] = request.referrer
+        else:
+            session['refer'] = request.referrer
+        vigencias_tipo_alimentacao = get_vigencias_tipo_alimentacao(params=request.args)
+    else:
+        vigencias_tipo_alimentacao = get_vigencias_tipo_alimentacao()
+    return render_template("vigencias_tipo_alimentacao.html", form_filter=form_filter,
+                           referrer=session['refer'], form=form, vigencias_tipo_alimentacao=vigencias_tipo_alimentacao)
+
+
+@app.route(f'/{raiz}/excluir_vigencia_tipo_alimentacao/<string:id_vigencia>', methods=['DELETE'])
+@flask_login.login_required
+def excluir_vigencia_tipo_alimentacao(id_vigencia):
+    headers = {'Content-type': 'application/json'}
+    requests.delete(api + '/editor/vigencia_tipo_alimentacao/{}'.format(str(id_vigencia), headers=headers))
+    flash('Vigência excluída com sucesso')
+    return ('', 204)
 
 
 @app.route(f'/{raiz}/escolas/<int:id_escola>', methods=['GET', 'POST'])
@@ -1845,6 +1907,17 @@ def get_unidades_especiais():
     return r.json()
 
 
+def get_vigencias_tipo_alimentacao(params=None, id=None):
+    url = api + '/editor/vigencias_tipo_alimentacao'
+    if params:
+        extra = "?" + "&".join([("{}={}".format(p[0], p[1])) for p in params.items()])
+        url += extra
+    if id:
+        url += '/' + id
+    r = requests.get(url)
+    return r.json()
+
+
 def get_unidades_especiais_by_id(id):
     url = api + '/editor/unidades_especiais/' + id
     r = requests.get(url)
@@ -2082,6 +2155,20 @@ class SpecialUnitForm(Form):
 
 class FilterTypeSchoolForm(Form):
     school_types = MultiCheckboxField('Incluir por tipo de escola', choices=constants.SCHOOL_TYPES_FILTER_DICT)
+    school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
+
+
+class MealsDurationForm(Form):
+    identifier = StringField('Identificador')
+    creation_date = DateField('Data Criacao', format='%Y-%m-%d')
+    initial_date = DateField('Data Inicial', format='%Y-%m-%d', validators=[validators.optional()])
+    end_date = DateField('Data Final', format='%Y-%m-%d', validators=[validators.optional()])
+    meals = MultiCheckboxField('Refeições', choices=constants.MEALS_DICT)
+    school_id = SelectField('Codigo EOL', choices=get_escolas_dict(limit='4000'))
+    school_name = StringField('Escola')
+
+
+class FilterSchoolForm(Form):
     school_autocomplete = TextAreaField('Incluir uma escola', id='autocomplete_school')
 
 
