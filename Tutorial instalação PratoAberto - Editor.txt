@@ -1,0 +1,27 @@
+Editor:
+
+> git clone https://github.com/prefeiturasp/SME-PratoAberto-Editor
+
+(instalar pyenv se não tiver)
+> pyenv install 3.6.15
+> pyenv local 3.6.15
+
+criar virtual env para Editor
+
+> python3.6 -m venv editor
+> source prato/bin/editor
+
+instalar bibliotecas
+
+> pip install -r requirements.txt
+
+rodar editor:
+
+# python db_setup.py -> Base SQLite (só deve rodar UMA ÚNICA VEZ - no setup do projeto)
+export PRATOABERTO_API=http://localhost:5000
+export PRATO_USER=admin
+export PASSWORD=codae@2017
+export APPLICATION_KEY=pratoaberto89
+export API_MONGO_URI=localhost:27017
+FLASK_APP=app.py flask run -p 5001
+
