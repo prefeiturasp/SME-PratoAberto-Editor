@@ -19,9 +19,8 @@ rodar editor:
 
 # python db_setup.py -> Base SQLite (só deve rodar UMA ÚNICA VEZ - no setup do projeto)
 export PRATOABERTO_API=http://localhost:5000
-export PRATO_USER=admin
-export PASSWORD=codae@2017
-export APPLICATION_KEY=pratoaberto89
+export PRATO_USER=<ESTA_NO_COFRE_DE_SENHAS>
+export PASSWORD=<ESTA_NO_COFRE_DE_SENHAS>
+export APPLICATION_KEY=<ESTA_NO_COFRE_DE_SENHAS>
 export API_MONGO_URI=localhost:27017
 FLASK_APP=app.py flask run -p 5001
-
